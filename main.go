@@ -31,11 +31,9 @@ func main() {
 	http.HandleFunc("/", handlers.Home)
 
 	http.HandleFunc("/signup", handlers.Signup)
-	http.HandleFunc("/terms", handlers.Terms)
 
 	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/logout", handlers.LogOut)
-	http.HandleFunc("/profile-page", handlers.Profile)
 
 	http.HandleFunc("/post", handlers.ViewPost)
 	http.HandleFunc("/profile", handlers.ViewProfile)

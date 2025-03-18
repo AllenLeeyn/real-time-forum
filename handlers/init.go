@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"real-time-forum/dbTools"
 	"regexp"
@@ -12,7 +12,8 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-//	Place for functions that executes different pages
+// handler functions for different functionality.
+// returns JSON and let JS on frontend to handle rendering
 
 var tmpl *template.Template
 var db *dbTools.DBContainer
@@ -24,13 +25,10 @@ type feedback = dbTools.Feedback
 type comment = dbTools.Comment
 
 type homepageData struct {
-	SessionCookie *http.Cookie
-	Categories    []string
-	Posts         []post
-	UserName      string
-	FilterBy      string
-	OrderBy       string
-	Id            int
+	isValidSession bool
+	Categories     []string
+	Posts          []post
+	UserName       string
 }
 
 type postpageData struct {
@@ -51,23 +49,18 @@ type profilepageData struct {
 }
 
 type ErrorData struct {
-	Type    string
-	Message string
-	Code    int
-}
-
-type PostError struct {
-	ErrorMessage string
+	Message string `json:"message"`
 }
 
 // Initializes all html files in templates folder
 func Init(dbMain *dbTools.DBContainer) {
-	var err error
-	tmpl, err = template.ParseGlob("assets/template/*.html")
-	if err != nil {
-		log.Fatalf("Error parsing templates: %v", err)
-	}
 	db = dbMain
+}
+
+func executeJSON(w http.ResponseWriter, data interface{}, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
 }
 
 /*----------- aunthenticate func -----------*/

@@ -10,36 +10,41 @@ import (
 
 // Page for viewing individual post
 func ViewPost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
+		return
+	}
+
 	// check session from cookie to get feedback data
 	sessionCookie, userID := checkSessionValidity(w, r)
 
-	if r.Method == http.MethodGet {
-		idStr := r.URL.Query().Get("id")
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			ExecuteError(w, "Tmpl", "Erroneous post ID", http.StatusBadRequest)
-			return
-		}
-		post, err := db.SelectPost(id, userID)
-		if err != nil {
-			ExecuteError(w, "Tmpl", "Error getting post", http.StatusBadRequest)
-			return
-		}
-		if post == nil {
-			ExecuteError(w, "Tmpl", "Post not found", http.StatusBadRequest)
-			return
-		}
-		comments, err := db.SelectComments(id, userID, "oldest")
-		if err != nil {
-			ExecuteError(w, "Tmpl", "Error getting comments", http.StatusInternalServerError)
-			return
-		}
-		extendSession(w, sessionCookie)
-		ExecuteTmpl(w, "viewPost.html", postpageData{sessionCookie, *post, comments, db.Categories})
-	} else {
-		ExecuteError(w, "Tmpl", "Method not allowed", http.StatusMethodNotAllowed)
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		executeJSON(w, ErrorData{"Invalid post ID"}, http.StatusBadRequest)
 		return
 	}
+	post, err := db.SelectPost(id, userID)
+	if err != nil {
+		executeJSON(w, ErrorData{"Error getting post"}, http.StatusBadRequest)
+		return
+	}
+	if post == nil {
+		executeJSON(w, ErrorData{"Post not found"}, http.StatusNotFound)
+		return
+	}
+	comments, err := db.SelectComments(id, userID, "oldest")
+	if err != nil {
+		executeJSON(w, ErrorData{"Error getting comments"}, http.StatusInternalServerError)
+		return
+	}
+	extendSession(w, sessionCookie)
+	executeJSON(w, postpageData{
+		sessionCookie,
+		*post,
+		comments,
+		db.Categories,
+	}, http.StatusOK)
 }
 
 // Page for user to draft their post (if method == get), otherwise post it (if method == post)
@@ -47,27 +52,24 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 	// check if user is logged in using session id
 	sessionCookie, userID := checkSessionValidity(w, r)
 	if userID == -1 {
-		ExecuteError(w, "json", "Please log in and try again", http.StatusBadRequest)
+		executeJSON(w, ErrorData{"Please login and try again"}, http.StatusUnauthorized)
 		return
 	}
 
-	if r.Method == http.MethodGet {
-		w.WriteHeader(http.StatusOK)
-		return
-	} else if r.Method != http.MethodPost {
-		ExecuteError(w, "Tmpl", "Method not allowed", http.StatusMethodNotAllowed)
+	if r.Method != http.MethodPost {
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 
 	title, content, categoriesInt, err := GetData(w, r)
 	if err != nil {
-		ExecuteError(w, "json", "Error getting form data", http.StatusBadRequest)
+		executeJSON(w, ErrorData{"Error getting form data"}, http.StatusBadRequest)
 		return
 	}
 	titleIsValid, titleError := CheckPostValidity(title, "postTitle")
 	contentIsValid, contentError := CheckPostValidity(content, "postContent")
 	if !(titleIsValid && contentIsValid) {
-		ExecuteError(w, "json", "Error: "+titleError+contentError, http.StatusBadRequest)
+		executeJSON(w, ErrorData{"Error: " + titleError + contentError}, http.StatusBadRequest)
 		return
 	}
 	post := dbTools.Post{
@@ -78,7 +80,8 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 	}
 	postNum, err := db.InsertPost(post)
 	if err != nil {
-		ExecuteError(w, "json", "Error creating post. Must select at least one category.",
+		executeJSON(w,
+			ErrorData{"Error creating post. Must select at least one category."},
 			http.StatusInternalServerError)
 		return
 	}

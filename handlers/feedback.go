@@ -8,12 +8,12 @@ import (
 
 func Feedback(w http.ResponseWriter, r *http.Request) {
 	sessionCookie, userID := checkSessionValidity(w, r)
-	if userID == -1 { // likely user not login
-		ExecuteError(w, "json", "Please login and try again", http.StatusUnauthorized)
+	if userID == -1 {
+		executeJSON(w, ErrorData{"Please login and try again"}, http.StatusUnauthorized)
 		return
 	}
 	if r.Method != http.MethodPost {
-		ExecuteError(w, "Tmpl", "Method not allowed", http.StatusMethodNotAllowed)
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -24,17 +24,17 @@ func Feedback(w http.ResponseWriter, r *http.Request) {
 	}{}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		ExecuteError(w, "json", "Error reading body", http.StatusInternalServerError)
+		executeJSON(w, ErrorData{"Error reading body"}, http.StatusInternalServerError)
 		return
 	}
 	if err = json.Unmarshal(body, &userFeedback); err != nil {
-		ExecuteError(w, "json", "Error reading json", http.StatusInternalServerError)
+		executeJSON(w, ErrorData{"Error reading json"}, http.StatusInternalServerError)
 		return
 	}
 
 	fb, err := db.SelectFeedback(userFeedback.Tgt, userID, userFeedback.ParentID)
 	if err != nil {
-		ExecuteError(w, "json", "Error getting feedback", http.StatusInternalServerError)
+		executeJSON(w, ErrorData{"Error reading feedback"}, http.StatusInternalServerError)
 		return
 	} else if fb == nil {
 		fb = &feedback{
@@ -42,13 +42,13 @@ func Feedback(w http.ResponseWriter, r *http.Request) {
 			ParentID: userFeedback.ParentID,
 			Rating:   userFeedback.Rating}
 		if err = db.InsertFeedback(userFeedback.Tgt, *fb); err != nil {
-			ExecuteError(w, "json", "Error giving feedback", http.StatusInternalServerError)
+			executeJSON(w, ErrorData{"Error reading feedback"}, http.StatusInternalServerError)
 			return
 		}
 	} else {
 		fb.Rating = userFeedback.Rating
 		if err = db.UpdateFeedback(userFeedback.Tgt, *fb); err != nil {
-			ExecuteError(w, "json", "Error giving feedback", http.StatusInternalServerError)
+			executeJSON(w, ErrorData{"Error reading feedback"}, http.StatusInternalServerError)
 			return
 		}
 	}

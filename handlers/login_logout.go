@@ -13,20 +13,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method != http.MethodPost {
-		ExecuteError(w, "Tmpl", "Method not allowed", http.StatusMethodNotAllowed)
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 
 	username, _, passwd, e := getCredentials(r, false)
 	if e != nil {
-		ExecuteError(w, "json", e.Error(), http.StatusBadRequest)
+		executeJSON(w, ErrorData{e.Error()}, http.StatusBadRequest)
 		return
 	}
 
 	// check that user exists
 	user, _ := db.SelectUserByField("name", username)
 	if user == nil || bcrypt.CompareHashAndPassword(user.PwHash, []byte(passwd)) != nil {
-		ExecuteError(w, "json", "Incorrect username and/or password", http.StatusBadRequest)
+		executeJSON(w, ErrorData{"Incorrect username and/or password"}, http.StatusBadRequest)
 		return
 	}
 
@@ -41,7 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 func LogOut(w http.ResponseWriter, r *http.Request) {
 	sessionCookie, _ := r.Cookie("session-id")
 	if sessionCookie == nil {
-		ExecuteError(w, "json", "You're not logged in", http.StatusBadRequest)
+		executeJSON(w, ErrorData{"You're not logged in"}, http.StatusBadRequest)
 		return
 	} else {
 		expireSession(w, sessionCookie.Value)

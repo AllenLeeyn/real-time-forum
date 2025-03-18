@@ -7,17 +7,16 @@ import (
 
 // Profile page
 func ViewProfile(w http.ResponseWriter, r *http.Request) {
-	var data profilepageData
 	if r.Method == http.MethodGet {
 		idStr := r.URL.Query().Get("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			ExecuteError(w, "Tmpl", "Erroneous profile ID", http.StatusBadRequest)
+			executeJSON(w, ErrorData{"Invalid profile ID"}, http.StatusBadRequest)
 			return
 		}
 		user, err := db.SelectUserByField("id", id)
 		if err != nil || user == nil {
-			ExecuteError(w, "Tmpl", "Error getting user details", http.StatusInternalServerError)
+			executeJSON(w, ErrorData{"Error getting user details"}, http.StatusInternalServerError)
 			return
 		}
 		sessionCookie, userID := checkSessionValidity(w, r)
@@ -26,10 +25,10 @@ func ViewProfile(w http.ResponseWriter, r *http.Request) {
 		}
 		posts, err := db.SelectPosts("createdBy", "", id, userID)
 		if err != nil {
-			ExecuteError(w, "Tmpl", "Error getting user posts", http.StatusInternalServerError)
+			executeJSON(w, ErrorData{"Error getting user posts"}, http.StatusInternalServerError)
 			return
 		}
-		data = profilepageData{
+		data := profilepageData{
 			ProfileID:     id,
 			ViewerID:      userID,
 			Name:          user.NickName,
@@ -42,9 +41,9 @@ func ViewProfile(w http.ResponseWriter, r *http.Request) {
 			data.Email = user.Email
 			data.SessionCookie = sessionCookie
 		}
-		ExecuteTmpl(w, "profile.html", data)
+		executeJSON(w, data, http.StatusOK)
 	} else {
-		ExecuteError(w, "Tmpl", "Invalid User Method", http.StatusMethodNotAllowed)
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 }

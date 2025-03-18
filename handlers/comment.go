@@ -11,11 +11,11 @@ import (
 func Comment(w http.ResponseWriter, r *http.Request) {
 	sessionCookie, userID := checkSessionValidity(w, r)
 	if userID == -1 {
-		ExecuteError(w, "json", "Please login and try again", http.StatusUnauthorized)
+		executeJSON(w, ErrorData{"Please login and try again"}, http.StatusUnauthorized)
 		return
 	}
 	if r.Method != http.MethodPost {
-		ExecuteError(w, "Tmpl", "Method not allowed", http.StatusMethodNotAllowed)
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -24,33 +24,33 @@ func Comment(w http.ResponseWriter, r *http.Request) {
 	}{}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		ExecuteError(w, "json", "Error reading body", http.StatusInternalServerError)
+		executeJSON(w, ErrorData{"Error reading body"}, http.StatusInternalServerError)
 		return
 	}
 	if err = json.Unmarshal(body, &s); err != nil {
-		ExecuteError(w, "json", "Error reading json", http.StatusInternalServerError)
+		executeJSON(w, ErrorData{"Error reading json"}, http.StatusInternalServerError)
 		return
 	} else if bodyIsValid, bodyErr := CheckPostValidity(s.Comment, "postContent"); !bodyIsValid {
-		ExecuteError(w, "json", bodyErr, http.StatusInternalServerError)
+		executeJSON(w, ErrorData{bodyErr}, http.StatusInternalServerError)
 		return
 	}
 
 	postId := r.URL.Query().Get("postId")
 	pId, err := strconv.Atoi(postId)
 	if err != nil {
-		ExecuteError(w, "Tmpl", "Erroneous post ID", http.StatusBadRequest)
+		executeJSON(w, ErrorData{"Invalid post ID"}, http.StatusBadRequest)
 		return
 	}
 
 	post, err := db.SelectPost(pId, userID)
 	if err != nil || post == nil {
-		ExecuteError(w, "json", "Post not found", http.StatusNotFound)
+		executeJSON(w, ErrorData{"Post not found"}, http.StatusNotFound)
 		return
 	}
 
 	user, err := db.SelectUserByField("id", userID)
 	if err != nil || user == nil {
-		ExecuteError(w, "json", "User not found", http.StatusNotFound)
+		executeJSON(w, ErrorData{"User not found"}, http.StatusNotFound)
 		return
 	}
 	c := comment{
@@ -60,7 +60,7 @@ func Comment(w http.ResponseWriter, r *http.Request) {
 		UserName: user.NickName}
 
 	if err := db.InsertComment(c); err != nil {
-		ExecuteError(w, "json", "Error creating comment", http.StatusNotFound)
+		executeJSON(w, ErrorData{"Error creating comment"}, http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

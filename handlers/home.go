@@ -8,11 +8,11 @@ import (
 // Home page
 func Home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		ExecuteError(w, "Tmpl", "Page not found", http.StatusNotFound)
+		executeJSON(w, ErrorData{"Page not found"}, http.StatusNotFound)
 		return
 	}
 	if r.Method != http.MethodGet {
-		ExecuteError(w, "Tmpl", "Method not allowed", http.StatusMethodNotAllowed)
+		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -24,7 +24,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		userName = u.NickName
 	}
 
-	// get Queries. No sorting implemented yet
 	filterBy := r.URL.Query().Get("filterBy")
 	orderBy := r.URL.Query().Get("orderBy")
 	idStr := r.URL.Query().Get("id")
@@ -38,17 +37,17 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	}
 	posts, err := db.SelectPosts(filterBy, orderBy, id, userID)
 	if err != nil {
-		ExecuteError(w, "Tmpl", "Error getting posts", http.StatusInternalServerError)
+		executeJSON(w, ErrorData{"Error getting posts"}, http.StatusInternalServerError)
 		return
 	}
 	extendSession(w, sessionCookie)
-	ExecuteTmpl(w, "home.html",
+	executeJSON(w,
 		homepageData{
-			sessionCookie,
-			db.Categories,
-			posts,
-			userName,
-			filterBy,
-			orderBy,
-			id})
+			isValidSession: sessionCookie != nil,
+			Categories:     db.Categories,
+			Posts:          posts,
+			UserName:       userName,
+		},
+		http.StatusOK,
+	)
 }
