@@ -1,3 +1,5 @@
+import { showModal } from "./modal.js" 
+
 document.getElementsByClassName("close")[0].onclick = function() {
 document.getElementById("newPostModal").style.display = "none";
 }
@@ -9,7 +11,8 @@ document.getElementById('new-post').onclick = function () {
   })
   .then(response => {
       if (response.ok) {
-        document.getElementById("newPostModal").style.display = "block";
+        // document.getElementById("newPostModal").style.display = "block";
+        showModal('newPostModal');
       } else {
         return response.json().then(errorData => {
           showMessage(errorData.message);

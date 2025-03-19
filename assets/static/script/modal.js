@@ -23,12 +23,12 @@ window.addEventListener('click', function(event) {
 });
 
 // Close modal when clicking on close button
-document.querySelectorAll('.close-modal').forEach(closeButton => {
-    closeButton.addEventListener('click', function() {
-        const modalId = closeButton.getAttribute('data-modal');
-        closeModal(modalId);
-    });
-});
+// document.querySelectorAll('.close-modal').forEach(closeButton => {
+//     closeButton.addEventListener('click', function() {
+//         const modalId = closeButton.getAttribute('data-modal');
+//         closeModal(modalId);
+//     });
+// });
 
 // Switch between login and register modals
 document.querySelectorAll('.switch-to-login, .switch-to-register').forEach(link => {
