@@ -6,11 +6,7 @@ import (
 )
 
 // Home page
-func Home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		executeJSON(w, ErrorData{"Page not found"}, http.StatusNotFound)
-		return
-	}
+func Posts(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		executeJSON(w, ErrorData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -18,6 +14,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 	// check session from cookie to get feedback data
 	sessionCookie, userID := checkSessionValidity(w, r)
+	println(userID)
 	userName := "Guest"
 	u, err := db.SelectUserByField("id", userID)
 	if err == nil && u != nil {
@@ -43,7 +40,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	extendSession(w, sessionCookie)
 	executeJSON(w,
 		homepageData{
-			isValidSession: sessionCookie != nil,
+			IsValidSession: sessionCookie != nil,
 			Categories:     db.Categories,
 			Posts:          posts,
 			UserName:       userName,

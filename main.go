@@ -24,12 +24,14 @@ func init() {
 	}
 
 	db.Categories, _ = db.SelectFieldFromTable("name", "categories")
+	handlers.Init(db)
 }
 
 func main() {
 	http.Handle("/static/", http.FileServer(http.Dir("assets/")))
-	http.HandleFunc("/", handlers.Home)
+	http.HandleFunc("/", serveIndex)
 
+	http.HandleFunc("/posts", handlers.Posts)
 	http.HandleFunc("/signup", handlers.Signup)
 
 	http.HandleFunc("/login", handlers.Login)
@@ -45,4 +47,12 @@ func main() {
 	fmt.Println("Starting Forum on http://localhost:8080/...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 	db.Close()
+}
+
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	http.ServeFile(w, r, "index.html")
 }
