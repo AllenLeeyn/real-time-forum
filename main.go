@@ -24,11 +24,13 @@ func init() {
 	}
 
 	db.Categories, _ = db.SelectFieldFromTable("name", "categories")
+	handlers.Init(db)
 }
 
 func main() {
 	http.Handle("/static/", http.FileServer(http.Dir("assets/")))
-	http.HandleFunc("/", handlers.Home)
+
+	http.HandleFunc("/home", handlers.Home)
 
 	http.HandleFunc("/signup", handlers.Signup)
 

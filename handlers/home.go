@@ -7,7 +7,7 @@ import (
 
 // Home page
 func Home(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
+	if r.URL.Path != "/home" {
 		executeJSON(w, ErrorData{"Page not found"}, http.StatusNotFound)
 		return
 	}

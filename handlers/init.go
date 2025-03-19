@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"real-time-forum/dbTools"
 	"regexp"
-	"text/template"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -15,7 +14,6 @@ import (
 // handler functions for different functionality.
 // returns JSON and let JS on frontend to handle rendering
 
-var tmpl *template.Template
 var db *dbTools.DBContainer
 
 type user = dbTools.User

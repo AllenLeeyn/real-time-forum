@@ -24,6 +24,7 @@ func ViewPost(w http.ResponseWriter, r *http.Request) {
 		executeJSON(w, ErrorData{"Invalid post ID"}, http.StatusBadRequest)
 		return
 	}
+	
 	post, err := db.SelectPost(id, userID)
 	if err != nil {
 		executeJSON(w, ErrorData{"Error getting post"}, http.StatusBadRequest)
