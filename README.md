@@ -54,11 +54,11 @@ Note: we are building a single page application (SPA). We have only one HTML and
 ---
 Design SPA layout
 - width design: 1024 (max), 768 (mid), 320 (min)
-- top nav bar for login/logout and user profile
+- top nav bar
 - categories on the left
 - posts section in the middle
 - feed display/ create post as a tab in post section
-- users section on the right?
+- register/login/logout/users section on the right?
 - messenger as a pop up in bottom right (closer previous when a new on is requested?)
 
 Focus on making base forum into SPA first.

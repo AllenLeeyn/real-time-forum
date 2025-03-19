@@ -1,0 +1,223 @@
+div #logo {
+  font-size: 20px;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+a {
+  text-decoration: none;
+  font-family: monospace;
+  color: var(--primary);
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent);
+  transition: color 0.2s ease;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  margin-right: 10px;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.navbar {
+  background: var(--card-background);
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.nav-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: var(--text-light);
+}
+
+.nav-actions .new-post {
+  background: var(--primary);
+  color: var(--card-background);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.nav-actions .new-post:hover {
+  background: var(--accent);
+}
+
+/* The Modal (background) */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-content .new-post {
+  float: right;
+  background: var(--primary);
+  color: var(--card-background);
+  padding: 0.5rem 0.5rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.modal-content .new-post:hover {
+  background: var(--accent);
+}
+
+.checkbox-group {
+  display: flex;
+  flex-flow: row;
+}
+
+.checkbox-item input[type="checkbox"] {
+  display: none;
+}
+
+.checkbox-item label {
+  margin-right: 10px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--background);
+  color: var(--text);
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.checkbox-item label:hover {
+  background: #dcd0f8;
+  transition: all 0.2s ease;
+}
+
+.checkbox-item input[type="checkbox"]:checked + label {
+  background: var(--secondary);
+  color: var(--background);
+  transition: all 0.2s ease;
+}
+
+.pill-button {
+  display: inline-block;
+  padding: 0.5rem 0.5rem;
+  background-color: white;
+  color: var(--text);
+  text-decoration: none;
+  border: 1px solid var(--hover);
+  border-radius: 50px; 
+  font-size: 0.8rem;
+  transition: background-color 0.3s ease;
+}
+
+.pill-button:hover {
+  background-color: var(--hover);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 500px) {
+  .nav-content {
+    margin: 0 auto;
+    display: block;
+    align-items: center;
+  }
+  
+  .nav-content > * {
+    margin-bottom: 10px;
+  }
+  
+  .modal-content {
+    background-color: #fefefe;
+    margin: 40% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+
+  .checkbox-group {
+    flex-flow: column;
+  }
+
+  .checkbox-item label {
+    margin-bottom: 10px;
+  }
+
+  .pill-button {
+    padding: 0.35rem 0.35rem;
+  }
+}
