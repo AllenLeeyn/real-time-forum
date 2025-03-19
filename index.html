@@ -11,10 +11,12 @@
     />
     <link rel="stylesheet" href="./assets/static/home.css" />
     <link rel="stylesheet" href="./assets/static/header.css" />
+    <link rel="stylesheet" href="./assets/static/chat.css" />
     <!-- <link rel="stylesheet" href="/static/toastMsg.css" />
     <link rel="stylesheet" href="/static/postCard.css" /> -->
     <script src="assets/static/script/modal.js" defer></script>
     <script src="assets/static/script/header.js" defer></script>
+    <script src="assets/static/script/chatConnecttion.js" defer></script>
     <!-- <script src="/static/script/toastMsg.js" defer></script>
     <script src="/static/script/feedback.js" defer></script> -->
 </head>
@@ -27,7 +29,8 @@
                 <h1>Real Time Forum</h1>
                 <div class="nav-actions">
                     {{if .SessionCookie}}
-                    <button id="new-post" class="nav-btn">Create New Post</button>
+                    <button id="open-new-post-modal" class="nav-btn">Create New Post</button>
+                    {{template "newPostModal" .}}
                     <button id="logout-btn" class="nav-btn">Logout</button>
                     {{else}}
                     <button id="open-login-modal" class="nav-btn">Login</button>
@@ -37,6 +40,7 @@
             </div>
         </nav>
     </header>
+    
 
     <div class="container">
     <!-- Categories Sidebar -->
@@ -72,9 +76,26 @@
             {{end}}
             </section>
         </div>
-    </div>
-    {{template "newPostModal" .}}
+        
 
+        <div class="chat-container">
+            <div class="message-list">
+                <!-- Messages will be displayed here -->
+            </div>
+            <div class="message-input">
+                <input type="text" id="message-input" placeholder="Type a message...">
+                <button id="send-button">Send</button>
+            </div>
+            <div class="user-list">
+                <!-- User list will be displayed here -->
+            </div>
+        </div>
+
+    </div>
+
+
+
+    
     <!-- Footer Section -->
     <footer id="footer">
         <p>&copy; 2025 Real Time Forum</p>

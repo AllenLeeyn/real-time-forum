@@ -14,6 +14,10 @@ document.getElementById('open-register-modal').addEventListener('click', functio
     showModal('register-modal');
 });
 
+document.getElementById('open-new-post-modal').addEventListener('click', function() {
+    showModal('new-post-modal');
+});
+
 // Close modal when clicking outside of it
 window.addEventListener('click', function(event) {
     if (event.target.classList.contains('modal')) {
