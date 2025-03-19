@@ -22,16 +22,16 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 
 	filterBy := r.URL.Query().Get("filterBy")
 	orderBy := r.URL.Query().Get("orderBy")
-	catIdStr := r.URL.Query().Get("id")
-	catId, err := strconv.Atoi(catIdStr)
-	if err != nil || catId > len(db.Categories) {
-		catId = -1
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id > len(db.Categories) {
+		id = -1
 	}
 
 	if filterBy != "category" {
-		catId = userID
+		id = userID
 	}
-	selectedPosts, err := db.SelectPosts(filterBy, orderBy, catId, userID)
+	selectedPosts, err := db.SelectPosts(filterBy, orderBy, id, userID)
 	if err != nil {
 		executeJSON(w, MsgData{"Error getting posts"}, http.StatusInternalServerError)
 		return
