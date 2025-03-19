@@ -32,17 +32,16 @@ func main() {
 	http.HandleFunc("/", serveIndex)
 
 	http.HandleFunc("/posts", handlers.Posts)
-	http.HandleFunc("/signup", handlers.Signup)
+	http.HandleFunc("/post", handlers.Post)
+	http.HandleFunc("/profile", handlers.Profile)
 
+	http.HandleFunc("/signup", handlers.Signup)
 	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/logout", handlers.LogOut)
 
-	http.HandleFunc("/post", handlers.ViewPost)
-	http.HandleFunc("/profile", handlers.ViewProfile)
-	http.HandleFunc("/new-post", handlers.NewPost)
-	http.HandleFunc("/add-comment", handlers.Comment)
-
-	http.HandleFunc("/feedback", handlers.Feedback)
+	http.HandleFunc("/new-post", handlers.CreatePost)
+	http.HandleFunc("/add-comment", handlers.CreateComment)
+	http.HandleFunc("/feedback", handlers.CreateFeedback)
 
 	fmt.Println("Starting Forum on http://localhost:8080/...")
 	log.Fatal(http.ListenAndServe(":8080", nil))

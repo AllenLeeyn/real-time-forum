@@ -6,17 +6,19 @@ import (
 )
 
 type User struct {
-	ID        int
-	TypeID    int
-	FirstName string
-	LastName  string
-	NickName  string
-	Gender    string
-	Age       int
-	Email     string
-	PwHash    []byte
-	RegDate   time.Time
-	LastLogin time.Time
+	ID            int
+	TypeID        int
+	FirstName     string `json:"firstName"`
+	LastName      string `json:"lastName"`
+	NickName      string `json:"nickName"`
+	Gender        string `json:"gender"`
+	Age           int    `json:"age"`
+	Email         string `json:"email"`
+	Passwd        string `json:"passwd"`
+	ConfirmPasswd string `json:"ConfirmPasswd"`
+	PwHash        []byte
+	RegDate       time.Time
+	LastLogin     time.Time
 }
 
 type Session struct {
@@ -35,11 +37,10 @@ type Post struct {
 	CommentCount int
 	LikeCount    int
 	DislikeCount int
-	Title        string
-	Content      string
+	Title        string `json:"title"`
+	Content      string `json:"content"`
 	CreatedAt    time.Time
-	TimeAgo      string
-	Categories   []int
+	Categories   []int `json:"category"`
 	CatNames     string
 	Rating       int
 }
@@ -49,18 +50,18 @@ type Comment struct {
 	UserID       int
 	UserName     string
 	ParentID     sql.NullInt64
-	PostID       int
-	Content      string
+	PostID       int    `json:"postID"`
+	Content      string `json:"content"`
 	LikeCount    int
 	DislikeCount int
 	CreatedAt    time.Time
-	TimeAgo      string
 	Rating       int
 }
 
 type Feedback struct {
+	Tgt       string `json:"tgt"`
 	UserID    int
-	ParentID  int
-	Rating    int
+	ParentID  int `json:"parentID"`
+	Rating    int `json:"rating"`
 	CreatedAt time.Time
 }

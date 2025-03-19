@@ -3,7 +3,6 @@ package dbTools
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -74,22 +73,6 @@ func (db *DBContainer) isValidCategories(categories []int) error {
 		}
 	}
 	return nil
-}
-
-func getTimeAgo(createdAt time.Time) string {
-	timeDiff := time.Since(createdAt)
-	day := time.Hour * 24
-
-	switch {
-	case timeDiff < time.Minute:
-		return "A few moments ago"
-	case timeDiff < time.Hour:
-		return fmt.Sprintf("%d minute(s) ago", int(timeDiff/time.Minute))
-	case timeDiff < day:
-		return fmt.Sprintf("%d hour(s) ago", int(timeDiff/time.Hour))
-	default:
-		return fmt.Sprintf("%d day(s) ago", int(timeDiff/day))
-	}
 }
 
 func (db *DBContainer) Close() {

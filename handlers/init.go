@@ -3,16 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"html"
+	"io"
 	"net/http"
 	"real-time-forum/dbTools"
 	"regexp"
-	"time"
-
-	"github.com/gofrs/uuid"
+	"strings"
 )
-
-// handler functions for different functionality.
-// returns JSON and let JS on frontend to handle rendering
 
 var db *dbTools.DBContainer
 
@@ -22,37 +19,72 @@ type post = dbTools.Post
 type feedback = dbTools.Feedback
 type comment = dbTools.Comment
 
-type homepageData struct {
+type postsData struct {
 	IsValidSession bool     `json:"isValidSession"`
 	Categories     []string `json:"categories"`
 	Posts          []post   `json:"posts"`
 	UserName       string   `json:"userName"`
 }
 
-type postpageData struct {
-	SessionCookie *http.Cookie
-	Post          post
-	Comments      []comment
-	Categories    []string
+type postData struct {
+	Post     post      `json:"post"`
+	Comments []comment `json:"comments"`
 }
 
-type profilepageData struct {
-	ProfileID     int
-	ViewerID      int
-	Name          string
-	Email         string
-	Posts         []post
-	SessionCookie *http.Cookie
-	Categories    []string
+type profileData struct {
+	Name  string `json:"name"`
+	Posts []post `json:"posts"`
 }
 
-type ErrorData struct {
+type MsgData struct {
 	Message string `json:"message"`
 }
 
 // Initializes all html files in templates folder
 func Init(dbMain *dbTools.DBContainer) {
 	db = dbMain
+}
+
+func checkContent(input string, min, max int) (bool, string) {
+	input = strings.TrimSpace(input)
+	if len(input) < min {
+		return false, "*Title too short"
+	} else if len(input) > max {
+		return false, "*Title too long"
+	}
+	return true, html.EscapeString(input)
+}
+
+func checkPostRequest(w http.ResponseWriter, r *http.Request, checkFor string) (*http.Cookie, int, bool) {
+	sessionCookie, userID := checkSessionValidity(w, r)
+	isValid := true
+	if checkFor == "guest" && sessionCookie != nil {
+		executeJSON(w, MsgData{"You are logged in"}, http.StatusBadRequest)
+		isValid = false
+	}
+	if checkFor == "user" && userID == -1 {
+		executeJSON(w, MsgData{"Please login and try again"}, http.StatusUnauthorized)
+		isValid = false
+	}
+	if r.Method != http.MethodPost {
+		executeJSON(w, MsgData{"Method not allowed"}, http.StatusMethodNotAllowed)
+		isValid = false
+	}
+	return sessionCookie, userID, isValid
+}
+
+/*----------- JSON func -----------*/
+func getJSON(w http.ResponseWriter, r *http.Request, data interface{}) bool {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		executeJSON(w, MsgData{"Error reading body"}, http.StatusInternalServerError)
+		return false
+	}
+	if err = json.Unmarshal(body, &data); err != nil {
+		executeJSON(w, MsgData{"Error reading json"}, http.StatusInternalServerError)
+		return false
+	}
+	return true
 }
 
 func executeJSON(w http.ResponseWriter, data interface{}, code int) {
@@ -62,7 +94,6 @@ func executeJSON(w http.ResponseWriter, data interface{}, code int) {
 }
 
 /*----------- aunthenticate func -----------*/
-
 // need to check for new requirements
 func getCredentials(r *http.Request, isSignup bool) (string, string, string, error) {
 	username := r.FormValue("username")
@@ -72,9 +103,6 @@ func getCredentials(r *http.Request, isSignup bool) (string, string, string, err
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	usernameRegex := `^[a-zA-Z0-9_-]{3,16}$`
 
-	if r.Method != "POST" {
-		return "", "", "", errors.New("invalid method")
-	}
 	if !validRegex(username, usernameRegex) {
 		return "", "", "", errors.New("user name must be between 3 to 16 alphanumeric characters, '_' or '-'")
 	}
@@ -114,73 +142,4 @@ func validPsswrd(password string) bool {
 		hasDigit(password) &&
 		hasSpecial(password) &&
 		isValidLength
-}
-
-/*----------- session func -----------*/
-
-func checkSessionValidity(w http.ResponseWriter, r *http.Request) (*http.Cookie, int) {
-	sessionCookie, err := r.Cookie("session-id")
-	if err != nil || sessionCookie == nil {
-		return nil, -1
-	}
-	sessionID := sessionCookie.Value
-	s, err := db.SelectActiveSessionBy("id", sessionID)
-	if err != nil || s.ExpireTime.Before(time.Now()) {
-		expireSession(w, sessionCookie.Value)
-		return nil, -1
-	}
-	return sessionCookie, s.UserID
-}
-
-func createSession(w http.ResponseWriter, user *dbTools.User) {
-	// generate a uuid for the session and set it into a cookie
-	id, _ := uuid.NewV4()
-	cookie := &http.Cookie{
-		Name:     "session-id",
-		Value:    id.String(),
-		MaxAge:   7200,
-		HttpOnly: true,
-	}
-	http.SetCookie(w, cookie)
-
-	db.InsertSession(&dbTools.Session{
-		ID:         id.String(),
-		UserID:     user.ID,
-		IsActive:   true,
-		ExpireTime: time.Now().Add(2 * time.Hour),
-	})
-}
-
-func extendSession(w http.ResponseWriter, sessionCookie *http.Cookie) {
-	if sessionCookie == nil {
-		return
-	}
-	// generate a uuid for the session and set it into a cookie
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session-id",
-		Value:    sessionCookie.Value,
-		MaxAge:   7200,
-		HttpOnly: true,
-	})
-	db.UpdateSession(&session{
-		IsActive:   true,
-		ExpireTime: time.Now().Add(2 * time.Hour),
-		LastAccess: time.Now(),
-		ID:         sessionCookie.Value,
-	})
-}
-
-func expireSession(w http.ResponseWriter, sessionId string) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session-id",
-		Value:    "", // Empty the cookie's value
-		MaxAge:   -1, // Invalidate the cookie immediately
-		HttpOnly: true,
-	})
-	db.UpdateSession(&session{
-		IsActive:   false,
-		ExpireTime: time.Now(),
-		LastAccess: time.Now(),
-		ID:         sessionId,
-	})
 }
