@@ -59,16 +59,18 @@
         <!-- Login Modal -->
         <div id="login-modal" class="modal">
             <div class="modal-content">
-                <span class="close-modal" data-modal="login-modal">&times;</span>
+                <!-- <span class="close-modal" data-modal="login-modal">&times;</span> -->
                 <h2>Login</h2>
-                <div id="login-error" class="error-message" style="display: none;"></div>
+                <!-- <div id="login-error" class="error-message" style="display: none;"></div> -->
                 <form method="post" id="login-form">
-                    <!-- <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" required> -->
+                    
                     <input type="radio" id="username-login" name="login-type" value="username" checked>
                     <label for="username-login">Username</label>
                     <input type="radio" id="email-login" name="login-type" value="email">
-                    <label for="email-login">Email</label>
+                    <label for="email-login">Email</label>  <br>
+
+                    <label for="login-credential">Username/Email:</label>
+                    <input type="text" id="login-credential" name="credential" required>
 
                     <label for="password">Password:</label>
                     <input type="password" id="password" name="password" required>
@@ -82,7 +84,7 @@
         <!-- Register Modal -->
         <div id="register-modal" class="modal">
             <div class="modal-content">
-                <span class="close-modal" data-modal="register-modal">&times;</span>
+                <!-- <span class="close-modal" data-modal="register-modal">&times;</span> -->
                 <h2>Register</h2>
                 <div id="register-error" class="error-message" style="display: none;"></div>
                 <form method="post" id="register-form">

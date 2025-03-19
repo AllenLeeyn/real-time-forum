@@ -1,9 +1,7 @@
-// Function to show modal
 function showModal(modalId) {
     document.getElementById(modalId).style.display = 'block';
 }
 
-// Function to close modal
 function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
