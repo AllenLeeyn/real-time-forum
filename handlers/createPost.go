@@ -7,12 +7,12 @@ import (
 
 // CreatePost() and redirects to new post if session is valid
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	sessionCookie, userID, isValid := checkPostRequest(w, r, "user")
+	sessionCookie, userID, isValid := checkHttpRequest(w, r, "user", http.MethodPost)
 	if !isValid {
 		return
 	}
 
-	data := post{}
+	data := &post{}
 	if !getJSON(w, r, data) {
 		return
 	}
@@ -26,7 +26,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	data.UserID = userID
 	data.Title = title
 	data.Content = content
-	postNum, err := db.InsertPost(data)
+	postNum, err := db.InsertPost(*data)
 	if err != nil {
 		executeJSON(w,
 			MsgData{"Error creating post. Must select at least one category."},

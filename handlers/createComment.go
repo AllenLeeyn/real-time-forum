@@ -5,12 +5,12 @@ import (
 )
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
-	sessionCookie, userID, isValid := checkPostRequest(w, r, "user")
+	sessionCookie, userID, isValid := checkHttpRequest(w, r, "user", http.MethodPost)
 	if !isValid {
 		return
 	}
 
-	data := comment{}
+	data := &comment{}
 	if !getJSON(w, r, data) {
 		return
 	}
@@ -36,7 +36,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	data.UserName = user.NickName
 	data.Content = content
 
-	if err := db.InsertComment(data); err != nil {
+	if err := db.InsertComment(*data); err != nil {
 		executeJSON(w, MsgData{"Error creating comment"}, http.StatusInternalServerError)
 		return
 	}

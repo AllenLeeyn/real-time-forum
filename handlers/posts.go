@@ -8,11 +8,10 @@ import (
 // Posts() grabs all posts for main page.
 // Checks for valid sessions to populate feedback data.
 func Posts(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		executeJSON(w, MsgData{"Method not allowed"}, http.StatusMethodNotAllowed)
+	sessionCookie, userID, isValid := checkHttpRequest(w, r, "user", http.MethodGet)
+	if !isValid {
 		return
 	}
-	sessionCookie, userID := checkSessionValidity(w, r)
 
 	userName := "Guest"
 	u, err := db.SelectUserByField("id", userID)

@@ -2,70 +2,76 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
     <title>grit:hub</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
     <link rel="stylesheet" href="/static/toastMsg.css" />
-    <link rel="stylesheet" href="/static/header.css" />
-    <link rel="stylesheet" href="/static/home.css" />
-    <link rel="stylesheet" href="/static/postCard.css" />
+    <link rel="stylesheet" type="text/css" href="/static/signup.css" />
     <script src="/static/script/toastMsg.js" defer></script>
-    <script src="/static/script/header.js" defer></script>
-    <script src="/static/script/feedback.js" defer></script>
+    <script src="/static/script/signup.js" defer></script>
   </head>
   <body>
-    
-    <!-- header navigation bar -->
-    <header>
-      <nav class="navbar">
-        <div class="nav-content">
-          <div class="logo">
-            <img src="/static/images/favicon-32x32.png" alt="Logo"/>
-            <a class="logo-text" href="/">grit:hub</a>
+    <div class="signUp">
+      <div class="container">
+        <!-- Left side with image background -->
+        <div class="image-section">
+          <div class="image-content">
+            <h1>Welcome to grit:hub!</h1>
+            <p>Sign up to continue your journey today!!!</p>
           </div>
         </div>
-      </nav>
-    </header>
-
-    <div class="container">
-      <!-- Categories Sidebar -->
-      <div class="categories">
-        <h3>Categories</h3>
-        <ul>
-          <!--***** Need to change how categories item are populated *****-->
-          <li><a href="/" class="category-item {{if not .FilterBy}}active{{end}}">All</a></li>
-          {{if .SessionCookie}}
-          <li><a href="?filterBy=createdBy" class="category-item {{if eq .FilterBy "createdBy"}}active{{end}}">My posts</a></li>
-          <li><a href="?filterBy=likedBy" class="category-item {{if eq .FilterBy "likedBy"}}active{{end}}">Liked posts</a></li>
-          {{end}}
-          {{range $index, $cat := .Categories}}
-          <li><a href="?filterBy=category&id={{$index}}" class="category-item {{if and (eq $.FilterBy "category") (eq $index $.Id)}}active{{end}}">{{$cat}}</a></li>
-          {{end}}
-        </ul>
-      </div>
-
-      <!-- Posts Feed -->
-      <div class="feed">
-        <section id="general">
-          <h2>Hello, {{.UserName}}.</h2>
-          
-          <!-- Post Block -->
-          {{range .Posts}}
-            {{template "post-card" .}}
-          {{else}}
-          <div class="post-card">
-            <h3>
-              No post found
-            </h3>
+  
+        <!-- Right side with login form -->
+        <div class="form-section">
+          <div class="form-container">
+            <h2>Sign Up</h2>
+            <form action="/signup" method="post" id="signUpForm">
+              <div class="input-group">
+                <label>First Name</label>
+                <input type="text" name="firstName" required />
+              </div>
+              <div class="input-group">
+                <label>Last Name</label>
+                <input type="text" name="lastName" required />
+              </div>
+              <div class="input-group">
+                <label>Nickname</label>
+                <input type="text" name="nickName" required />
+              </div>
+              <div class="input-group">
+                <label>Gender</label>
+                <input type="radio" name="gender" value="Male" id="male" required />
+                <label for="male">Male</label>
+                <input type="radio" name="gender" value="Female" id="female" required />
+                <label for="female">Female</label>
+                <input type="radio" name="gender" value="Other" id="other" required checked/>
+                <label for="other">Other</label>
+              </div>
+              <div class="input-group">
+                <label>Age</label>
+                <input type="number" name="age" id="age" required min="1" step="1" />
+              </div>
+              <div class="input-group input-email">
+                <label>Email</label>
+                <input type="email" name="email" required placeholder=" ">
+              </div>
+              <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" required />
+              </div>
+              <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm-password" required />
+              </div>
+              <button type="submit" id="signUpSubmit">Sign Up</button>
+              <div class="login-link">
+                <p>Already have an account? <a href="/login">Log in</a></p>
+              </div>
+            </form>
           </div>
-          {{end}}
-        </section>
-      </div>
+        </div>
     </div>
-    {{template "newPostModal" .}}
+    </div>
   </body>
 </html>

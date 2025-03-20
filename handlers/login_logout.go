@@ -1,26 +1,35 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	_, _, isValid := checkPostRequest(w, r, "guest")
+	_, _, isValid := checkHttpRequest(w, r, "guest", http.MethodPost)
 	if !isValid {
 		return
 	}
 
-	username, _, passwd, e := getCredentials(r, false)
+	u := &user{}
+	if !getJSON(w, r, u) {
+		return
+	}
+
+	e := checkLoginCredentials(u)
 	if e != nil {
 		executeJSON(w, MsgData{e.Error()}, http.StatusBadRequest)
 		return
 	}
 
 	// check that user exists
-	user, _ := db.SelectUserByField("name", username)
-	if user == nil || bcrypt.CompareHashAndPassword(user.PwHash, []byte(passwd)) != nil {
+	user, _ := db.SelectUserByField("name", u.NickName)
+	if user == nil {
+		user, _ = db.SelectUserByField("email", u.Email)
+	}
+	if user == nil || bcrypt.CompareHashAndPassword(user.PwHash, []byte(u.Passwd)) != nil {
 		executeJSON(w, MsgData{"Incorrect username and/or password"}, http.StatusBadRequest)
 		return
 	}
@@ -30,7 +39,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		expireSession(w, s.ID)
 	}
 	createSession(w, user)
-	http.Redirect(w, r, "./", http.StatusSeeOther)
+	executeJSON(w, MsgData{"Login succesful"}, http.StatusOK)
 }
 
 func LogOut(w http.ResponseWriter, r *http.Request) {
@@ -42,4 +51,21 @@ func LogOut(w http.ResponseWriter, r *http.Request) {
 		expireSession(w, sessionCookie.Value)
 	}
 	http.Redirect(w, r, "./", http.StatusSeeOther)
+}
+
+func checkLoginCredentials(u *user) error {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	usernameRegex := `^[a-zA-Z0-9_-]{3,16}$`
+
+	if !validRegex(u.NickName, usernameRegex) {
+		u.NickName = ""
+	}
+	if !validRegex(u.Email, emailRegex) {
+		u.Email = ""
+	}
+	if !validPsswrd(u.Passwd) {
+		return errors.New("password must be 8 characters or longer.\n" +
+			"Include at least a lower case character, an upper case character, a number and one of '@$!%*?&'")
+	}
+	return nil
 }

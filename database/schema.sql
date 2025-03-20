@@ -14,7 +14,7 @@ CREATE TABLE users (
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     nick_name TEXT NOT NULL,
-    gender TEXT CHECK(gender IN ('Male', 'Female', 'Non-binary', 'Other')) NOT NULL,
+    gender TEXT CHECK(gender IN ('Male', 'Female', 'Other')) NOT NULL,
     age INTEGER NOT NULL,
     email TEXT NOT NULL UNIQUE,
     pw_hash TEXT NOT NULL,
