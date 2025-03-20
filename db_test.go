@@ -304,6 +304,12 @@ func TestInsertPost(t *testing.T) {
 			CreatedAt:  time.Date(2025, 1, 17, 13, 12, 59, 0, time.UTC),
 			Categories: []int{3, 4},
 		}, "nil"},
+		{post{ // valid entry
+			UserID:     u.ID,
+			Title:      "Why does Alfred baby me so much?",
+			Content:    "I fight criminals for breakfast and yet he still makes breakfast for me...",
+			Categories: []int{1, 3, 4},
+		}, "nil"},
 	}
 	db.DeleteAllPosts()
 

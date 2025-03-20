@@ -29,22 +29,29 @@ func init() {
 
 func main() {
 	http.Handle("/static/", http.FileServer(http.Dir("assets/")))
+	http.HandleFunc("/", serveIndex)
 
-	http.HandleFunc("/home", handlers.Home)
+	http.HandleFunc("/posts", handlers.Posts)
+	http.HandleFunc("/post", handlers.Post)
+	http.HandleFunc("/profile", handlers.Profile)
 
 	http.HandleFunc("/signup", handlers.Signup)
-
 	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/logout", handlers.LogOut)
 
-	http.HandleFunc("/post", handlers.ViewPost)
-	http.HandleFunc("/profile", handlers.ViewProfile)
-	http.HandleFunc("/new-post", handlers.NewPost)
-	http.HandleFunc("/add-comment", handlers.Comment)
-
-	http.HandleFunc("/feedback", handlers.Feedback)
+	http.HandleFunc("/new-post", handlers.CreatePost)
+	http.HandleFunc("/add-comment", handlers.CreateComment)
+	http.HandleFunc("/feedback", handlers.CreateFeedback)
 
 	fmt.Println("Starting Forum on http://localhost:8080/...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 	db.Close()
+}
+
+func serveIndex(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	http.ServeFile(w, r, "index.html")
 }

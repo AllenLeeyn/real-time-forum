@@ -61,13 +61,13 @@ If invalid options or empty are given, default option is used.
 Valid filterBy: createdBy, category, likedBy.
 Valid orderBy: oldest, likeCount, commentCount.
 */
-func (db *DBContainer) SelectPosts(filterBy, orderBy string, id, userID int) ([]Post, error) {
+func (db *DBContainer) SelectPosts(filterBy, orderBy string, catId, userID int) ([]Post, error) {
 	qry := `SELECT v_posts.id, puser_id, user_name, 
 				comment_count, like_count, dislike_count,
 				title, content, pcreated_at, category_ids, pf.rating
 			FROM v_posts
 			LEFT JOIN post_feedback pf ON pf.parent_id = v_posts.id AND pf.user_id = ?` +
-		getWhereQuery(filterBy, id) +
+		getWhereQuery(filterBy, catId) +
 		getOrderByQuery(orderBy)
 	rows, err := db.conn.Query(qry, userID)
 	if err != nil {
@@ -103,7 +103,6 @@ func (db *DBContainer) SelectPosts(filterBy, orderBy string, id, userID int) ([]
 			p.Content = p.Content[:50] + "..."
 		}
 		p.Rating = int(rating.Int64)
-		p.TimeAgo = getTimeAgo(p.CreatedAt)
 		posts = append(posts, p)
 	}
 	if err := rows.Err(); err != nil {
@@ -143,7 +142,6 @@ func (db *DBContainer) SelectPost(id, userID int) (*Post, error) {
 		return nil, err
 	}
 	p.Rating = int(rating.Int64)
-	p.TimeAgo = getTimeAgo(p.CreatedAt)
 	return &p, err
 }
 
