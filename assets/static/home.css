@@ -144,7 +144,28 @@
     bottom: 0;
     width: 100%;
   }
-  
+
+
+/* Message Prompt Box */
+#message-container {
+    background-color: lightgreen; /* For success messages */
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+/* For error messages, you can add a different class */
+.error-message {
+    background-color: lightcoral;
+}
+
+
+
+
+
+
+
+
   /* Modal Styles */
   #new-post-modal {
     position: fixed;
@@ -157,7 +178,8 @@
     border-radius: 5px;
     display: none;
   }
-  
+
+
   /* Modal Background */
   .modal {
     display: none;
@@ -232,4 +254,3 @@
       margin: 0px auto 0;
     }
   }
-  

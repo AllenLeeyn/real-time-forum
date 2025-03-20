@@ -16,10 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
       if (data.isValidSession) {
           // add buttons to do things
           const createPostHTML = `
-          <button id="new-post" class="nav-btn">Create New Post</button>
+            <button id="new-post" class="nav-btn">Create New Post</button>
           `;
+          // Profile Page? Modal?
           const logoutHTML = `
-              <button id="logout-btn" class="nav-btn">Logout</button>
+            <button id="logout-btn" class="nav-btn">Logout</button>
           `;
           navActionsContainer.insertAdjacentHTML('beforeend', createPostHTML);
           navActionsContainer.insertAdjacentHTML('beforeend', logoutHTML);
@@ -36,7 +37,7 @@ function attachEventListeners() {
   document.getElementById('logout-btn').onclick = function () {
       fetch('/logout', {
           method: 'POST',
-          credentials: 'include', // Ensures cookies are sent with the request
+          credentials: 'include', 
       })
       .then(response => {
           if (response.ok) {
