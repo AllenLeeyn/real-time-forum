@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./static/chat.css" />
     <!-- <link rel="stylesheet" href="/static/toastMsg.css" />
     <link rel="stylesheet" href="/static/postCard.css" /> -->
+    <script src="./static/script/header.js" defer></script>
     <script src="./static/script/feed.js" defer></script>
     <script src="./static/script/categories.js" defer></script>
 
@@ -33,14 +34,7 @@
             <div class="nav-content">
                 <h1>Real Time Forum</h1>
                 <div class="nav-actions">
-                    {{if .SessionCookie}}
-                    <button id="open-new-post-modal" class="nav-btn">Create New Post</button>
-                    {{template "newPostModal" .}}
-                    <button id="logout-btn" class="nav-btn">Logout</button>
-                    {{else}}
-                    <button id="open-login-modal" class="nav-btn">Login</button>
-                    <button id="open-register-modal" class="nav-btn">Register</button>
-                    {{end}}
+                    <!-- Navigation actions will be populated here -->
                 </div>
             </div>
         </nav>
@@ -50,7 +44,7 @@
     <div class="container">
     <!-- Categories Sidebar -->
         <div class="categories">
-            <h3 id="preference-header">Preference</h3>
+            <!-- <h3 id="preference-header">Preference</h3> -->
             <ul>
                 <!-- Inserting Categories Dynamically -->
             </ul>
@@ -81,13 +75,11 @@
 
     </div>
 
-
-
     
     <!-- Footer Section -->
     <footer>
         <div class="footer-container">
-            <p>&copy; Real Movie Forum (2025)</p>
+            <p>&copy; Real Time Forum (2025)</p>
             <nav>
                 <ul>
                     <p>Created by:</p>
@@ -98,67 +90,6 @@
         </div>
     </footer>
     
-
-    <!-- Login Modal -->
-    <div id="login-modal" class="modal">
-        <div class="modal-content">
-            <h2>Login</h2><br>
-            <div id="login-error" class="error-message" style="display: none;"></div>
-            <form method="post" id="login-form">
-                <input type="radio" id="username-login" name="login-type" value="username" checked>
-                <label for="username-login">Username</label>
-                <input type="radio" id="email-login" name="login-type" value="email">
-                <label for="email-login">E-mail</label><br>
-
-                <label for="login-credential">User ID / E-mail:</label>
-                <input type="text" id="login-credential" name="credential" required><br>
-
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required><br>
-                    
-                <button type="submit">Login</button>
-            </form>
-            <p>Don't have an account? <br><a href="#" class="switch-to-register">Register here</a></p>
-        </div>
-    </div>
-    
-    <!-- Register Modal -->
-    <div id="register-modal" class="modal">
-        <div class="modal-content">
-            <h2>Register</h2><br>
-            <div id="register-error" class="error-message" style="display: none;"></div>
-            <form method="post" id="register-form">
-                <label for="register-email">Email:</label> <br>
-                <input type="email" id="register-email" name="email" required><br>
-        
-                <label for="register-nickname">Nickname:</label>
-                <input type="text" id="register-nickname" name="nickname" required><br>
-        
-                <label for="register-password">Password:</label>
-                <input type="password" id="register-password" name="password" required><br>
-        
-                <label for="register-firstname">First name:</label>
-                <input type="text" id="register-firstname" name="firstName" required><br>
-        
-                <label for="register-lastname">Last name:</label>
-                <input type="text" id="register-lastname" name="lastName" required><br>
-        
-                <label for="gender">Gender:</label><br>
-                <select id="gender" name="gender" required>
-                    <option value="">Select your gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select><br>
-        
-                <label for="age">Age:</label><br>
-                <input type="number" id="age" name="age" min="18" max="120" required><br><br>
-        
-                <button type="submit">Register</button>
-            </form>
-                <p>Already have an account? <br><a href="#" class="switch-to-login">Login here</a></p>
-        </div>
-    </div>
     
 </body>
 </html>

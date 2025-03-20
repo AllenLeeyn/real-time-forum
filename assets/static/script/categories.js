@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+// document.addEventListener('DOMContentLoaded', function() {
     fetch('/posts')
     .then(response => {
         if (!response.ok) {
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
         console.error('Error fetching or handling categories:', error);
     });
-});
+// });
 
 
 
