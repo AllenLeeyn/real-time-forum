@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const createPostHTML = `
             <button id="new-post" class="nav-btn">Create New Post</button>
           `;
-          // Profile Page? Modal?
+          // maybe later we can implement a Profile Page? treat this with Modal?
           const logoutHTML = `
             <button id="logout-btn" class="nav-btn">Logout</button>
           `;
@@ -29,8 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
       attachEventListeners();
   })
   .catch(error => console.error('Error fetching session info:', error));
-
-  
 });
 
 function attachEventListeners() {
@@ -43,7 +41,7 @@ function attachEventListeners() {
           if (response.ok) {
               showMessage("Logout successful!");
               setTimeout(() => {
-                  window.location.href = '/signup';
+                  window.location.href = '/login';
               }, 2000);
           } else {
               return response.json().then(errorData => {
@@ -89,5 +87,5 @@ function showMessage(message) {
   // Hide the message after a few seconds
   setTimeout(() => {
       messageContainer.style.display = 'none';
-  }, 3000); // Hide after 3 seconds
+  }, 2000); // Hide after 2 seconds
 }

@@ -18,9 +18,9 @@
     <link rel="stylesheet" type="text/css" href="/static/signup.css" />
     <!-- <link rel="stylesheet" href="/static/toastMsg.css" />
     <link rel="stylesheet" href="/static/postCard.css" /> -->
-    <script src="./static/script/header.js" defer></script>
-    <script src="./static/script/feed.js" defer></script>
-    <script src="./static/script/categories.js" defer></script>
+    <script src="/static/script/header.js" defer></script>
+    <script src="/static/script/feed.js" defer></script>
+    <script src="/static/script/categories.js" defer></script>
     <script src="/static/script/toastMsg.js" defer></script>
     <script src="/static/script/signup.js" defer></script>
 
@@ -91,6 +91,7 @@
             </div>
         </div>
     </div>
+
     <!-- header navigation bar -->
     <header id="header">
         <nav class="navbar">
@@ -102,7 +103,7 @@
             </div>
         </nav>
     </header>
-
+        
     <!-- Message Container -->
     <div id="message-container" style="display: none;"></div>
 
@@ -118,11 +119,24 @@
 
         <!-- Posts Feed -->
         <div class="feed">
-            <section id="general">
-                <h2>Recent Posts</h2>
-                <!-- Post Block -->
-                <!-- Your JavaScript will populate posts here -->
-            </section>
+            <div class="feed-header">
+
+            </div>
+            <div class="feed-body">
+                <section id="general">
+                    <h2>Recent Posts</h2>
+                    <!-- Post Block -->
+                    <!-- Your JavaScript will populate posts here -->
+                </section>
+                <section id="viewPost">
+                    <!-- SingleP Post Block -->
+
+                    <!-- Create Comment Section Box -->
+                </section>
+                <section id="createPost">
+                    <!-- Create Post Input Fields -->
+                </section>
+            </div>
         </div>
 
         <div class="chat-container">

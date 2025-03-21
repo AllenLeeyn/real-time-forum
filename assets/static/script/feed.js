@@ -2,7 +2,7 @@
 fetch('/posts')
 .then(response => response.json())
 .then(data => {
-    // console.log(data); 
+    console.log(data); 
 
     const postsContainer = document.getElementById('general'); // Correct container ID
     postsContainer.innerHTML = ''; // Clear existing content
