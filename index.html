@@ -9,22 +9,27 @@
     <link rel="stylesheet" href="/static/toastMsg.css" />
     <link rel="stylesheet" type="text/css" href="/static/signup.css" />
     <script src="/static/script/toastMsg.js" defer></script>
-    <script src="/static/script/signup.js" defer></script>
+    <script src="/static/script/main.js" defer></script>
   </head>
   <body>
-    <div class="signUp">
+
+    <div id="mainView" style="display: none;">
+      you are logged in...
+    </div>
+
+    <div id="validationView">
       <div class="container">
         <!-- Left side with image background -->
         <div class="image-section">
           <div class="image-content">
             <h1>Welcome to grit:hub!</h1>
-            <p>Sign up to continue your journey today!!!</p>
+            <p>Sign up or log in to start chatting.</p>
           </div>
         </div>
   
         <!-- Right side with login form -->
         <div class="form-section">
-          <div class="form-container">
+          <div class="form-container" id="signUpFormContainer">
             <h2>Sign Up</h2>
             <form action="/signup" method="post" id="signUpForm">
               <div class="input-group">
@@ -66,10 +71,41 @@
               </div>
               <button type="submit" id="signUpSubmit">Sign Up</button>
               <div class="login-link">
-                <p>Already have an account? <a href="/login">Log in</a></p>
+                <p>Already have an account? <a id="toLogIn">Log in</a></p>
               </div>
             </form>
           </div>
+
+          <div class="form-container" id="logInFormContainer" style="display: none;">
+            <h2>Login</h2>
+            <form action="/login" method="post" id="logInForm">
+              <div class="input-group">
+                <label>Use: </label>
+                <input type="radio" name="Nickname" value="nickName" required checked/>
+                <label for="male">Nickname</label>
+                <input type="radio" name="logInUsing" value="email" required />
+                <label for="female">Email</label>
+              </div>
+              <div class="input-group">
+                <label>Nickname</label>
+                <input type="text" name="nickName" required />
+              </div>
+              <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" required />
+              </div>
+              <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" required />
+              </div>
+  
+              <button type="submit" id="logInSubmit">Log in</button>
+              <div class="login-link">
+                <p>Don't have an account? <a id="toSignUp">Sign Up</a></p>
+              </div>
+            </form>
+          </div>
+          
         </div>
     </div>
     </div>
