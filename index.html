@@ -22,139 +22,167 @@
     <script src="./static/script/feed.js" defer></script>
     <script src="./static/script/categories.js" defer></script>
     <script src="/static/script/toastMsg.js" defer></script>
-    <script src="/static/script/signup.js" defer></script>
+    <script src="/static/script/main.js" defer></script>
+  </head>
+  <body>
 
-    <!-- <script src="assets/static/script/home.js" defer></script>
-    <script src="assets/static/script/modal.js" defer></script>
-    <script src="assets/static/script/chatConnecttion.js" defer></script> 
-    <script src="/static/script/feedback.js" defer></script> -->
-</head>
-<body>
-    <div class="signUp">
-        <div class="signup-container">
-            <!-- Left side with image background -->
-            <div class="image-section">
-            <div class="image-content">
-                <h1>Welcome to Real Talk Forum!</h1>
-                <p>Sign up to continue your journey today!!!</p>
-            </div>
+    <div id="mainView" style="display: none;">
+      <!-- header navigation bar -->
+      <header id="header">
+          <nav class="navbar">
+              <div class="nav-content">
+                  <h1>Real Time Forum</h1>
+                  <div class="nav-actions">
+                      <!-- Navigation actions will be populated here -->
+                  </div>
+              </div>
+          </nav>
+      </header>
+  
+      <!-- Message Container -->
+      <div id="message-container" style="display: none;"></div>
+  
+      <div class="container">
+      <!-- Categories Sidebar -->
+          <div class="categories">
+              <!-- <h3 id="preference-header">Preference</h3> -->
+              <ul>
+                  <!-- Inserting Categories Dynamically -->
+              </ul>
+  
+          </div>
+  
+          <!-- Posts Feed -->
+          <div class="feed">
+              <section id="general">
+                  <h2>Recent Posts</h2>
+                  <!-- Post Block -->
+                  <!-- Your JavaScript will populate posts here -->
+              </section>
+          </div>
+  
+          <div class="chat-container">
+              <div class="message-list">
+                  <!-- Messages will be displayed here -->
+              </div>
+              <div class="message-input">
+                  <input type="text" id="message-input" placeholder="Type a message...">
+                  <button id="send-button">Send</button>
+              </div>
+              <div class="user-list">
+                  <!-- User list will be displayed here -->
+              </div>
+          </div>
+  
+      </div>
+  
+      
+      <!-- Footer Section -->
+      <footer>
+          <div class="footer-container">
+              <p>&copy; Real Time Forum (2025)</p>
+              <nav>
+                  <ul>
+                      <p>Created by:</p>
+                      <li><a href="https://github.com/AllenLeeyn" target="_blank"> Allen Ng</a></li>
+                      <li><a href="https://github.com/kurizma" target="_blank"> Joon Kim</a></li>
+                  </ul>
+              </nav>
+          </div>
+      </footer>
+    </div>
+
+    <div id="validationView">
+      <div class="container">
+        <!-- Left side with image background -->
+        <div class="image-section">
+          <div class="image-content">
+            <h1>Welcome to grit:hub!</h1>
+            <p>Sign up or log in to start chatting.</p>
+          </div>
         </div>
     
         <!-- Right side with login form -->
         <div class="form-section">
-            <div class="form-container">
-                <h2>Sign Up</h2>
-                <form action="/signup" method="post" id="signUpForm">
-                <div class="input-group">
-                    <label>First Name</label>
-                    <input type="text" name="firstName" required />
-                </div>
-                <div class="input-group">
-                    <label>Last Name</label>
-                    <input type="text" name="lastName" required />
-                </div>
-                <div class="input-group">
-                    <label>Nickname</label>
-                    <input type="text" name="nickName" required />
-                </div>
-                <div class="input-group">
-                    <label>Gender</label>
-                    <input type="radio" name="gender" value="Male" id="male" required />
-                    <label for="male">Male</label>
-                    <input type="radio" name="gender" value="Female" id="female" required />
-                    <label for="female">Female</label>
-                    <input type="radio" name="gender" value="Other" id="other" required checked/>
-                    <label for="other">Other</label>
-                </div>
-                <div class="input-group">
-                    <label>Age</label>
-                    <input type="number" name="age" id="age" required min="1" step="1" />
-                </div>
-                <div class="input-group input-email">
-                    <label>Email</label>
-                    <input type="email" name="email" required placeholder=" ">
-                </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required />
-                </div>
-                <div class="input-group">
-                    <label>Confirm Password</label>
-                    <input type="password" name="confirm-password" required />
-                </div>
-                <button type="submit" id="signUpSubmit">Sign Up</button>
-                <div class="login-link">
-                    <p>Already have an account? <a href="/login">Log in</a></p>
-                </div>
-                </form>
-                </div>
-            </div>
+          <div class="form-container" id="signUpFormContainer">
+            <h2>Sign Up</h2>
+            <form action="/signup" method="post" id="signUpForm">
+              <div class="input-group">
+                <label>First Name</label>
+                <input type="text" name="firstName" required />
+              </div>
+              <div class="input-group">
+                <label>Last Name</label>
+                <input type="text" name="lastName" required />
+              </div>
+              <div class="input-group">
+                <label>Nickname</label>
+                <input type="text" name="nickName" required />
+              </div>
+              <div class="input-group">
+                <label>Gender</label>
+                <input type="radio" name="gender" value="Male" id="male" required />
+                <label for="male">Male</label>
+                <input type="radio" name="gender" value="Female" id="female" required />
+                <label for="female">Female</label>
+                <input type="radio" name="gender" value="Other" id="other" required checked/>
+                <label for="other">Other</label>
+              </div>
+              <div class="input-group">
+                <label>Age</label>
+                <input type="number" name="age" id="age" required min="1" step="1" />
+              </div>
+              <div class="input-group input-email">
+                <label>Email</label>
+                <input type="email" name="email" required placeholder=" ">
+              </div>
+              <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" required />
+              </div>
+              <div class="input-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm-password" required />
+              </div>
+              <button type="submit" id="signUpSubmit">Sign Up</button>
+              <div class="login-link">
+                <p>Already have an account? <a id="toLogIn">Log in</a></p>
+              </div>
+            </form>
+          </div>
+
+          <div class="form-container" id="logInFormContainer" style="display: none;">
+            <h2>Login</h2>
+            <form action="/login" method="post" id="logInForm">
+              <div class="input-group">
+                <label>Use: </label>
+                <input type="radio" name="Nickname" value="nickName" required checked/>
+                <label for="male">Nickname</label>
+                <input type="radio" name="logInUsing" value="email" required />
+                <label for="female">Email</label>
+              </div>
+              <div class="input-group">
+                <label>Nickname</label>
+                <input type="text" name="nickName" required />
+              </div>
+              <div class="input-group">
+                <label>Email</label>
+                <input type="email" name="email" required />
+              </div>
+              <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" required />
+              </div>
+  
+              <button type="submit" id="logInSubmit">Log in</button>
+              <div class="login-link">
+                <p>Don't have an account? <a id="toSignUp">Sign Up</a></p>
+              </div>
+            </form>
+          </div>
+          
         </div>
     </div>
-    <!-- header navigation bar -->
-    <header id="header">
-        <nav class="navbar">
-            <div class="nav-content">
-                <h1>Real Time Forum</h1>
-                <div class="nav-actions">
-                    <!-- Navigation actions will be populated here -->
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Message Container -->
-    <div id="message-container" style="display: none;"></div>
-
-    <div class="container">
-    <!-- Categories Sidebar -->
-        <div class="categories">
-            <!-- <h3 id="preference-header">Preference</h3> -->
-            <ul>
-                <!-- Inserting Categories Dynamically -->
-            </ul>
-
-        </div>
-
-        <!-- Posts Feed -->
-        <div class="feed">
-            <section id="general">
-                <h2>Recent Posts</h2>
-                <!-- Post Block -->
-                <!-- Your JavaScript will populate posts here -->
-            </section>
-        </div>
-
-        <div class="chat-container">
-            <div class="message-list">
-                <!-- Messages will be displayed here -->
-            </div>
-            <div class="message-input">
-                <input type="text" id="message-input" placeholder="Type a message...">
-                <button id="send-button">Send</button>
-            </div>
-            <div class="user-list">
-                <!-- User list will be displayed here -->
-            </div>
-        </div>
-
-    </div>
-
-    
-    <!-- Footer Section -->
-    <footer>
-        <div class="footer-container">
-            <p>&copy; Real Time Forum (2025)</p>
-            <nav>
-                <ul>
-                    <p>Created by:</p>
-                    <li><a href="https://github.com/AllenLeeyn" target="_blank"> Allen Ng</a></li>
-                    <li><a href="https://github.com/kurizma" target="_blank"> Joon Kim</a></li>
-                </ul>
-            </nav>
-        </div>
-    </footer>
-    
 
 </body>
 </html>
