@@ -5,22 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon"> -->
-    <title>Real Time Forum</title>
+    <title>REAlEMiT</title>
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
-    <link rel="stylesheet" type="text/css" href="./static/home.css" />
-    <link rel="stylesheet" type="text/css" href="./static/header.css" />
-    <link rel="stylesheet" type="text/css" href="./static/footer.css" />
-    <link rel="stylesheet" type="text/css" href="./static/chat.css" />
-    <link rel="stylesheet" type="text/css" href="/static/toastMsg.css" />
-    <link rel="stylesheet" type="text/css" href="/static/signup.css" />
-    <!-- <link rel="stylesheet" href="/static/toastMsg.css" />
-    <link rel="stylesheet" href="/static/postCard.css" /> -->
-    <script src="./static/script/header.js" defer></script>
-    <script src="./static/script/feed.js" defer></script>
-    <script src="./static/script/categories.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/main.css" />
+    <link rel="stylesheet" type="text/css" href="/static/validationView.css" />
+    <link rel="stylesheet" type="text/css" href="/static/header.css" />
+
     <script src="/static/script/toastMsg.js" defer></script>
     <script src="/static/script/main.js" defer></script>
   </head>
@@ -28,25 +23,24 @@
 
     <div id="mainView" style="display: none;">
       <!-- header navigation bar -->
-      <header id="header">
+      <header>
           <nav class="navbar">
               <div class="nav-content">
-                  <h1>Real Time Forum</h1>
+                  <a class="logo-text">REAlEMiT</a>
                   <div class="nav-actions">
-                      <!-- Navigation actions will be populated here -->
+                    <button id="logout-btn" class="nav-btn">Log out</button>
                   </div>
               </div>
           </nav>
       </header>
   
-      <!-- Message Container -->
-      <div id="message-container" style="display: none;"></div>
-  
       <div class="container">
       <!-- Categories Sidebar -->
           <div class="categories">
-              <!-- <h3 id="preference-header">Preference</h3> -->
-              <ul>
+              <ul  id="categoriesList">
+                <li><a href="/" class="category-item active">All</a></li>
+                <li><a href="?filterBy=createdBy" class="category-item">My posts</a></li>
+                <li><a href="?filterBy=likedBy" class="category-item">Liked posts</a></li>
                   <!-- Inserting Categories Dynamically -->
               </ul>
   
@@ -56,23 +50,19 @@
           <div class="feed">
               <section id="general">
                   <h2>Recent Posts</h2>
-                  <!-- Post Block -->
-                  <!-- Your JavaScript will populate posts here -->
               </section>
           </div>
   
-          <div class="chat-container">
+          <!-- <div class="chat-container">
               <div class="message-list">
-                  <!-- Messages will be displayed here -->
               </div>
               <div class="message-input">
                   <input type="text" id="message-input" placeholder="Type a message...">
                   <button id="send-button">Send</button>
               </div>
               <div class="user-list">
-                  <!-- User list will be displayed here -->
               </div>
-          </div>
+          </div> -->
   
       </div>
   
@@ -97,13 +87,14 @@
         <!-- Left side with image background -->
         <div class="image-section">
           <div class="image-content">
-            <h1>Welcome to grit:hub!</h1>
+            <h1>Welcome to REAlEMiT</h1>
             <p>Sign up or log in to start chatting.</p>
           </div>
         </div>
     
         <!-- Right side with login form -->
         <div class="form-section">
+          
           <div class="form-container" id="signUpFormContainer">
             <h2>Sign Up</h2>
             <form action="/signup" method="post" id="signUpForm">
@@ -144,8 +135,8 @@
                 <label>Confirm Password</label>
                 <input type="password" name="confirm-password" required />
               </div>
-              <button type="submit" id="signUpSubmit">Sign Up</button>
-              <div class="login-link">
+              <button type="submit" id="signup-btn">Sign Up</button>
+              <div class="link">
                 <p>Already have an account? <a id="toLogIn">Log in</a></p>
               </div>
             </form>
@@ -156,32 +147,33 @@
             <form action="/login" method="post" id="logInForm">
               <div class="input-group">
                 <label>Use: </label>
-                <input type="radio" name="Nickname" value="nickName" required checked/>
-                <label for="male">Nickname</label>
-                <input type="radio" name="logInUsing" value="email" required />
-                <label for="female">Email</label>
+                <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
+                <label for="nickNameField">Nickname</label>
+                <input type="radio" name="logInUsing" value="email" id="emailField" required />
+                <label for="emailField">Email</label>
               </div>
-              <div class="input-group">
+              <div style="display: flex;" class="input-group" id="nickNameGroup">
                 <label>Nickname</label>
-                <input type="text" name="nickName" required />
+                <input type="text" name="nickName"/>
               </div>
-              <div class="input-group">
+              <div style="display: none;" class="input-group" id="emailGroup">
                 <label>Email</label>
-                <input type="email" name="email" required />
+                <input type="email" name="email"/>
               </div>
               <div class="input-group">
                 <label>Password</label>
                 <input type="password" name="password" required />
               </div>
   
-              <button type="submit" id="logInSubmit">Log in</button>
-              <div class="login-link">
+              <button type="submit" id="login-btn">Log in</button>
+              <div class="link">
                 <p>Don't have an account? <a id="toSignUp">Sign Up</a></p>
               </div>
             </form>
           </div>
           
         </div>
+      </div>
     </div>
 
 </body>

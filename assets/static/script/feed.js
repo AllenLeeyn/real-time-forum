@@ -1,4 +1,4 @@
-// Post Feed to populate with post cards
+/* // Post Feed to populate with post cards
 fetch('/posts')
 .then(response => response.json())
 .then(data => {
@@ -45,4 +45,4 @@ function renderPostCard(post) {
             <p>${post.content}</p>
         </div>
     `;
-}
+} */

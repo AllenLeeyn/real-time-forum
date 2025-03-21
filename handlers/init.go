@@ -80,7 +80,6 @@ func getJSON(w http.ResponseWriter, r *http.Request, data interface{}) bool {
 		executeJSON(w, MsgData{"Error reading body"}, http.StatusInternalServerError)
 		return false
 	}
-	println(string(body))
 	if err = json.Unmarshal(body, data); err != nil {
 		executeJSON(w, MsgData{"Error reading json"}, http.StatusInternalServerError)
 		return false

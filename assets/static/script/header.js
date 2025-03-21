@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+/* document.addEventListener('DOMContentLoaded', function() {
   fetch('/posts')
   .then(response => response.json())
   .then(data => {
@@ -14,14 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
       navActionsContainer.innerHTML = ''; 
 
       if (data.isValidSession) {
-          // add buttons to do things
-          const createPostHTML = `
-            <button id="new-post" class="nav-btn">Create New Post</button>
-          `;
-          // Profile Page? Modal?
-          const logoutHTML = `
-            <button id="logout-btn" class="nav-btn">Logout</button>
-          `;
           navActionsContainer.insertAdjacentHTML('beforeend', createPostHTML);
           navActionsContainer.insertAdjacentHTML('beforeend', logoutHTML);
       }
@@ -80,14 +72,4 @@ function attachEventListeners() {
       });
   };
 }
-
-function showMessage(message) {
-  const messageContainer = document.getElementById('message-container');
-  messageContainer.textContent = message;
-  messageContainer.style.display = 'block'; // Show the message
-
-  // Hide the message after a few seconds
-  setTimeout(() => {
-      messageContainer.style.display = 'none';
-  }, 3000); // Hide after 3 seconds
-}
+ */

@@ -1,4 +1,4 @@
-// document.addEventListener('DOMContentLoaded', function() {
+/* // document.addEventListener('DOMContentLoaded', function() {
     fetch('/posts')
     .then(response => {
         if (!response.ok) {
@@ -68,7 +68,7 @@
         console.error('Error fetching or handling categories:', error);
     });
 // });
-
+ */
 
 
 // // Fetch categories for the sidebar from the backend

@@ -1,15 +1,42 @@
-document.getElementById('signUpSubmit').onclick = signUpSubmition;
-document.getElementById('logInSubmit').onclick = logInSubmition;
+document.getElementById('signup-btn').onclick = signUpSubmition;
+document.getElementById('login-btn').onclick = logInSubmition;
+document.getElementById('logout-btn').onclick = logOutSubmition;
 document.getElementById('toLogIn').onclick = toggleView;
 document.getElementById('toSignUp').onclick = toggleView;
+document.addEventListener('DOMContentLoaded', start());
 
-const VALIDATION_VIEW = document.getElementById("validationView")
-const SIGNUP_VIEW = document.getElementById("signUpFormContainer")
-const LOGIN_VIEW = document.getElementById("logInFormContainer")
-const MAIN_VIEW = document.getElementById("mainView")
+const VALIDATION_VIEW = document.getElementById("validationView");
+const SIGNUP_VIEW = document.getElementById("signUpFormContainer");
+const LOGIN_VIEW = document.getElementById("logInFormContainer");
+const MAIN_VIEW = document.getElementById("mainView");
+
+const CATEGORIES_LIST = document.getElementById("categoriesList");
+
+let categories = [];
+let posts = [];
 
 let validSession = false;
 let currentView = SIGNUP_VIEW
+
+/*------ start ------*/
+function start(){
+  fetch('/posts')
+  .then(async response => {
+    if (response.ok){
+      validSession = true;
+      currentView = MAIN_VIEW;
+      data = await response.json();
+      categories = data.categories;
+      insertCategories();
+      posts = data.posts;
+    } 
+    renderView();
+  })
+  .catch(error =>{
+    console.error("Error:", error);
+    showMessage("An error occurred. Please check your connection.");
+  });
+}
 
 /*------ view functions ------*/
 function toggleView(event){
@@ -43,6 +70,14 @@ function renderView(){
   }
 }
 
+function insertCategories(){
+  categories.forEach((category, index) => {
+    const listElement = document.createElement('li')
+    listElement.innerHTML = `<a href="?filterBy=category&id=${index}" class="category-item">${category}</a>`;
+    CATEGORIES_LIST.appendChild(listElement);
+  });
+}
+
 /*------ Authentication functions ------*/
 function signUpSubmition(event){
   event.preventDefault();
@@ -53,7 +88,7 @@ function signUpSubmition(event){
   const userLastName = formData.get('lastName');
   const userNickname = formData.get('nickName');
   const gender = formData.get('gender');
-  const age = formData.get('age');
+  const age = parseInt(formData.get('age'));
   const email = formData.get('email');
   const password = formData.get('password');
   const confirmPassword = formData.get('confirm-password');
@@ -116,7 +151,7 @@ function signUpSubmition(event){
       validSession = true;
       showMessage("Signup successful!");
       currentView = MAIN_VIEW;
-      toggleView(event);
+      renderView();
     } else{
       return response.json().then(errorData => {
         showMessage(errorData.message);
@@ -129,24 +164,46 @@ function signUpSubmition(event){
   });
 };
 
+const nickNameRadio = document.getElementById("nickNameField");
+const nickNameGroup = document.getElementById("nickNameGroup");
+const emailRadio = document.getElementById("emailField");
+const emailGroup = document.getElementById("emailGroup");
+nickNameRadio.addEventListener("change", toggleFields);
+emailRadio.addEventListener("change", toggleFields);
+
+function toggleFields() {
+  if (nickNameRadio.checked) {
+    nickNameGroup.style.display = "flex";
+    emailGroup.style.display = "none";
+  } else if (emailRadio.checked) {
+    nickNameGroup.style.display = "none";
+    emailGroup.style.display = "flex";
+  }
+}
+
 function logInSubmition(event){
   event.preventDefault();
   const form = document.getElementById('logInForm');
   const formData = new FormData(form);
 
-  const userNickname = formData.get('nickName');
-  const email = formData.get('email');
+  let userNickname = formData.get('nickName');
+  let email = formData.get('email');
   const password = formData.get('password');
 
   // Validate username
-  if (!isValidName("Nickname", userNickname)) return;
+  if (nickNameRadio.checked){
+    console.log(userNickname)
+    if (!isValidName("Nickname", userNickname)) return;
+  } else {userNickname = ""}
 
   // Validate email
-  if (email.trim() === "") {
-    return showMessage("Email is required.");
-  } else if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-    return showMessage("Please enter a valid email address.");
-  }
+  if (emailRadio.checked){
+    if (email.trim() === "") {
+      return showMessage("Email is required.");
+    } else if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      return showMessage("Please enter a valid email address.");
+    }
+  } else {email = ""}
 
   // Validate password
   if (password.trim() === "") {
@@ -163,7 +220,6 @@ function logInSubmition(event){
     password: password,
   };
 
-  console.log(jsonData)
   fetch('/login',{
     method: 'POST',
     headers: {
@@ -176,8 +232,36 @@ function logInSubmition(event){
     if (response.ok){
       validSession = true;
       currentView = MAIN_VIEW;
-      toggleView(event);
+      renderView();
       showMessage("Log in successful!");
+    } else{
+      return response.json().then(errorData => {
+        showMessage(errorData.message);
+      });
+    }
+  })
+  .catch(error =>{
+    console.error("Error:", error);
+    showMessage("An error occurred. Please check your connection.");
+  });
+};
+
+function logOutSubmition(event){
+  event.preventDefault();
+  validSession = false;
+  currentView = LOGIN_VIEW;
+  renderView();
+
+  fetch('/logout',{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  })
+  .then(response => {
+    if (response.ok){
+      showMessage("Log out successful!");
     } else{
       return response.json().then(errorData => {
         showMessage(errorData.message);

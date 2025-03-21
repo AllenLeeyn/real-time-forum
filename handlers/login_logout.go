@@ -25,7 +25,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check that user exists
-	user, _ := db.SelectUserByField("name", u.NickName)
+	user, _ := db.SelectUserByField("nick_name", u.NickName)
 	if user == nil {
 		user, _ = db.SelectUserByField("email", u.Email)
 	}
