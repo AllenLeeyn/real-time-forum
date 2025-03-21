@@ -7,35 +7,35 @@ import (
 )
 
 func Signup(w http.ResponseWriter, r *http.Request) {
-	_, _, isValid := checkPostRequest(w, r, "guest")
+	_, _, isValid := checkHttpRequest(w, r, "guest", http.MethodPost)
 	if !isValid {
 		return
 	}
 
+	u := &user{}
+	if !getJSON(w, r, u) {
+		return
+	}
+
 	// check that credentials are valid
-	name, email, passwd, e := getCredentials(r, true)
+	e := checkCredentials(u)
 	if e != nil {
 		executeJSON(w, MsgData{e.Error()}, http.StatusBadRequest)
 		return
 	}
-	passwdHash, err := bcrypt.GenerateFromPassword([]byte(passwd), 0)
+	passwdHash, err := bcrypt.GenerateFromPassword([]byte(u.Passwd), 0)
 	if err != nil {
 		executeJSON(w, MsgData{"Error creating user"}, http.StatusInternalServerError)
 		return
 	}
 
-	// add the user to the database
-	user := &user{
-		TypeID:   1,
-		NickName: name,
-		Email:    email,
-		PwHash:   passwdHash,
-	}
-	user.ID, err = db.InsertUser(user)
+	u.TypeID = 1
+	u.PwHash = passwdHash
+	_, err = db.InsertUser(u)
 	if err != nil {
 		executeJSON(w, MsgData{"Error creating user"}, http.StatusInternalServerError)
 		return
 	}
-	createSession(w, user)
+	createSession(w, u)
 	executeJSON(w, MsgData{"Signup succesful"}, http.StatusOK)
 }

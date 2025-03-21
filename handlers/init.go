@@ -55,7 +55,7 @@ func checkContent(input string, min, max int) (bool, string) {
 	return true, html.EscapeString(input)
 }
 
-func checkPostRequest(w http.ResponseWriter, r *http.Request, checkFor string) (*http.Cookie, int, bool) {
+func checkHttpRequest(w http.ResponseWriter, r *http.Request, checkFor, method string) (*http.Cookie, int, bool) {
 	sessionCookie, userID := checkSessionValidity(w, r)
 	isValid := true
 	if checkFor == "guest" && sessionCookie != nil {
@@ -66,7 +66,7 @@ func checkPostRequest(w http.ResponseWriter, r *http.Request, checkFor string) (
 		executeJSON(w, MsgData{"Please login and try again"}, http.StatusUnauthorized)
 		isValid = false
 	}
-	if r.Method != http.MethodPost {
+	if r.Method != method {
 		executeJSON(w, MsgData{"Method not allowed"}, http.StatusMethodNotAllowed)
 		isValid = false
 	}
@@ -80,7 +80,8 @@ func getJSON(w http.ResponseWriter, r *http.Request, data interface{}) bool {
 		executeJSON(w, MsgData{"Error reading body"}, http.StatusInternalServerError)
 		return false
 	}
-	if err = json.Unmarshal(body, &data); err != nil {
+	println(string(body))
+	if err = json.Unmarshal(body, data); err != nil {
 		executeJSON(w, MsgData{"Error reading json"}, http.StatusInternalServerError)
 		return false
 	}
@@ -95,34 +96,36 @@ func executeJSON(w http.ResponseWriter, data interface{}, code int) {
 
 /*----------- aunthenticate func -----------*/
 // need to check for new requirements
-func getCredentials(r *http.Request, isSignup bool) (string, string, string, error) {
-	username := r.FormValue("username")
-	email := r.FormValue("email")
-	passwd := r.FormValue("password")
-
+func checkCredentials(u *user) error {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	usernameRegex := `^[a-zA-Z0-9_-]{3,16}$`
 
-	if !validRegex(username, usernameRegex) {
-		return "", "", "", errors.New("user name must be between 3 to 16 alphanumeric characters, '_' or '-'")
+	if !validRegex(u.FirstName, usernameRegex) {
+		return errors.New("user name must be between 3 to 16 alphanumeric characters, '_' or '-'")
 	}
-	if !validPsswrd(passwd) {
-		return "", "", "", errors.New("password must be 8 characters or longer.\n" +
+	if !validRegex(u.LastName, usernameRegex) {
+		return errors.New("user name must be between 3 to 16 alphanumeric characters, '_' or '-'")
+	}
+	if !validRegex(u.NickName, usernameRegex) {
+		return errors.New("user name must be between 3 to 16 alphanumeric characters, '_' or '-'")
+	}
+	if !validPsswrd(u.Passwd) {
+		return errors.New("password must be 8 characters or longer.\n" +
 			"Include at least a lower case character, an upper case character, a number and one of '@$!%*?&'")
 	}
-	if isSignup && (passwd != r.FormValue("confirm-password")) {
-		return "", "", "", errors.New("passwords do not match")
+	if u.Passwd != u.ConfirmPasswd {
+		return errors.New("passwords do not match")
 	}
-	if isSignup && !validRegex(email, emailRegex) {
-		return "", "", "", errors.New("invalid email")
+	if !validRegex(u.Email, emailRegex) {
+		return errors.New("invalid email")
 	}
-	if user, _ := db.SelectUserByField("email", email); isSignup && user != nil {
-		return "", "", "", errors.New("email is already used")
+	if user, _ := db.SelectUserByField("email", u.Email); user != nil {
+		return errors.New("email is already used")
 	}
-	if user, _ := db.SelectUserByField("name", username); isSignup && user != nil {
-		return "", "", "", errors.New("name is already used")
+	if user, _ := db.SelectUserByField("name", u.NickName); user != nil {
+		return errors.New("name is already used")
 	}
-	return username, email, passwd, nil
+	return nil
 }
 
 func validRegex(input, pattern string) bool {

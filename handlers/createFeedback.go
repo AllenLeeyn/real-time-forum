@@ -5,12 +5,12 @@ import (
 )
 
 func CreateFeedback(w http.ResponseWriter, r *http.Request) {
-	sessionCookie, userID, isValid := checkPostRequest(w, r, "user")
+	sessionCookie, userID, isValid := checkHttpRequest(w, r, "user", http.MethodPost)
 	if !isValid {
 		return
 	}
 
-	data := feedback{}
+	data := &feedback{}
 	if !getJSON(w, r, data) {
 		return
 	}
@@ -20,7 +20,7 @@ func CreateFeedback(w http.ResponseWriter, r *http.Request) {
 		executeJSON(w, MsgData{"Error reading feedback"}, http.StatusInternalServerError)
 		return
 	} else if fb == nil {
-		fb = &data
+		fb = data
 		if err = db.InsertFeedback(data.Tgt, *fb); err != nil {
 			executeJSON(w, MsgData{"Error reading feedback"}, http.StatusInternalServerError)
 			return

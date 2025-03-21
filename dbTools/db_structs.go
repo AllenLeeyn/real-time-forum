@@ -14,8 +14,8 @@ type User struct {
 	Gender        string `json:"gender"`
 	Age           int    `json:"age"`
 	Email         string `json:"email"`
-	Passwd        string `json:"passwd"`
-	ConfirmPasswd string `json:"ConfirmPasswd"`
+	Passwd        string `json:"password"`
+	ConfirmPasswd string `json:"confirmPassword"`
 	PwHash        []byte
 	RegDate       time.Time
 	LastLogin     time.Time

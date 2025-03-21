@@ -7,11 +7,10 @@ import (
 
 // Profile page
 func Profile(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		executeJSON(w, MsgData{"Method not allowed"}, http.StatusMethodNotAllowed)
+	sessionCookie, userID, isValid := checkHttpRequest(w, r, "user", http.MethodGet)
+	if !isValid {
 		return
 	}
-	sessionCookie, userID := checkSessionValidity(w, r)
 
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
