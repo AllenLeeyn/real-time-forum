@@ -20,8 +20,10 @@ func CreateFeedback(w http.ResponseWriter, r *http.Request) {
 		executeJSON(w, MsgData{"Error reading feedback"}, http.StatusInternalServerError)
 		return
 	} else if fb == nil {
+		data.UserID = userID
 		fb = data
 		if err = db.InsertFeedback(data.Tgt, *fb); err != nil {
+			println(err.Error())
 			executeJSON(w, MsgData{"Error reading feedback"}, http.StatusInternalServerError)
 			return
 		}

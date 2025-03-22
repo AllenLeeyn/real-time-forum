@@ -11,7 +11,7 @@ const LOGIN_VIEW = document.getElementById("logInFormContainer");
 const MAIN_VIEW = document.getElementById("mainView");
 
 const CATEGORIES_LIST = document.getElementById("categoriesList");
-const FEED_DISPLAY = document.getElementById("feed-display");
+const MAIN_DISPLAY = document.getElementById("main-display");
 
 let categories = [];
 let posts = [];
@@ -121,9 +121,9 @@ function addCategoriesListener(item){
 }
 
 function insertPosts(){
-  FEED_DISPLAY.innerHTML = '';
+  MAIN_DISPLAY.innerHTML = '';
   if (!Array.isArray(posts) || posts.length === 0){
-    FEED_DISPLAY.innerHTML = `
+    MAIN_DISPLAY.innerHTML = `
       <div class="post-card">
         <h3>
           No post found
@@ -132,46 +132,48 @@ function insertPosts(){
       `;
     return;
   }
-  posts.forEach(post =>{
-    FEED_DISPLAY.appendChild(insertPost(post))
-  });
+  posts.forEach(post =>{insertPost(post)});
+  addFeedbackListeners();
 }
 
 function insertPost(post){
+  const row = MAIN_DISPLAY.insertRow();
+  const cell = row.insertCell();
   const postElement = document.createElement('div');
-  postElement.className = 'post-card';
   postElement.innerHTML = `
-    <div class="post-header">
-      <div class="post-meta">
-        <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
-        <div class="post-time">${post.CreatedAt}</div>
+    <div>
+      <div class="post-header">
+        <div class="post-meta">
+          <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
+          <div class="post-time">${post.CreatedAt}</div>
+        </div>
+      </div>
+      <div class="post-content">
+        <h3>
+          <a href="/post?id=${post.ID}">${post.title}</a>
+        </h3>
+        <pre>${post.content}</pre>
+      </div>
+      <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
+        <button class="icon-button like-button" data-id=${post.ID} data-for="post">
+          <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
+        </button>
+        <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
+          <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
+        </button>
+        <form action="/post?id=${post.ID}" method="GET">
+          <input type="hidden" name="id" value="${post.ID}" />
+          <button type="submit" class="icon-button">
+            <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
+          </button>
+        </form>
+        <p class="icon-button">
+          <span>${post.CatNames}</span>
+        </p>
       </div>
     </div>
-    <div class="post-content">
-      <h3>
-        <a href="/post?id=${post.ID}">${post.title}</a>
-      </h3>
-      <pre>${post.content}</pre>
-    </div>
-    <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
-      <button class="icon-button like-button" data-id=${post.ID} data-for="post">
-        <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
-      </button>
-      <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
-        <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
-      </button>
-      <form action="/post?id=${post.ID}" method="GET">
-        <input type="hidden" name="id" value="${post.ID}" />
-        <button type="submit" class="icon-button">
-          <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
-        </button>
-      </form>
-      <p class="icon-button">
-        <span>${post.CatNames}</span>
-      </p>
-    </div>
     `;
-  return postElement;
+  cell.appendChild(postElement);
 }
 
 /*------ Authentication functions ------*/
@@ -375,4 +377,86 @@ function isValidName(field, data){
     return false;
   }
   return true;
+};
+
+/*------ new post display ------*/
+document.getElementById('new-post').onclick = function () {
+  MAIN_DISPLAY.innerHTML = '';
+  const newPostElement = document.createElement('div');
+  newPostElement.className = "newPost";
+  newPostElement.innerHTML = `
+    <form id="newPostForm">
+      <div class="input-group">
+        <input
+          type="text"
+          name="title"
+          placeholder="Post Title"
+          required
+        />
+      </div>
+      <div class="input-group">
+        <textarea
+          name="content"
+          placeholder="Write your thread content here..."
+          rows="10"
+          required
+        ></textarea>
+      </div>
+      <div class="input-group">
+        <h4>Click to select categories:</h4>
+        <div class="checkbox-group">
+          ${categories.map((cat, index) => `
+            <div class="checkbox-item">
+              <input type="checkbox" id="category${index}" name="categories" value=${index}>
+              <label for="category${index}">${cat}</label>
+            </div>
+            `).join('')}
+        </div>
+      </div>
+      <div class="input-group">
+        <button class="new-post" id="newPostSubmit" type="submit">Create Post</button>
+      </div>
+    </form>`;
+  MAIN_DISPLAY.appendChild(newPostElement);
+  document.getElementById('newPostSubmit').onclick = newPostSubmition;
+};
+
+function newPostSubmition(event) {
+  event.preventDefault();
+  const form = document.getElementById('newPostForm');
+  const formData = new FormData(form);
+  
+  const title = formData.get('title');
+  const content = formData.get('content');
+  const categories = formData.getAll('categories');
+  const categoriesInt = categories.map(category => parseInt(category));
+
+  console.log(form)
+  const jsonData = {
+    title: title,
+    content: content,
+    categories: categoriesInt,
+  }
+  fetch('/new-post', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(jsonData),
+  })
+  .then(response => {
+      if (response.ok) {
+        showMessage("Post created!");
+        start();
+      } else {
+        return response.json().then(errorData => {
+          showMessage(errorData.message);
+        });
+      }
+  })
+  .catch(error => {
+    showMessage("An error occurred. Please check your connection and try again.");
+    console.error("Error:", error);
+  });
 };

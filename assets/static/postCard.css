@@ -1,16 +1,13 @@
 /* Posts Feed */
-.post-card {
-    background: var(--card-background);
-    border-radius: 16px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
 
 .post-header {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
+}
+
+.post-meta {
+    flex: 1;
 }
 
 .post-meta a{
@@ -23,7 +20,7 @@
 }
 
 .post-time {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-light);
 }
 
@@ -53,7 +50,7 @@
 
 .post-actions {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     padding-top: 0.6rem;
     border-top: 1px solid white;
 }

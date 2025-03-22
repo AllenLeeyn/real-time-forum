@@ -40,7 +40,7 @@ type Post struct {
 	Title        string `json:"title"`
 	Content      string `json:"content"`
 	CreatedAt    time.Time
-	Categories   []int `json:"category"`
+	Categories   []int `json:"categories"`
 	CatNames     string
 	Rating       int
 }

@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="/static/header.css" />
 
     <script src="/static/script/toastMsg.js" defer></script>
+    <script src="/static/script/feedback.js" defer></script>
     <script src="/static/script/main.js" defer></script>
   </head>
   <body>
@@ -29,6 +30,7 @@
               <div class="nav-content">
                   <a class="logo-text">REAlEMiT</a>
                   <div class="nav-actions">
+                    <button  id="new-post" class="nav-btn">New Post</button>
                     <button id="logout-btn" class="nav-btn">Log out</button>
                   </div>
               </div>
@@ -41,14 +43,21 @@
               <ul  id="categoriesList">
                   <!-- Inserting Categories Dynamically -->
               </ul>
-  
           </div>
   
           <!-- Posts Feed -->
           <div class="feed">
-              <section id="feed-display">
-                  <h2>Recent Posts</h2>
-              </section>
+            <table id="headertable" class="htable">
+              <tbody>
+                <tr>
+                  <th class="selected" id="feed">FEED</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </tbody>
+            </table>
+            <table id="main-display" class="itable"></table>
           </div>
   
           <div class="chat-container">

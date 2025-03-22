@@ -19,7 +19,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	isValidTitle, title := checkContent(data.Title, 10, 200)
 	isValidContent, content := checkContent(data.Content, 10, 2000)
-	if isValidTitle || isValidContent {
+	if !isValidTitle || !isValidContent {
 		executeJSON(w, MsgData{"Error: " + title + content}, http.StatusBadRequest)
 		return
 	}

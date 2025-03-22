@@ -19,7 +19,6 @@
   body {
     font-family: 'Roboto Mono', monospace; /* Using Roboto Mono for consistency */
     background: var(--background);
-    color: var(--text);
   }
   
   textarea {
