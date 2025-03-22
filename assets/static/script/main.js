@@ -80,50 +80,140 @@ function insertCategories(){
     CATEGORIES_LIST.appendChild(listElement);
   });
 }
+// insert posts logic //
 
-function insertPosts(){
-  posts.forEach(post =>{
-    FEED_DISPLAY.appendChild(insertPost(post))
+  const recentPostsBtn = document.getElementById('recent-posts-btn');
+  const viewPostBtn = document.getElementById('view-post-btn');
+  const createPostBtn = document.getElementById('create-post-btn');
+
+  const recentPostsView = document.getElementById('recent-posts-view');
+  const viewPostView = document.getElementById('view-post-view');
+  const createPostView = document.getElementById('create-post-view');
+
+  recentPostsBtn.addEventListener('click', function() {
+      recentPostsView.style.display = 'block';
+      viewPostView.style.display = 'none';
+      createPostView.style.display = 'none';
+
+      recentPostsBtn.classList.add('active');
+      viewPostBtn.classList.remove('active');
+      createPostBtn.classList.remove('active');
   });
-}
 
-function insertPost(post){
-  console.log(post)
-  const postElement = document.createElement('div');
-  postElement.className = 'post-card';
-  postElement.innerHTML = `
-    <div class="post-header">
-      <div class="post-meta">
-        <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
-        <div class="post-time">${post.CreatedAt}</div>
-      </div>
-    </div>
-    <div class="post-content">
-      <h3>
-        <a href="/post?id=${post.ID}">${post.title}</a>
-      </h3>
-      <pre>${post.content}</pre>
-    </div>
-    <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
-      <button class="icon-button like-button" data-id=${post.ID} data-for="post">
-        <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
-      </button>
-      <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
-        <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
-      </button>
-      <form action="/post?id=${post.ID}" method="GET">
-        <input type="hidden" name="id" value="${post.ID}" />
-        <button type="submit" class="icon-button">
-          <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
-        </button>
-      </form>
-      <p class="icon-button">
-        <span>${post.CatNames}</span>
-      </p>
-    </div>
-    `;
-  return postElement;
-}
+  viewPostBtn.addEventListener('click', function() {
+      recentPostsView.style.display = 'none';
+      viewPostView.style.display = 'block';
+      createPostView.style.display = 'none';
+
+      recentPostsBtn.classList.remove('active');
+      viewPostBtn.classList.add('active');
+      createPostBtn.classList.remove('active');
+  });
+
+  createPostBtn.addEventListener('click', function() {
+      recentPostsView.style.display = 'none';
+      viewPostView.style.display = 'none';
+      createPostView.style.display = 'block';
+
+      recentPostsBtn.classList.remove('active');
+      viewPostBtn.classList.remove('active');
+      createPostBtn.classList.add('active');
+  });
+
+  // Function to insert posts
+  function insertPosts(){
+      posts.forEach(post =>{
+          const postElement = insertPost(post);
+          document.getElementById('posts-container').appendChild(postElement);
+      });
+  }
+
+  function insertPost(post){
+      console.log(post)
+      const postElement = document.createElement('div');
+      postElement.className = 'post-card';
+      postElement.innerHTML = `
+          <div class="post-header">
+            <div class="post-meta">
+              <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
+              <div class="post-time">${post.CreatedAt}</div>
+            </div>
+          </div>
+          <div class="post-content">
+            <h3>
+              <a href="/post?id=${post.ID}">${post.title}</a>
+            </h3>
+            <pre>${post.content}</pre>
+          </div>
+          <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
+            <button class="icon-button like-button" data-id=${post.ID} data-for="post">
+              <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
+            </button>
+            <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
+              <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
+            </button>
+            <form action="/post?id=${post.ID}" method="GET">
+              <input type="hidden" name="id" value="${post.ID}" />
+              <button type="submit" class="icon-button">
+                <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
+              </button>
+            </form>
+            <p class="icon-button">
+              <span>${post.CatNames}</span>
+            </p>
+          </div>
+          `;
+      return postElement;
+  }
+
+  // Call the function to insert posts
+  insertPosts();
+
+
+
+// function insertPosts(){
+//   posts.forEach(post =>{
+//     FEED_DISPLAY.appendChild(insertPost(post))
+//   });
+// }
+
+// function insertPost(post){
+//   console.log(post)
+//   const postElement = document.createElement('div');
+//   postElement.className = 'post-card';
+//   postElement.innerHTML = `
+//     <div class="post-header">
+//       <div class="post-meta">
+//         <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
+//         <div class="post-time">${post.CreatedAt}</div>
+//       </div>
+//     </div>
+//     <div class="post-content">
+//       <h3>
+//         <a href="/post?id=${post.ID}">${post.title}</a>
+//       </h3>
+//       <pre>${post.content}</pre>
+//     </div>
+//     <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
+//       <button class="icon-button like-button" data-id=${post.ID} data-for="post">
+//         <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
+//       </button>
+//       <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
+//         <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
+//       </button>
+//       <form action="/post?id=${post.ID}" method="GET">
+//         <input type="hidden" name="id" value="${post.ID}" />
+//         <button type="submit" class="icon-button">
+//           <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
+//         </button>
+//       </form>
+//       <p class="icon-button">
+//         <span>${post.CatNames}</span>
+//       </p>
+//     </div>
+//     `;
+//   return postElement;
+// }
 
 /*------ Authentication functions ------*/
 function signUpSubmition(event){

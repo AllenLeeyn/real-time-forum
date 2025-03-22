@@ -19,163 +19,199 @@
 
     <script src="/static/script/toastMsg.js" defer></script>
     <script src="/static/script/main.js" defer></script>
-  </head>
-  <body>
+</head>
+
+<body>
 
     <div id="mainView" style="display: none;">
-      <!-- header navigation bar -->
-      <header>
-          <nav class="navbar">
-              <div class="nav-content">
-                  <a class="logo-text">REAlEMiT</a>
-                  <div class="nav-actions">
-                    <button id="logout-btn" class="nav-btn">Log out</button>
-                  </div>
+        <div id="validationView">
+            <div class="container">
+              <!-- Left side with image background -->
+              <div class="image-section">
+                <div class="image-content">
+                  <h1>Welcome to REAlEMiT</h1>
+                  <p>Sign up or log in to start chatting.</p>
+                </div>
               </div>
-          </nav>
-      </header>
-  
-      <div class="container">
-      <!-- Categories Sidebar -->
-          <div class="categories">
-              <ul  id="categoriesList">
-                <li><a href="/" class="category-item active">All</a></li>
-                <li><a href="?filterBy=createdBy" class="category-item">My posts</a></li>
-                <li><a href="?filterBy=likedBy" class="category-item">Liked posts</a></li>
-                  <!-- Inserting Categories Dynamically -->
-              </ul>
-  
-          </div>
-  
-          <!-- Posts Feed -->
-          <div class="feed">
-              <section id="feed-display">
-                  <h2>Recent Posts</h2>
-              </section>
-          </div>
-  
-          <!-- <div class="chat-container">
-              <div class="message-list">
-              </div>
-              <div class="message-input">
-                  <input type="text" id="message-input" placeholder="Type a message...">
-                  <button id="send-button">Send</button>
-              </div>
-              <div class="user-list">
-              </div>
-          </div> -->
-  
-      </div>
-  
-      <!-- Footer Section -->
-<!--       <footer>
-        <div class="footer-container">
-            <p>&copy; Real Time Forum (2025)</p>
-            <nav>
-                <ul>
-                    <p>Created by:</p>
-                    <li><a href="https://github.com/AllenLeeyn" target="_blank"> Allen Ng</a></li>
-                    <li><a href="https://github.com/kurizma" target="_blank"> Joon Kim</a></li>
-                </ul>
-            </nav>
-        </div>
-      </footer> -->
+          
+              <!-- Right side with login form -->
+              <div class="form-section">
+                
+                <div class="form-container" id="signUpFormContainer">
+                  <h2>Sign Up</h2>
+                  <form action="/signup" method="post" id="signUpForm">
+                    <div class="input-group">
+                      <label>First Name</label>
+                      <input type="text" name="firstName" required />
+                    </div>
+                    <div class="input-group">
+                      <label>Last Name</label>
+                      <input type="text" name="lastName" required />
+                    </div>
+                    <div class="input-group">
+                      <label>Nickname</label>
+                      <input type="text" name="nickName" required />
+                    </div>
+                    <div class="input-group">
+                      <label>Gender</label>
+                      <input type="radio" name="gender" value="Male" id="male" required />
+                      <label for="male">Male</label>
+                      <input type="radio" name="gender" value="Female" id="female" required />
+                      <label for="female">Female</label>
+                      <input type="radio" name="gender" value="Other" id="other" required checked/>
+                      <label for="other">Other</label>
+                    </div>
+                    <div class="input-group">
+                      <label>Age</label>
+                      <input type="number" name="age" id="age" required min="1" step="1" />
+                    </div>
+                    <div class="input-group input-email">
+                      <label>Email</label>
+                      <input type="email" name="email" required placeholder=" ">
+                    </div>
+                    <div class="input-group">
+                      <label>Password</label>
+                      <input type="password" name="password" required />
+                    </div>
+                    <div class="input-group">
+                      <label>Confirm Password</label>
+                      <input type="password" name="confirm-password" required />
+                    </div>
+                    <button type="submit" id="signup-btn">Sign Up</button>
+                    <div class="link">
+                      <p>Already have an account? <a id="toLogIn">Log in</a></p>
+                    </div>
+                  </form>
+                </div>
       
-    </div>
-
-    <div id="validationView">
-      <div class="container">
-        <!-- Left side with image background -->
-        <div class="image-section">
-          <div class="image-content">
-            <h1>Welcome to REAlEMiT</h1>
-            <p>Sign up or log in to start chatting.</p>
-          </div>
+                <div class="form-container" id="logInFormContainer" style="display: none;">
+                  <h2>Login</h2>
+                  <form action="/login" method="post" id="logInForm">
+                    <div class="input-group">
+                      <label>Use: </label>
+                      <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
+                      <label for="nickNameField">Nickname</label>
+                      <input type="radio" name="logInUsing" value="email" id="emailField" required />
+                      <label for="emailField">Email</label>
+                    </div>
+                    <div style="display: flex;" class="input-group" id="nickNameGroup">
+                      <label>Nickname</label>
+                      <input type="text" name="nickName"/>
+                    </div>
+                    <div style="display: none;" class="input-group" id="emailGroup">
+                      <label>Email</label>
+                      <input type="email" name="email"/>
+                    </div>
+                    <div class="input-group">
+                      <label>Password</label>
+                      <input type="password" name="password" required />
+                    </div>
+        
+                    <button type="submit" id="login-btn">Log in</button>
+                    <div class="link">
+                        <p>Don't have an account? <a id="toSignUp">Sign Up</a></p>
+                    </div>
+                </form>
+                </div>
+                
+                </div>
+            </div>
         </div>
+        
+<!-- After Login / Registration  -->
+<!-- User Interface -->
+
+    <header id="header">
+        <nav class="navbar">
+            <div class="nav-content">
+                <h1>Real Time Forum</h1>
+                <div class="nav-actions">
+                    <!-- Navigation actions will be populated here -->
+                </div>
+            </nav>
+    </header>
+
+    <main>
+        <!-- header navigation bar -->
+        <header>
+            <nav class="navbar">
+                <div class="nav-content">
+                    <a class="logo-text">REAlEMiT</a>
+                    <div class="nav-actions">
+                    <button id="logout-btn" class="nav-btn">Log out</button>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Categories Sidebar -->
+        <div class="categories">
+            <ul  id="categoriesList">
+            <li><a href="/" class="category-item active">All</a></li>
+            <li><a href="?filterBy=createdBy" class="category-item">My posts</a></li>
+            <li><a href="?filterBy=likedBy" class="category-item">Liked posts</a></li>
+            <!-- Inserting Categories Dynamically -->
+            </ul>
+        </div>
+
+        <div class="main-container">
+            <div class="view-selector">
+                <button class="view-button active" id="recent-posts-btn">Recent Posts</button>
+                <button class="view-button" id="view-post-btn">View Post</button>
+                <button class="view-button" id="create-post-btn">Create New Post</button>
+            </div>
+
+            <div class="view-content">
+                <!-- Recent Posts View -->
+                <div class="feed" id="recent-posts-view">
+                    <h2>Recent Posts</h2>
+                    <div id="posts-container">
+                        <!-- Dynamically generated posts will be added here -->
+                    </div>
+                </div>
+
+                <!-- View Post View -->
+                <div class="post-view" id="view-post-view" style="display:none;">
+                    <header>
+                        <h2 id="post-title-view"></h2>
+                        <p>Posted by <span id="post-author-view"></span> on <span id="post-date-view"></span></p>
+                    </header>
+                    <div class="post-content" id="post-content-view">
+                        <!-- Detailed post content here -->
+                    </div>
+                    <footer>
+                        <!-- Interaction buttons like Like, Comment, Share -->
+                        <!-- Comments section -->
+                    </footer>
+                </div>
+
+                <!-- Create New Post View -->
+                <div class="create-post" id="create-post-view" style="display:none;">
+                    <h2>Create New Post</h2>
+                    <form id="new-post-form">
+                        <label for="post-title">Post Title:</label>
+                        <input type="text" id="post-title" name="post-title" required>
+
+                        <label for="post-content">Post Content:</label>
+                        <textarea id="post-content" name="post-content" required></textarea>
+
+                        <label for="categories">Categories:</label>
+                        <select id="categories" name="categories" multiple>
+                            <!-- Options for categories -->
+                        </select>
+
+                        <button type="submit">Publish Post</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
     
-        <!-- Right side with login form -->
-        <div class="form-section">
-          
-          <div class="form-container" id="signUpFormContainer">
-            <h2>Sign Up</h2>
-            <form action="/signup" method="post" id="signUpForm">
-              <div class="input-group">
-                <label>First Name</label>
-                <input type="text" name="firstName" required />
-              </div>
-              <div class="input-group">
-                <label>Last Name</label>
-                <input type="text" name="lastName" required />
-              </div>
-              <div class="input-group">
-                <label>Nickname</label>
-                <input type="text" name="nickName" required />
-              </div>
-              <div class="input-group">
-                <label>Gender</label>
-                <input type="radio" name="gender" value="Male" id="male" required />
-                <label for="male">Male</label>
-                <input type="radio" name="gender" value="Female" id="female" required />
-                <label for="female">Female</label>
-                <input type="radio" name="gender" value="Other" id="other" required checked/>
-                <label for="other">Other</label>
-              </div>
-              <div class="input-group">
-                <label>Age</label>
-                <input type="number" name="age" id="age" required min="1" step="1" />
-              </div>
-              <div class="input-group input-email">
-                <label>Email</label>
-                <input type="email" name="email" required placeholder=" ">
-              </div>
-              <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" required />
-              </div>
-              <div class="input-group">
-                <label>Confirm Password</label>
-                <input type="password" name="confirm-password" required />
-              </div>
-              <button type="submit" id="signup-btn">Sign Up</button>
-              <div class="link">
-                <p>Already have an account? <a id="toLogIn">Log in</a></p>
-              </div>
-            </form>
-          </div>
-
-          <div class="form-container" id="logInFormContainer" style="display: none;">
-            <h2>Login</h2>
-            <form action="/login" method="post" id="logInForm">
-              <div class="input-group">
-                <label>Use: </label>
-                <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
-                <label for="nickNameField">Nickname</label>
-                <input type="radio" name="logInUsing" value="email" id="emailField" required />
-                <label for="emailField">Email</label>
-              </div>
-              <div style="display: flex;" class="input-group" id="nickNameGroup">
-                <label>Nickname</label>
-                <input type="text" name="nickName"/>
-              </div>
-              <div style="display: none;" class="input-group" id="emailGroup">
-                <label>Email</label>
-                <input type="email" name="email"/>
-              </div>
-              <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" required />
-              </div>
-  
-              <button type="submit" id="login-btn">Log in</button>
-              <div class="link">
-                <p>Don't have an account? <a id="toSignUp">Sign Up</a></p>
-              </div>
-            </form>
-          </div>
-          
-        </div>
-      </div>
-    </div>
+    <footer>
+        <!-- Footer content here -->
+    </footer>
 
 </body>
 </html>
