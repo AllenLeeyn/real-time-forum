@@ -13,20 +13,12 @@
     margin-bottom: 1rem;
 }
 
-.post-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--secondary);
-    margin-right: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--card-background);
-}
-
 .post-meta {
     flex: 1;
+}
+
+.post-meta a{
+    text-decoration: none;
 }
 
 .post-author {
@@ -67,14 +59,16 @@
     display: flex;
     gap: 2rem;
     padding-top: 0.6rem;
-    border-top: 1px solid var(--background);
+    border-top: 1px solid white;
 }
 
 .icon-button {
+    padding: 5px;
+    width: fit-content;
     display: flex;
-    align-items: center;
     background: none;
     border: none;
+    align-items: center;
     color: var(--text-light);
     cursor: pointer;
     font-size: 0.9rem;
@@ -82,6 +76,8 @@
 }
 
 .icon-button:hover {
+    background: none;
+    border: none;
     color: var(--primary);
 }
 

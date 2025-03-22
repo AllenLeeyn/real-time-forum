@@ -7,6 +7,7 @@
   --card-background: #232323; /* White for cards */
   --text: hsl(0, 0%, 80%);
   --text-light: #afafaf; /* Medium gray for secondary text */
+  --text-dark: black; /* Medium gray for secondary text */
   --hover: #e8eaf6; /* Light purple for hover effects */
 }
 
@@ -34,16 +35,16 @@ a:hover {
   transition: color 0.2s ease;
 }
 
-.container {
-  display: flex;
-  width: 100%;
-  height: 100vh;
-}
-
 #mainView{
   margin: 80px auto 0;
   display: flex;
   gap: 2rem;
+}
+
+.container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
 }
 
 /* Categories Sidebar */
@@ -54,16 +55,19 @@ a:hover {
 }
 
 .categories li {
-  margin: 2px;
+  margin: 3px;
   font-size: 16px;
 }
 
 .category-item {
+  text-decoration: none;
   display: flex;
   align-items: center;
   width: 150px;
   padding: 5px;
+  padding-left: 15px;
   border-radius: 8px;
+  background: var(--card-background);
   cursor: pointer;
   transition: background 0.2s;
   color: var(--text);

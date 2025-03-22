@@ -11,6 +11,7 @@ const LOGIN_VIEW = document.getElementById("logInFormContainer");
 const MAIN_VIEW = document.getElementById("mainView");
 
 const CATEGORIES_LIST = document.getElementById("categoriesList");
+const FEED_DISPLAY = document.getElementById("feed-display");
 
 let categories = [];
 let posts = [];
@@ -27,8 +28,10 @@ function start(){
       currentView = MAIN_VIEW;
       data = await response.json();
       categories = data.categories;
+      console.log(categories)
       insertCategories();
       posts = data.posts;
+      insertPosts();
     } 
     renderView();
   })
@@ -66,16 +69,60 @@ function renderView(){
     SIGNUP_VIEW.style.display = 'block';
 
   } else if (currentView === MAIN_VIEW) {
-    MAIN_VIEW.style.display = 'block';
+    MAIN_VIEW.style.display = 'flex';
   }
 }
 
 function insertCategories(){
   categories.forEach((category, index) => {
-    const listElement = document.createElement('li')
+    const listElement = document.createElement('li');
     listElement.innerHTML = `<a href="?filterBy=category&id=${index}" class="category-item">${category}</a>`;
     CATEGORIES_LIST.appendChild(listElement);
   });
+}
+
+function insertPosts(){
+  posts.forEach(post =>{
+    FEED_DISPLAY.appendChild(insertPost(post))
+  });
+}
+
+function insertPost(post){
+  console.log(post)
+  const postElement = document.createElement('div');
+  postElement.className = 'post-card';
+  postElement.innerHTML = `
+    <div class="post-header">
+      <div class="post-meta">
+        <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
+        <div class="post-time">${post.CreatedAt}</div>
+      </div>
+    </div>
+    <div class="post-content">
+      <h3>
+        <a href="/post?id=${post.ID}">${post.title}</a>
+      </h3>
+      <pre>${post.content}</pre>
+    </div>
+    <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
+      <button class="icon-button like-button" data-id=${post.ID} data-for="post">
+        <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
+      </button>
+      <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
+        <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
+      </button>
+      <form action="/post?id=${post.ID}" method="GET">
+        <input type="hidden" name="id" value="${post.ID}" />
+        <button type="submit" class="icon-button">
+          <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
+        </button>
+      </form>
+      <p class="icon-button">
+        <span>${post.CatNames}</span>
+      </p>
+    </div>
+    `;
+  return postElement;
 }
 
 /*------ Authentication functions ------*/
@@ -148,10 +195,8 @@ function signUpSubmition(event){
   })
   .then(response => {
     if (response.ok){
-      validSession = true;
       showMessage("Signup successful!");
-      currentView = MAIN_VIEW;
-      renderView();
+      start();
     } else{
       return response.json().then(errorData => {
         showMessage(errorData.message);
@@ -230,10 +275,8 @@ function logInSubmition(event){
   })
   .then(response => {
     if (response.ok){
-      validSession = true;
-      currentView = MAIN_VIEW;
-      renderView();
       showMessage("Log in successful!");
+      start();
     } else{
       return response.json().then(errorData => {
         showMessage(errorData.message);
