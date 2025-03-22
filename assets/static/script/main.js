@@ -17,7 +17,7 @@ let categories = [];
 let posts = [];
 
 let validSession = false;
-let currentView = SIGNUP_VIEW
+let currentView = SIGNUP_VIEW;
 
 /*------ start ------*/
 function start(){
@@ -74,21 +74,70 @@ function renderView(){
 }
 
 function insertCategories(){
+  CATEGORIES_LIST.innerHTML = `
+    <li><a href="/posts" class="category-item active">All</a></li>
+    <li><a href="/posts?filterBy=createdBy" class="category-item">My posts</a></li>
+    <li><a href="/posts?filterBy=likedBy" class="category-item">Liked posts</a></li>`;
+
   categories.forEach((category, index) => {
     const listElement = document.createElement('li');
-    listElement.innerHTML = `<a href="?filterBy=category&id=${index}" class="category-item">${category}</a>`;
+    listElement.innerHTML = `<a href="/posts?filterBy=category&id=${index}" class="category-item">${category}</a>`;
     CATEGORIES_LIST.appendChild(listElement);
+  });
+
+  addCategoriesListeners();
+}
+
+function addCategoriesListeners(){
+  const categoryItems = Array.from(CATEGORIES_LIST.children);
+  currentFilter = categoryItems[0];
+  categoryItems.forEach(item => addCategoriesListener(item));
+}
+
+function addCategoriesListener(item){
+  const categoryHref = item.querySelector('a').getAttribute('href');
+  item.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    fetch(categoryHref)
+    .then(async response => {
+      if (response.ok){
+        document.getElementsByClassName('active')[0].classList.remove('active');
+        item.querySelector('a').classList.add('active');
+        data = await response.json();
+        posts = data.posts;
+        insertPosts();
+      } else {
+        currentView = LOGIN_VIEW
+        showMessage("Something went wrong. Log in and try again.");
+      }
+      renderView();
+    })
+    .catch(error =>{
+      console.error("Error:", error);
+      showMessage("An error occurred. Please check your connection.");
+    });
   });
 }
 
 function insertPosts(){
+  FEED_DISPLAY.innerHTML = '';
+  if (!Array.isArray(posts) || posts.length === 0){
+    FEED_DISPLAY.innerHTML = `
+      <div class="post-card">
+        <h3>
+          No post found
+        </h3>
+      </div>
+      `;
+    return;
+  }
   posts.forEach(post =>{
     FEED_DISPLAY.appendChild(insertPost(post))
   });
 }
 
 function insertPost(post){
-  console.log(post)
   const postElement = document.createElement('div');
   postElement.className = 'post-card';
   postElement.innerHTML = `

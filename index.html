@@ -39,9 +39,6 @@
       <!-- Categories Sidebar -->
           <div class="categories">
               <ul  id="categoriesList">
-                <li><a href="/" class="category-item active">All</a></li>
-                <li><a href="?filterBy=createdBy" class="category-item">My posts</a></li>
-                <li><a href="?filterBy=likedBy" class="category-item">Liked posts</a></li>
                   <!-- Inserting Categories Dynamically -->
               </ul>
   
@@ -54,36 +51,20 @@
               </section>
           </div>
   
-          <!-- <div class="chat-container">
+          <div class="chat-container">
               <div class="message-list">
               </div>
               <div class="message-input">
                   <input type="text" id="message-input" placeholder="Type a message...">
-                  <button id="send-button">Send</button>
               </div>
               <div class="user-list">
               </div>
-          </div> -->
+          </div>
   
       </div>
-  
-      <!-- Footer Section -->
-<!--       <footer>
-        <div class="footer-container">
-            <p>&copy; Real Time Forum (2025)</p>
-            <nav>
-                <ul>
-                    <p>Created by:</p>
-                    <li><a href="https://github.com/AllenLeeyn" target="_blank"> Allen Ng</a></li>
-                    <li><a href="https://github.com/kurizma" target="_blank"> Joon Kim</a></li>
-                </ul>
-            </nav>
-        </div>
-      </footer> -->
-      
     </div>
 
-    <div id="validationView">
+    <div id="validationView"  style="display: none;">
       <div class="container">
         <!-- Left side with image background -->
         <div class="image-section">
@@ -98,7 +79,7 @@
           
           <div class="form-container" id="signUpFormContainer">
             <h2>Sign Up</h2>
-            <form action="/signup" method="post" id="signUpForm">
+            <form id="signUpForm">
               <div class="input-group">
                 <label>First Name</label>
                 <input type="text" name="firstName" required />
@@ -145,7 +126,7 @@
 
           <div class="form-container" id="logInFormContainer" style="display: none;">
             <h2>Login</h2>
-            <form action="/login" method="post" id="logInForm">
+            <form id="logInForm">
               <div class="input-group">
                 <label>Use: </label>
                 <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
@@ -177,5 +158,15 @@
       </div>
     </div>
 
+    <!-- Footer Section -->
+    <footer>
+      <div>
+          <p>&copy; REAlEMiT (2025)</p>
+            <ul>
+                <li><a href="https://github.com/AllenLeeyn" target="_blank"> Allen Ng</a></li>
+                <li><a href="https://github.com/kurizma" target="_blank"> Joon Kim</a></li>
+            </ul>
+      </div>
+    </footer>
 </body>
 </html>

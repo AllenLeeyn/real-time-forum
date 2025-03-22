@@ -13,10 +13,6 @@
     margin-bottom: 1rem;
 }
 
-.post-meta {
-    flex: 1;
-}
-
 .post-meta a{
     text-decoration: none;
 }
