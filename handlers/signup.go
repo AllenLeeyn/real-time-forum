@@ -31,7 +31,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	u.TypeID = 1
 	u.PwHash = passwdHash
-	_, err = db.InsertUser(u)
+	u.ID, err = db.InsertUser(u)
 	if err != nil {
 		executeJSON(w, MsgData{"Error creating user"}, http.StatusInternalServerError)
 		return
