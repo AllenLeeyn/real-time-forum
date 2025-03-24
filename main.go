@@ -50,8 +50,8 @@ func main() {
 
 func serveIndex(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		http.ServeFile(w, r, "index.html")
 	}
-	http.ServeFile(w, r, "index.html")
 }
