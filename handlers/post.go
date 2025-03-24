@@ -27,7 +27,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 		executeJSON(w, MsgData{"Post not found"}, http.StatusNotFound)
 		return
 	}
-	seletctedComments, err := db.SelectComments(id, userID, "oldest")
+	seletctedComments, err := db.SelectComments(id, userID, "")
 	if err != nil {
 		executeJSON(w, MsgData{"Error getting comments"}, http.StatusInternalServerError)
 		return

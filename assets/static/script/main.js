@@ -1,6 +1,8 @@
 import { submitSignUp, submitLogIn, submitLogOut } from "./validation.js";
 import { showNewPost } from "./newPost.js";
-import { insertPostCards } from "./postCard.js";
+import { getFeed } from "./feed.js";
+import { addFeedbackListeners } from "./feedback.js";
+import { addViewPostLinksListeners, addSubmitCommentListener } from "./post.js";
 
 document.addEventListener('DOMContentLoaded', start());
 document.getElementById('signup-btn').onclick = submitSignUp;
@@ -15,14 +17,17 @@ const SIGNUP_VIEW = document.getElementById("signUpFormContainer");
 const LOGIN_VIEW = document.getElementById("logInFormContainer");
 const MAIN_VIEW = document.getElementById("mainView");
 
+const FEED_DISPLAY = document.getElementById("feedDisplay");
+export const POST_DISPLAY = document.getElementById("postDisplay");
+export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
 const CATEGORIES_LIST = document.getElementById("categoriesList");
-export const DISPLAY_AREA = document.getElementById("displayArea");
 
 export const currentState = {
   isValid: false,
   categories: [],
   view: SIGNUP_VIEW,
-  posts: [],
+  display: FEED_DISPLAY,
+  feed: null,
 }
 
 /*------ toast message function ------*/
@@ -35,7 +40,7 @@ export function showMessage(message) {
 }
 
 /*------ handle typical JSON fetch ------*/
-function handleGetFetch(path, handler){
+export function handleGetFetch(path, handler){
   fetch(path)
   .then(handler)
   .catch(error =>{
@@ -44,7 +49,7 @@ function handleGetFetch(path, handler){
   });
 }
 
-export function handlePostFetch(path, jsonData, message){
+export function handlePostFetch(path, jsonData, message, drawFn){
   fetch(path, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -54,7 +59,7 @@ export function handlePostFetch(path, jsonData, message){
   .then(response => {
       if (response.ok){
           showMessage(message);
-          start();
+          drawFn();
       } else{
           return response.json().then(errorData => {
               showMessage(errorData.message);
@@ -76,11 +81,11 @@ export function start(){
     if (response.ok){
       currentState.isValid = true;
       currentState.view = MAIN_VIEW;
+      currentState.display = FEED_DISPLAY;
       const data = await response.json();
       currentState.categories = data.categories;
       insertCategories();
-      currentState.posts = data.posts;
-      insertPostCards();
+      currentState.feed = getFeed(data.posts);
     } 
     renderView();
   });
@@ -115,9 +120,34 @@ function renderView(){
 
   } else if ( currentState.view === MAIN_VIEW) {
     MAIN_VIEW.style.display = 'flex';
+    renderDisplay();
   }
 }
 
+export function renderDisplay(){
+  FEED_DISPLAY.style.display = 'none';
+  POST_DISPLAY.style.display = 'none';
+  NEW_POST_DISPLAY.style.display = 'none';
+
+  if (currentState.display === FEED_DISPLAY) {
+    FEED_DISPLAY.innerHTML = '';
+    FEED_DISPLAY.style.display = '';
+    FEED_DISPLAY.append(currentState.feed);
+    addFeedbackListeners();
+    addViewPostLinksListeners();
+
+  } else if (currentState.display === NEW_POST_DISPLAY){
+    NEW_POST_DISPLAY.style.display = '';
+
+  } else if (currentState.display === POST_DISPLAY){
+    POST_DISPLAY.style.display = '';
+    addFeedbackListeners();
+    addViewPostLinksListeners();
+    addSubmitCommentListener();
+  }
+}
+
+/* categories */
 function insertCategories(){
   CATEGORIES_LIST.innerHTML = `
     <li><a href="/posts" class="category-item active">All</a></li>
@@ -148,8 +178,8 @@ function addCategoriesListener(item){
         document.getElementsByClassName('active')[0].classList.remove('active');
         item.querySelector('a').classList.add('active');
         const data = await response.json();
-        posts = data.posts;
-        insertPosts();
+        currentState.feed = getFeed(data.posts);
+        currentState.display = FEED_DISPLAY;
       } else {
         currentState.view = LOGIN_VIEW
         showMessage("Something went wrong. Log in and try again.");

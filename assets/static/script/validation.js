@@ -1,4 +1,4 @@
-import { showMessage, handlePostFetch} from "./main.js";
+import { showMessage, handlePostFetch, start} from "./main.js";
 
 /*------ Authentication functions ------*/
 export function submitSignUp(event){
@@ -58,7 +58,7 @@ export function submitSignUp(event){
         email: email,
         password: password,
         confirmPassword: confirmPassword,
-    }, "Signup successful!");
+    }, "Signup successful!", start);
 };
 
 const nickNameRadio = document.getElementById("nickNameField");
@@ -115,12 +115,12 @@ export function submitLogIn(event){
         nickName: userNickname,
         email: email,
         password: password,
-    }, "Log in successful!");
+    }, "Log in successful!", start);
 };
 
 export function submitLogOut(event){
     event.preventDefault();
-    handlePostFetch('/logout', {}, "Log out successful!");
+    handlePostFetch('/logout', {}, "Log out successful!", start);
 };
 
 function isValidName(field, data){
