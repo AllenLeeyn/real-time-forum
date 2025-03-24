@@ -42,19 +42,17 @@ export function showNewPost(event){
   NEW_POST_DISPLAY.appendChild(newPostElement);
   currentState.display = NEW_POST_DISPLAY;
   renderDisplay();
-  document.getElementById('newPostSubmit').onclick = submitNewPost;
-};
+  document.getElementById('newPostForm').onsubmit = submitNewPost;};
   
 function submitNewPost(event) {
     event.preventDefault();
-    const form = document.getElementById('newPostForm');
+    const form = event.target;
     const formData = new FormData(form);
     
     const title = formData.get('title');
     const content = formData.get('content');
-    const categories = formData.getAll('categories');
-    const categoriesInt = categories.map(category => parseInt(category));
-
+    const categories = formData.getAll('categories').map(c => parseInt(c));
+    
     handlePostFetch('/new-post', {
       title: title,
       content: content,
