@@ -76,29 +76,41 @@ function getPost(data){
         <button id="submit-comment" data-id=${data.post.ID}>Post Comment</button>
         </div>
     `;
-    
-    data.comments.forEach(comment => {
+
+    if (!Array.isArray(data.comments) || data.comments.length === 0){
         postElement.innerHTML +=`
-      <div>
-        <div class="post-header">
-          <div class="post-meta">
-            <a href="/profile?id=${comment.UserID} class="post-author">${comment.UserName}</a>
-            <div class="post-time">${comment.CreatedAt}</div>
-          </div>
+        <div>
+            <div class="post-card">
+                <h3>
+                No comment found
+                </h3>
+            </div>
         </div>
-        <div class="post-content">
-          <pre>${comment.content}</pre>
-        </div>
-        <div class="post-actions" data-id=${comment.ID} data-state="${comment.Rating}" data-for="comment">
-          <button class="icon-button like-button" data-id=${comment.ID} data-for="comment">
-            <i class="fas fa-thumbs-up"></i> <span>${comment.LikeCount}</span>
-          </button>
-          <button class="icon-button dislike-button" data-id=${comment.ID} data-for="comment">
-            <i class="fas fa-thumbs-down"></i> <span>${comment.DislikeCount}</span>
-          </button>
-        </div>
-      </div>`;
-    });
+        `;
+    } else {
+        data.comments.forEach(comment => {
+            postElement.innerHTML +=`
+            <div>
+                <div class="post-header">
+                    <div class="post-meta">
+                    <a href="/profile?id="${comment.UserID}" class="post-author">${comment.UserName}</a>
+                    <div class="post-time">${comment.CreatedAt}</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <pre>${comment.content}</pre>
+                </div>
+                <div class="post-actions" data-id=${comment.ID} data-state="${comment.Rating}" data-for="comment">
+                    <button class="icon-button like-button" data-id=${comment.ID} data-for="comment">
+                    <i class="fas fa-thumbs-up"></i> <span>${comment.LikeCount}</span>
+                    </button>
+                    <button class="icon-button dislike-button" data-id=${comment.ID} data-for="comment">
+                    <i class="fas fa-thumbs-down"></i> <span>${comment.DislikeCount}</span>
+                    </button>
+                </div>
+            </div>`;
+        });
+    }
     return container;
 }
 
