@@ -126,14 +126,17 @@ function renderView(){
 }
 
 export function renderDisplay(){
+  console.log('Rendering display...');
   FEED_DISPLAY.style.display = 'none';
   POST_DISPLAY.style.display = 'none';
   NEW_POST_DISPLAY.style.display = 'none';
 
   if (currentState.display === FEED_DISPLAY) {
-    FEED_DISPLAY.innerHTML = '';
+    console.log('Displaying feed...');
+    // FEED_DISPLAY.innerHTML = currentState.feed;
+    // FEED_DISPLAY.innerHTML = '';
     FEED_DISPLAY.style.display = '';
-    FEED_DISPLAY.append(currentState.feed);
+    // FEED_DISPLAY.append(currentState.feed);
     addFeedbackListeners();
     addViewPostLinksListeners();
 

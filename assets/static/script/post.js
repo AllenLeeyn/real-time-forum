@@ -1,8 +1,8 @@
 import { currentState, POST_DISPLAY, renderDisplay, handleGetFetch, handlePostFetch, showMessage } from "./main.js";
 
 export function insertPostCard(post, container){
-    const row = document.createElement('tr');
-    const cell = document.createElement('td');
+    console.log('Inserting post card for:', post);
+    const article = document.createElement('article');
     const postElement = document.createElement('div');
     postElement.classList.add('post-card');
   
@@ -36,11 +36,11 @@ export function insertPostCard(post, container){
         </div>
       </div>
       `;
-      cell.appendChild(postElement);
-      row.appendChild(cell);
-      container.appendChild(row);
-  
-      return postElement;
+      article.appendChild(postElement);
+      container.appendChild(article);
+      console.log('Post card appended to container.');
+    
+      return article;
 }
 
 export function addViewPostLinksListeners(){
