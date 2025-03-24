@@ -144,59 +144,6 @@ a:hover {
   padding-right: 1rem;
 }
 
-/*----- table -----*/
-table {
-  position: relative;
-  color: var(--text);
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 0.8rem;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
-}
-
-#headertable {
-  width: 100%;
-  table-layout: auto;
-}
-
-th {
-  background-color: var(--primary);
-  color: white;
-  padding: 0.8rem;
-  font-size: 0.8rem;
-  text-align: center;
-  text-transform: uppercase;
-  font-weight: bold;
-  white-space: pre-line;
-  border-bottom: 3px solid var(--primary);
-}
-
-.itable{
-  margin-bottom: 20px;
-}
-
-th.selected{
-  color: yellow;
-  border-bottom: 3px solid yellow;
-}
-
-th:hover {
-  color: hsl(51, 100%, 70%);
-  cursor: pointer;
-}
-
-tbody tr:nth-child(even) {
-  background-color: hsl(0, 0%, 22%);
-}
-
-tbody tr:nth-child(odd) {
-  background-color: hsl(0, 0%, 18%);
-}
-
-tbody td {
-  padding: 1rem;
-  text-align: left;
-}
 /* Modal overlay styles */
 .modal {
   position: fixed; /* Fixed positioning to cover the whole viewport */

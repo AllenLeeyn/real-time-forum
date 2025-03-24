@@ -47,20 +47,36 @@
   
           <!-- Posts Feed -->
           <div class="feed">
-            <table id="headertable" class="htable">
-              <tbody>
-                <tr>
-                  <th class="selected" id="feed">FEED</th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </tbody>
-            </table>
-            <table id="feedDisplay" class="itable"></table>
-            <table id="postDisplay" class="itable"></table>
-            <table id="newPostDisplay" class="itable"></table>
-            <table id="profileDisplay" class="itable"></table>
+               <!-- Header for Feed (if needed) -->
+            <header class="feed-header">
+              <!-- You can use a nav or a simple div here -->
+              <nav>
+                <button id="feed-post">Post Feed</button>
+                <button id="view-post">Post</button>
+                <button id="new-post">New Post</button>
+              </nav>
+            </header>
+
+            <!-- Feed Display Section -->
+            <section id="feedDisplay" class="feed-display">
+                <!-- Create an article element here -->
+                <!-- Post content here -->
+            </section>
+
+            <!-- Post Display Section -->
+            <section id="postDisplay" class="post-display">
+              <!-- Use semantic elements like article for each post -->
+              <article>
+                <!-- Post content here -->
+              </article>
+            </section>
+
+            <!-- Create New Post Section -->
+            <section id="newPostDisplay" class="new-post-display">
+              <form id="newPostForm">
+                <!-- Form fields for creating a new post -->
+              </form>
+            </section>
           </div>
   
           <div class="chat-container">
