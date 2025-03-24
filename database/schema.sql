@@ -13,7 +13,7 @@ CREATE TABLE users (
     type_id INTEGER NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    nick_name TEXT NOT NULL,
+    nick_name TEXT NOT NULL UNIQUE,
     gender TEXT CHECK(gender IN ('Male', 'Female', 'Other')) NOT NULL,
     age INTEGER NOT NULL,
     email TEXT NOT NULL UNIQUE,

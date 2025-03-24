@@ -1,4 +1,4 @@
-function addFeedbackListeners(){
+export function addFeedbackListeners(){
   // Get all like and dislike buttons
   const likeButtons = document.querySelectorAll(".like-button");
   const dislikeButtons = document.querySelectorAll(".dislike-button");
@@ -78,9 +78,7 @@ function handlePostFeedback(forType, parentID, action) {
     // You could handle fetch success/failure like this:
     fetch('/feedback', {
       method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(feedback)
     })
     .then(response => {

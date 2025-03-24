@@ -35,17 +35,70 @@ a:hover {
   transition: color 0.2s ease;
 }
 
-#mainView{
-  margin: 80px auto 0;
-  display: flex;
-  gap: 2rem;
-}
-
 .container {
   display: flex;
   width: 100%;
   min-height: 100vh;
   justify-content: center;
+}
+
+
+/* header */
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar {
+  background: var(--primary);
+  color: white;
+  padding: 1rem;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-content {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+.nav-btn {
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.5rem 0.5rem;
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border: 1px solid var(--accent);
+  border-radius: 50px; 
+  font-size: 0.8rem;
+  transition: background-color 0.3s ease;
+}
+
+.nav-btn:hover {
+  background-color: var(--secondary);
+}
+
+#mainView{
+  margin: 80px auto 0;
+  display: flex;
+  gap: 2rem;
 }
 
 /* Categories Sidebar */
@@ -102,8 +155,8 @@ table {
 }
 
 #headertable {
-  width: 100%;  /* Ensure the table spans the full width */
-  table-layout: auto;  /* Automatically adjust column width based on content */
+  width: 100%;
+  table-layout: auto;
 }
 
 th {
@@ -145,71 +198,7 @@ tbody td {
   text-align: left;
 }
 
-/* new post */
-.newPost{
-  margin: 10px;
-}
-
-.input-group {
-  margin-bottom: 15px;
-}
-
-.input-group input,
-.input-group textarea {
-  resize: none;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.modal-content .new-post {
-  float: right;
-  background: var(--primary);
-  color: var(--card-background);
-  padding: 0.5rem 0.5rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  transition: background 0.3s ease;
-}
-
-.modal-content .new-post:hover {
-  background: var(--accent);
-}
-
-.checkbox-group {
-  margin: 10px;
-  display: flex;
-}
-
-.checkbox-item input[type="checkbox"] {
-  display: none;
-}
-
-.checkbox-item label {
-  border: 1px solid var(--accent);
-  padding: 5px;
-  margin: 3px;
-  border-radius: 20px;
-  cursor: pointer;
-  background: var(--background);
-  color: var(--text);
-  transition: all 0.2s ease;
-}
-
-.checkbox-item label:hover {
-  background: #dcd0f8;
-  transition: all 0.2s ease;
-}
-
-.checkbox-item input[type="checkbox"]:checked + label {
-  background: var(--secondary);
-  color: var(--background);
-  transition: all 0.2s ease;
-}
-
-/* footer*/
+/* footer */
 footer {
   background-color: var(--primary);
   border-top: 1px solid var(--card-background);

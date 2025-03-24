@@ -121,7 +121,7 @@ func checkCredentials(u *user) error {
 	if user, _ := db.SelectUserByField("email", u.Email); user != nil {
 		return errors.New("email is already used")
 	}
-	if user, _ := db.SelectUserByField("name", u.NickName); user != nil {
+	if user, _ := db.SelectUserByField("nick_name", u.NickName); user != nil {
 		return errors.New("name is already used")
 	}
 	return nil
