@@ -32,6 +32,7 @@ export const currentState = {
 
 /*------ toast message function ------*/
 export function showMessage(message) {
+  if (message === "") return;
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('toast-message');
   messageDiv.textContent = message;
