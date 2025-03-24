@@ -282,7 +282,7 @@ function logInSubmition(event){
   const form = document.getElementById('logInForm');
   const formData = new FormData(form);
 
-  let userNickname = formData.get('nickName');
+  let userNickname = formData.get('nick_name');
   let email = formData.get('email');
   const password = formData.get('password');
 
