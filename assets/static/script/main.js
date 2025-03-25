@@ -3,7 +3,6 @@ import { showNewPost } from "./newPost.js";
 import { getFeed } from "./feed.js";
 import { addFeedbackListeners } from "./feedback.js";
 import { addViewPostLinksListeners, addSubmitCommentListener, showPostButton } from "./post.js";
-import { addViewPostLinksListeners, addSubmitCommentListener } from "./post.js";
 import { showProfile, addViewProfileLinksListeners } from "./profile.js";
 
 document.addEventListener('DOMContentLoaded', start());
@@ -161,6 +160,7 @@ export function renderDisplay(){
     addFeedbackListeners();
     addViewPostLinksListeners();
     addSubmitCommentListener();
+    // setupPostInteractions();
   }
 }
 
