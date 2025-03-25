@@ -67,7 +67,7 @@ async function postLinkHandler(response){
 }
 
 function getPost(data){
-    const container = document.createElement('tbody');
+    const container = document.createElement('article');
 
     const postElement = insertPostCard(data.post, container);
     postElement.innerHTML += `
