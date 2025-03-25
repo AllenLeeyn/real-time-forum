@@ -167,6 +167,11 @@ a:hover {
 }
 
 
+#view-post {
+  display: none;
+}
+
+
 
 
 /* Modal overlay styles */

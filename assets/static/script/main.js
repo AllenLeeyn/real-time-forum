@@ -2,6 +2,7 @@ import { submitSignUp, submitLogIn, submitLogOut } from "./validation.js";
 import { showNewPost } from "./newPost.js";
 import { getFeed } from "./feed.js";
 import { addFeedbackListeners } from "./feedback.js";
+import { addViewPostLinksListeners, addSubmitCommentListener, showPostButton } from "./post.js";
 import { addViewPostLinksListeners, addSubmitCommentListener } from "./post.js";
 import { showProfile, addViewProfileLinksListeners } from "./profile.js";
 
@@ -21,12 +22,14 @@ const MAIN_VIEW = document.getElementById("mainView");
 const PROFILE_BTN = document.getElementById("profile-btn");
 PROFILE_BTN.onclick = showProfile;
 
-const FEED_DISPLAY = document.getElementById("feedDisplay");
+export const FEED_DISPLAY = document.getElementById("feedDisplay");
 export const POST_DISPLAY = document.getElementById("postDisplay");
 export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
 export const PROFILE_DISPLAY = document.getElementById("profileDisplay");
 
 const CATEGORIES_LIST = document.getElementById("categoriesList");
+
+
 
 export const currentState = {
   isValid: false,
@@ -35,6 +38,9 @@ export const currentState = {
   display: FEED_DISPLAY,
   feed: null,
 }
+
+
+
 
 /*------ toast message function ------*/
 export function showMessage(message) {
@@ -155,12 +161,6 @@ export function renderDisplay(){
     addFeedbackListeners();
     addViewPostLinksListeners();
     addSubmitCommentListener();
-    addViewProfileLinksListeners();
-
-  } else if (currentState.display === PROFILE_DISPLAY){
-    PROFILE_DISPLAY.style.display = '';
-    addFeedbackListeners();
-    addViewPostLinksListeners();
   }
 }
 
@@ -205,3 +205,8 @@ function addCategoriesListener(item){
     });
   });
 }
+// -- Post Interaction -- 
+FEED_DISPLAY.addEventListener('click', showPostButton);
+document.querySelectorAll('.post-card').forEach(post => {
+  post.addEventListener('click', showPostButton);
+});
