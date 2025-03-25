@@ -1,4 +1,5 @@
 import { NEW_POST_DISPLAY, currentState, handlePostFetch, renderDisplay, start } from "./main.js";
+import { templateNewPost } from "./template.js";
 
 /*------ new post display ------*/
 export function showNewPost(event){
@@ -6,39 +7,7 @@ export function showNewPost(event){
   NEW_POST_DISPLAY.innerHTML = '';
   const newPostElement = document.createElement('div');
   newPostElement.className = "newPost";
-  newPostElement.innerHTML = `
-    <form id="newPostForm">
-      <div class="input-group">
-        <input
-          type="text"
-          name="title"
-          placeholder="Post Title"
-          required
-        />
-      </div>
-      <div class="input-group">
-        <textarea
-          name="content"
-          placeholder="Write your thread content here..."
-          rows="10"
-          required
-        ></textarea>
-      </div>
-      <div class="input-group">
-        <h4>Click to select categories:</h4>
-        <div class="checkbox-group">
-          ${currentState.categories.map((cat, index) => `
-            <div class="checkbox-item">
-              <input type="checkbox" id="category${index}" name="categories" value=${index}>
-              <label for="category${index}">${cat}</label>
-            </div>
-            `).join('')}
-        </div>
-      </div>
-      <div class="input-group">
-        <button class="new-post" id="newPostSubmit" type="submit">Create Post</button>
-      </div>
-    </form>`;
+  newPostElement.innerHTML = templateNewPost(currentState.categories);
   NEW_POST_DISPLAY.appendChild(newPostElement);
   currentState.display = NEW_POST_DISPLAY;
   renderDisplay();
@@ -55,7 +24,7 @@ function submitNewPost(event) {
     const categories = formData.getAll('categories');
     const categoriesInt = categories.map(category => parseInt(category));
 
-    handlePostFetch('/new-post', {
+    handlePostFetch('/create-post', {
       title: title,
       content: content,
       categories: categoriesInt,

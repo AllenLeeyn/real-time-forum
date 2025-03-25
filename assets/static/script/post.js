@@ -1,46 +1,19 @@
 import { currentState, POST_DISPLAY, renderDisplay, handleGetFetch, handlePostFetch, showMessage } from "./main.js";
+import { templateCommentCard, templateCommentForm, templateNoFound, templatePostCard } from "./template.js";
 
 export function insertPostCard(post, container){
     const row = document.createElement('tr');
     const cell = document.createElement('td');
+
     const postElement = document.createElement('div');
     postElement.classList.add('post-card');
-  
-    postElement.innerHTML = `
-      <div>
-        <div class="post-header">
-          <div class="post-meta">
-            <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
-            <div class="post-time">${post.CreatedAt}</div>
-          </div>
-        </div>
-        <div class="post-content">
-          <h3>
-            <a href="/post?id=${post.ID}">${post.title}</a>
-          </h3>
-          <pre>${post.content}</pre>
-        </div>
-        <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
-          <button class="icon-button like-button" data-id=${post.ID} data-for="post">
-            <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
-          </button>
-          <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
-            <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
-          </button>
-          <button class="icon-button">
-            <i class="fas fa-comment" href="/post?id=${post.ID}"></i> <span>${post.CommentCount}</span>
-          </button>
-          <p class="icon-button">
-            <span>${post.CatNames}</span>
-          </p>
-        </div>
-      </div>
-      `;
-      cell.appendChild(postElement);
-      row.appendChild(cell);
-      container.appendChild(row);
-  
-      return postElement;
+    postElement.innerHTML = templatePostCard(post);
+
+    cell.appendChild(postElement);
+    row.appendChild(cell);
+    container.appendChild(row);
+
+    return postElement;
 }
 
 export function addViewPostLinksListeners(){
@@ -48,94 +21,65 @@ export function addViewPostLinksListeners(){
     const commentBtns = document.querySelectorAll(".fas.fa-comment");
 
     postLinks.forEach(link =>{
-        link.addEventListener("click", (event) => postLinkListener(event, link))
+        link.addEventListener("click", postLinkHandler)
     })
     commentBtns.forEach(link =>{
-        link.addEventListener("click", (event) => postLinkListener(event, link))
+        link.addEventListener("click", postLinkHandler)
     })
 }
 
-function postLinkListener(event, link){
+function postLinkHandler(event){
     event.preventDefault();
-    const path = link.getAttribute('href');
-    handleGetFetch(path, postLinkHandler);
-}
+    const path = event.target.getAttribute('href');
 
-async function postLinkHandler(response){
-    if (response.ok) {
-        POST_DISPLAY.innerHTML = "";
-        const data = await response.json();
-        POST_DISPLAY.appendChild(getPost(data));
-        currentState.display = POST_DISPLAY;
-        renderDisplay();
-    }
+    handleGetFetch(path, (response) => {
+        if (response.ok) {
+            drawPostWithComments(response);
+        }
+    });
 }
 
 function getPost(data){
     const container = document.createElement('tbody');
-
     const postElement = insertPostCard(data.post, container);
-    postElement.innerHTML += `
-        <div id="comment-form">
-        <textarea id="comment-input" placeholder="Write your comment here..." rows="3"></textarea>
-        <button id="submit-comment" data-id=${data.post.ID}>Post Comment</button>
-        </div>
-    `;
+    postElement.innerHTML += templateCommentForm(data.post);
 
     if (!Array.isArray(data.comments) || data.comments.length === 0){
-        postElement.innerHTML +=`
-        <div>
-            <div class="post-card">
-                <h3>
-                No comment found
-                </h3>
-            </div>
-        </div>
-        `;
+        postElement.innerHTML += templateNoFound("comment");
     } else {
         data.comments.forEach(comment => {
-            postElement.innerHTML +=`
-            <div>
-                <div class="post-header">
-                    <div class="post-meta">
-                    <a href="/profile?id="${comment.UserID}" class="post-author">${comment.UserName}</a>
-                    <div class="post-time">${comment.CreatedAt}</div>
-                    </div>
-                </div>
-                <div class="post-content">
-                    <pre>${comment.content}</pre>
-                </div>
-                <div class="post-actions" data-id=${comment.ID} data-state="${comment.Rating}" data-for="comment">
-                    <button class="icon-button like-button" data-id=${comment.ID} data-for="comment">
-                    <i class="fas fa-thumbs-up"></i> <span>${comment.LikeCount}</span>
-                    </button>
-                    <button class="icon-button dislike-button" data-id=${comment.ID} data-for="comment">
-                    <i class="fas fa-thumbs-down"></i> <span>${comment.DislikeCount}</span>
-                    </button>
-                </div>
-            </div>`;
+            postElement.innerHTML += templateCommentCard(comment);
         });
     }
     return container;
 }
 
-export function addSubmitCommentListener(){
-    document.getElementById('submit-comment').onclick = function (event){
-        event.preventDefault();
+function submitComment(event){
+    const postID = parseInt(event.target.getAttribute('data-id'));
+    const commentInput = document.getElementById('comment-input')
+    const commentText = commentInput.value.trim()
 
-        const postID = parseInt(this.getAttribute('data-id'));
-        const commentInput = document.getElementById('comment-input')
-        const commentText = commentInput.value.trim()
-    
-        if (!commentText) {
-            showMessage('Comment cannot be empty!')
-            return;
-        }
-        handlePostFetch(`/add-comment`, { 
-            postID: postID,
-            content: commentText,
-        }, "Comment created!", ()=>{
-            handleGetFetch(`/post?id=${postID}`, postLinkHandler)
-        });
-    };
+    if (!commentText) {
+        showMessage('Comment cannot be empty!')
+        return;
+    }
+    handlePostFetch(`/create-comment`, { 
+        postID: postID,
+        content: commentText,
+    }, "Comment created!", ()=>{
+        handleGetFetch(`/post?id=${postID}`, async (response) => {
+            if (response.ok) {
+                drawPostWithComments(response);
+            }
+        })
+    });
+};
+
+async function drawPostWithComments(response){
+    POST_DISPLAY.innerHTML = "";
+    const data = await response.json();
+    POST_DISPLAY.appendChild(getPost(data));
+    currentState.display = POST_DISPLAY;
+    renderDisplay();
+    document.getElementById('submit-comment').onclick = submitComment;
 }
