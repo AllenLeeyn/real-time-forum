@@ -142,10 +142,7 @@ export function renderDisplay(){
 
   if (currentState.display === FEED_DISPLAY) {
     console.log('Displaying feed...');
-    // FEED_DISPLAY.innerHTML = currentState.feed;
-    // FEED_DISPLAY.innerHTML = '';
     FEED_DISPLAY.style.display = '';
-    // FEED_DISPLAY.append(currentState.feed);
     addFeedbackListeners();
     addViewPostLinksListeners();
     addViewProfileLinksListeners();

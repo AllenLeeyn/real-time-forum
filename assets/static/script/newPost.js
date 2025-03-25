@@ -56,7 +56,7 @@ function submitNewPost(event) {
     handlePostFetch('/new-post', {
       title: title,
       content: content,
-      categories: categoriesInt,
+      categories: categories,
     }, "Post created!", start);
 };
   
