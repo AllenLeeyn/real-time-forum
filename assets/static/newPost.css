@@ -1,10 +1,6 @@
 /* new post */
   .newPost{
-    margin: 10px;
-  }
-  
-  .input-group {
-    margin-bottom: 15px;
+    padding: 10px;
   }
   
   .input-group input,
@@ -18,10 +14,15 @@
   }
 
   .checkbox-group {
-    margin: 10px;
+    margin-top: 15px;
     display: flex;
+    flex-wrap: wrap;
   }
   
+  .checkbox-item {
+    margin-bottom: 15px;
+  }
+
   .checkbox-item input[type="checkbox"] {
     display: none;
   }
@@ -32,9 +33,9 @@
     margin: 3px;
     border-radius: 20px;
     cursor: pointer;
+    font-size: 12px;
     background: var(--background);
     color: var(--text);
-    transition: all 0.2s ease;
   }
   
   .checkbox-item label:hover {

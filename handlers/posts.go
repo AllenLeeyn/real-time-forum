@@ -42,6 +42,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			Categories:     db.Categories,
 			Posts:          selectedPosts,
 			UserName:       userName,
+			UserID:         userID,
 		},
 		http.StatusOK,
 	)

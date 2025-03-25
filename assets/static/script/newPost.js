@@ -1,7 +1,8 @@
 import { NEW_POST_DISPLAY, currentState, handlePostFetch, renderDisplay, start } from "./main.js";
 
 /*------ new post display ------*/
-export function showNewPost(){
+export function showNewPost(event){
+  event.preventDefault();
   NEW_POST_DISPLAY.innerHTML = '';
   const newPostElement = document.createElement('div');
   newPostElement.className = "newPost";

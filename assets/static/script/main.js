@@ -3,6 +3,7 @@ import { showNewPost } from "./newPost.js";
 import { getFeed } from "./feed.js";
 import { addFeedbackListeners } from "./feedback.js";
 import { addViewPostLinksListeners, addSubmitCommentListener } from "./post.js";
+import { showProfile, addViewProfileLinksListeners } from "./profile.js";
 
 document.addEventListener('DOMContentLoaded', start());
 document.getElementById('signup-btn').onclick = submitSignUp;
@@ -17,9 +18,14 @@ const SIGNUP_VIEW = document.getElementById("signUpFormContainer");
 const LOGIN_VIEW = document.getElementById("logInFormContainer");
 const MAIN_VIEW = document.getElementById("mainView");
 
+const PROFILE_BTN = document.getElementById("profile-btn");
+PROFILE_BTN.onclick = showProfile;
+
 const FEED_DISPLAY = document.getElementById("feedDisplay");
 export const POST_DISPLAY = document.getElementById("postDisplay");
 export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
+export const PROFILE_DISPLAY = document.getElementById("profileDisplay");
+
 const CATEGORIES_LIST = document.getElementById("categoriesList");
 
 export const currentState = {
@@ -84,6 +90,8 @@ export function start(){
       currentState.view = MAIN_VIEW;
       currentState.display = FEED_DISPLAY;
       const data = await response.json();
+      PROFILE_BTN.textContent = data.userName;
+      PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
       currentState.categories = data.categories;
       insertCategories();
       currentState.feed = getFeed(data.posts);
@@ -129,6 +137,7 @@ export function renderDisplay(){
   FEED_DISPLAY.style.display = 'none';
   POST_DISPLAY.style.display = 'none';
   NEW_POST_DISPLAY.style.display = 'none';
+  PROFILE_DISPLAY.style.display = 'none';
 
   if (currentState.display === FEED_DISPLAY) {
     FEED_DISPLAY.innerHTML = '';
@@ -136,6 +145,7 @@ export function renderDisplay(){
     FEED_DISPLAY.append(currentState.feed);
     addFeedbackListeners();
     addViewPostLinksListeners();
+    addViewProfileLinksListeners();
 
   } else if (currentState.display === NEW_POST_DISPLAY){
     NEW_POST_DISPLAY.style.display = '';
@@ -145,6 +155,12 @@ export function renderDisplay(){
     addFeedbackListeners();
     addViewPostLinksListeners();
     addSubmitCommentListener();
+    addViewProfileLinksListeners();
+
+  } else if (currentState.display === PROFILE_DISPLAY){
+    PROFILE_DISPLAY.style.display = '';
+    addFeedbackListeners();
+    addViewPostLinksListeners();
   }
 }
 

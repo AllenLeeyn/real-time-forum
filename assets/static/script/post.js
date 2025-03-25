@@ -27,8 +27,8 @@ export function insertPostCard(post, container){
           <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
             <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
           </button>
-          <button type="submit" class="icon-button">
-            <i class="fas fa-comment"></i> <span>${post.CommentCount}</span>
+          <button class="icon-button">
+            <i class="fas fa-comment" href="/post?id=${post.ID}"></i> <span>${post.CommentCount}</span>
           </button>
           <p class="icon-button">
             <span>${post.CatNames}</span>
@@ -45,15 +45,20 @@ export function insertPostCard(post, container){
 
 export function addViewPostLinksListeners(){
     const postLinks = document.querySelectorAll(".post-content h3 a");
+    const commentBtns = document.querySelectorAll(".fas.fa-comment");
 
     postLinks.forEach(link =>{
+        link.addEventListener("click", (event) => postLinkListener(event, link))
+    })
+    commentBtns.forEach(link =>{
         link.addEventListener("click", (event) => postLinkListener(event, link))
     })
 }
 
 function postLinkListener(event, link){
     event.preventDefault();
-    handleGetFetch(link.href, postLinkHandler)
+    const path = link.getAttribute('href');
+    handleGetFetch(path, postLinkHandler);
 }
 
 async function postLinkHandler(response){

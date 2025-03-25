@@ -24,6 +24,7 @@ type postsData struct {
 	Categories     []string `json:"categories"`
 	Posts          []post   `json:"posts"`
 	UserName       string   `json:"userName"`
+	UserID         int      `json:"userID"`
 }
 
 type postData struct {
