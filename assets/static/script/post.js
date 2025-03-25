@@ -1,4 +1,4 @@
-import { currentState, POST_DISPLAY, renderDisplay, handleGetFetch, handlePostFetch, showMessage } from "./main.js";
+import { currentState, POST_DISPLAY, FEED_DISPLAY, renderDisplay, handleGetFetch, handlePostFetch, showMessage } from "./main.js";
 
 export function insertPostCard(post, container){
     console.log('Inserting post card for:', post);
@@ -134,3 +134,44 @@ export function addSubmitCommentListener(){
         });
     };
 }
+
+export function showPostButton() {
+    document.getElementById("view-post").style.display = "block";
+}
+
+export function setupPostInteractions() {
+    function showPostButton(event) {
+        event.stopPropagation();
+        const postCard = event.target.closest('.post-card');
+        if (postCard) {
+        const viewPostButton = postCard.querySelector('.view-post');
+        if (viewPostButton) {
+            viewPostButton.style.display = 'block';
+        }
+        // Hide buttons on other post cards
+        FEED_DISPLAY.querySelectorAll('.post-card .view-post').forEach(button => {
+            if (button !== viewPostButton) {
+            button.style.display = 'none';
+            }
+        });
+        }
+    }
+
+    // Add click event listener to the feed display
+    FEED_DISPLAY.addEventListener('click', showPostButton);
+
+    // Add click event listeners to all existing post cards
+    FEED_DISPLAY.querySelectorAll('.post-card').forEach(post => {
+        post.addEventListener('click', showPostButton);
+    });
+
+    // Add a global click listener to hide all buttons when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('.post-card')) {
+        FEED_DISPLAY.querySelectorAll('.post-card .view-post').forEach(button => {
+            button.style.display = 'none';
+        });
+        }
+    });
+}
+

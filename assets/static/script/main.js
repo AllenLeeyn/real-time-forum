@@ -2,7 +2,7 @@ import { submitSignUp, submitLogIn, submitLogOut } from "./validation.js";
 import { showNewPost } from "./newPost.js";
 import { getFeed } from "./feed.js";
 import { addFeedbackListeners } from "./feedback.js";
-import { addViewPostLinksListeners, addSubmitCommentListener } from "./post.js";
+import { addViewPostLinksListeners, addSubmitCommentListener, showPostButton } from "./post.js";
 
 document.addEventListener('DOMContentLoaded', start());
 document.getElementById('signup-btn').onclick = submitSignUp;
@@ -17,10 +17,12 @@ const SIGNUP_VIEW = document.getElementById("signUpFormContainer");
 const LOGIN_VIEW = document.getElementById("logInFormContainer");
 const MAIN_VIEW = document.getElementById("mainView");
 
-const FEED_DISPLAY = document.getElementById("feedDisplay");
+export const FEED_DISPLAY = document.getElementById("feedDisplay");
 export const POST_DISPLAY = document.getElementById("postDisplay");
 export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
 const CATEGORIES_LIST = document.getElementById("categoriesList");
+
+
 
 export const currentState = {
   isValid: false,
@@ -29,6 +31,9 @@ export const currentState = {
   display: FEED_DISPLAY,
   feed: null,
 }
+
+
+
 
 /*------ toast message function ------*/
 export function showMessage(message) {
@@ -145,6 +150,7 @@ export function renderDisplay(){
     addFeedbackListeners();
     addViewPostLinksListeners();
     addSubmitCommentListener();
+    // setupPostInteractions();
   }
 }
 
@@ -189,3 +195,8 @@ function addCategoriesListener(item){
     });
   });
 }
+// -- Post Interaction -- 
+FEED_DISPLAY.addEventListener('click', showPostButton);
+document.querySelectorAll('.post-card').forEach(post => {
+  post.addEventListener('click', showPostButton);
+});
