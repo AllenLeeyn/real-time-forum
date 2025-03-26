@@ -221,7 +221,7 @@ footer ul li a {
   bottom: 20px; /* Position it at the bottom of the screen */
   left: 50%;
   transform: translateX(-50%);
-  background-color: red; /* Green background for success */
+  background-color: #975aa7; 
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
@@ -229,6 +229,9 @@ footer ul li a {
   z-index: 1000; /* Make sure it appears on top of other content */
   opacity: 0;
   animation: fadeInOut 3s ease-out forwards; /* Add fade-in/fade-out animation */
+  border: 1px solid white; /* Add this line */
+  padding: 12px 24px; /* Slightly increase padding for better spacing */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* Optional: Add subtle shadow */
 }
 
 @keyframes fadeInOut {
