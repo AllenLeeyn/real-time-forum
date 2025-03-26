@@ -31,31 +31,31 @@ type Session struct {
 }
 
 type Post struct {
-	ID           int
-	UserID       int
-	UserName     string
-	CommentCount int
-	LikeCount    int
-	DislikeCount int
-	Title        string `json:"title"`
-	Content      string `json:"content"`
-	CreatedAt    time.Time
-	Categories   []int `json:"categories"`
-	CatNames     string
-	Rating       int
+	ID           int       `json:"ID"`
+	UserID       int       `json:"userID"`
+	UserName     string    `json:"userName"`
+	CommentCount int       `json:"commentCount"`
+	LikeCount    int       `json:"likeCount"`
+	DislikeCount int       `json:"dislikeCount"`
+	Title        string    `json:"title"`
+	Content      string    `json:"content"`
+	CreatedAt    time.Time `json:"createdAt"`
+	Categories   []int     `json:"categories"`
+	CatNames     string    `json:"catNames"`
+	Rating       int       `json:"rating"`
 }
 
 type Comment struct {
 	ID           int
-	UserID       int
-	UserName     string
+	UserID       int    `json:"userID"`
+	UserName     string `json:"userName"`
 	ParentID     sql.NullInt64
-	PostID       int    `json:"postID"`
-	Content      string `json:"content"`
-	LikeCount    int
-	DislikeCount int
-	CreatedAt    time.Time
-	Rating       int
+	PostID       int       `json:"postID"`
+	Content      string    `json:"content"`
+	LikeCount    int       `json:"likeCount"`
+	DislikeCount int       `json:"dislikeCount"`
+	CreatedAt    time.Time `json:"createdAt"`
+	Rating       int       `json:"rating"`
 }
 
 type Feedback struct {

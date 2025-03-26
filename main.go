@@ -39,8 +39,8 @@ func main() {
 	http.HandleFunc("/login", handlers.Login)
 	http.HandleFunc("/logout", handlers.LogOut)
 
-	http.HandleFunc("/new-post", handlers.CreatePost)
-	http.HandleFunc("/add-comment", handlers.CreateComment)
+	http.HandleFunc("/create-post", handlers.CreatePost)
+	http.HandleFunc("/create-comment", handlers.CreateComment)
 	http.HandleFunc("/feedback", handlers.CreateFeedback)
 
 	fmt.Println("Starting Forum on http://localhost:8080/...")
