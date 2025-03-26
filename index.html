@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon"> -->
-    <title>REAlEMiT</title>
-    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/static/main.css" />
-    <link rel="stylesheet" type="text/css" href="/static/newPost.css" />
-    <link rel="stylesheet" type="text/css" href="/static/post.css" />
-    <link rel="stylesheet" type="text/css" href="/static/postCard.css" />
-    <link rel="stylesheet" type="text/css" href="/static/validation.css" />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="RealEMit platform for easy posting and sharing" />
+  <meta name="author" content="JOGA" />
 
-    <script src="/static/script/main.js" type="module" defer></script>
-  </head>
+  <!-- <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon"> -->
+  <title>REAlEMiT</title>
+
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" as="style" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <link rel="stylesheet" href="/static/main.css" />
+  <link rel="stylesheet" href="/static/newPost.css" />
+  <link rel="stylesheet" href="/static/post.css" />
+  <link rel="stylesheet" href="/static/validation.css" />
+
+  <script src="/static/script/main.js" type="module" defer></script>
+</head>
   <body>
 
     <div id="mainView" style="display: none;">
@@ -27,8 +32,9 @@
       <header>
           <nav class="navbar">
               <div class="nav-content">
-                <a id="logo-text" class="logo-text" href="#">REAlEMiT</a>
+                  <a id="logo-text" class="logo-text">REAlEMiT</a>
                   <div class="nav-actions">
+                    <button  id="new-post" class="nav-btn">New Post</button>
                     <button id="profile-btn" class="nav-btn">Profile</button>
                     <button id="logout-btn" class="nav-btn">Log out</button>
                   </div>
@@ -40,44 +46,29 @@
           <!-- Categories Sidebar -->
           <div class="categories">
               <ul  id="categoriesList">
-                  <!-- Inserting Categories Dynamically -->
+                <!-- Inserting Categories Dynamically -->
               </ul>
           </div>
   
           <!-- Posts Feed -->
           <div class="feed">
-            <header class="feed-header">
-              <nav class="button-container">
-                <button id="feed-post">Post Feed</button>
-                <button id="view-post" style="display: none">Post</button>
-                <button id="new-post">New Post</button>
-              </nav>
-            </header>
+            <table id="headertable" class="htable">
+              <tbody>
+                <tr>
+                  <th id="tab-feed">FEED</th>
+                  <th id="tab-post" style="display: none;"></th>
+                  <th id="tab-profile" style="display: none;"></th>
+                  <th id="tab-messenger" style="display: none;"></th>
+                  <th id="tab-new-post" style="display: none;">New Post</th>
+                </tr>
+              </tbody>
+            </table>
 
-            <!-- Feed Display Section -->
-            <section id="feedDisplay" class="feed-display">
-                <!-- Create an article element here -->
-                <!-- Post content here -->
-            </section>
-
-            <!-- Post Display Section -->
-            <section id="postDisplay" class="post-display">
-              <!-- Use semantic elements like article for each post -->
-              <article>
-                <!-- Post content here -->
-              </article>
-            </section>
-
-            <!-- Create New Post Section -->
-            <section id="newPostDisplay" class="new-post-display">
-              <form id="newPostForm">
-                <!-- Form fields for creating a new post -->
-              </form>
-            </section>
-
-            <section id="profileDisplay" class="profile-display" style="display: none;">
-              <!-- Profile content will be rendered here -->
-            </section>
+            <table id="feedDisplay" class="itable"></table>
+            <table id="postDisplay" class="itable"></table>
+            <table id="newPostDisplay" class="itable"></table>
+            <table id="profileDisplay" class="itable"></table>
+            <table id="messengerDisplay" class="itable"></table>
           </div>
   
           <div class="chat-container">
@@ -110,41 +101,49 @@
             <h2>Sign Up</h2>
             <form id="signUpForm">
               <div class="input-group">
-                <label>First Name</label>
-                <input type="text" name="firstName" required />
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" placeholder="3 to 16 alphanumeric, '_' or '-'" required />
               </div>
               <div class="input-group">
-                <label>Last Name</label>
-                <input type="text" name="lastName" required />
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" placeholder="3 to 16 alphanumeric, '_' or '-'" required />
               </div>
               <div class="input-group">
-                <label>Nickname</label>
-                <input type="text" name="nickName" required />
+                <label class="form-label">Nickname</label>
+                <input type="text" name="nickName" placeholder="3 to 16 alphanumeric, '_' or '-'" required />
+              </div>
+                <div class="input-group">
+                  <label class="form-label">Gender</label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <input type="radio" name="gender" value="Male" id="male" required />
+                      <label class="radio-label" for="male">Male</label>
+                    </div>
+                    <div class="radio-item">
+                      <input type="radio" name="gender" value="Female" id="female" required />
+                      <label class="radio-label"  for="female">Female</label>
+                    </div>
+                    <div class="radio-item">
+                      <input type="radio" name="gender" value="Other" id="other" required checked/>
+                      <label class="radio-label"  for="other">Other</label>
+                    </div>
+                </div>
               </div>
               <div class="input-group">
-                <label>Gender</label>
-                <input type="radio" name="gender" value="Male" id="male" required />
-                <label for="male">Male</label>
-                <input type="radio" name="gender" value="Female" id="female" required />
-                <label for="female">Female</label>
-                <input type="radio" name="gender" value="Other" id="other" required checked/>
-                <label for="other">Other</label>
-              </div>
-              <div class="input-group">
-                <label>Age</label>
+                <label class="form-label">Age</label>
                 <input type="number" name="age" id="age" required min="1" step="1" />
               </div>
               <div class="input-group input-email">
-                <label>Email</label>
+                <label class="form-label">Email</label>
                 <input type="email" name="email" required placeholder=" ">
               </div>
               <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" required />
+                <label class="form-label">Password</label>
+                <input type="password" name="password"  placeholder="At least 1 a-z, A-Z, 0-9 and [@$!%*?&]" required />
               </div>
               <div class="input-group">
-                <label>Confirm Password</label>
-                <input type="password" name="confirm-password" required />
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="confirm-password" placeholder="At least 1 a-z, A-Z, 0-9 and [@$!%*?&]" required />
               </div>
               <button type="submit" id="signup-btn">Sign Up</button>
               <div class="link">
@@ -157,22 +156,28 @@
             <h2>Login</h2>
             <form id="logInForm">
               <div class="input-group">
-                <label>Use: </label>
-                <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
-                <label for="nickNameField">Nickname</label>
-                <input type="radio" name="logInUsing" value="email" id="emailField" required />
-                <label for="emailField">Email</label>
+                <label class="form-label">Use: </label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
+                      <label class="form-label" for="nickNameField">Nickname</label>
+                    </div>
+                    <div class="radio-item">
+                      <input type="radio" name="logInUsing" value="email" id="emailField" required />
+                      <label class="form-label" for="emailField">Email</label>
+                    </div>
+                  </div>
               </div>
               <div style="display: flex;" class="input-group" id="nickNameGroup">
-                <label>Nickname</label>
+                <label class="form-label">Nickname</label>
                 <input type="text" name="nickName"/>
               </div>
               <div style="display: none;" class="input-group" id="emailGroup">
-                <label>Email</label>
+                <label class="form-label">Email</label>
                 <input type="email" name="email"/>
               </div>
               <div class="input-group">
-                <label>Password</label>
+                <label class="form-label">Password</label>
                 <input type="password" name="password" required />
               </div>
   

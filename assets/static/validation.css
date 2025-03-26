@@ -63,6 +63,7 @@
   margin-bottom: 10px;
 }
 
+
 .input-group input {
   width: 100%;
   padding: 6px;
@@ -77,13 +78,26 @@
   outline: none;
 }
 
-.input-group input[type="radio"] {
-  margin-left: 10px;
+.form-label {
+  font-size: 14px;
+  width: 120px;
+  color: var(--text-light);
 }
 
-.input-group label {
-  width: 110px;
-  color: var(--text-light);
+.radio-group {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+}
+
+.radio-label {
+  font-size: 14px;
+  width: 100px;
 }
 
 button {
@@ -127,4 +141,19 @@ button:hover {
 
 .hide {
   display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .radio-group {
+    flex-wrap: wrap;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .form-section {
+    padding: 20px;
+  }
 }
