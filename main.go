@@ -43,6 +43,9 @@ func main() {
 	http.HandleFunc("/create-comment", handlers.CreateComment)
 	http.HandleFunc("/feedback", handlers.CreateFeedback)
 
+	webSocketHandler := handlers.NewWebSocketHandler()
+	http.Handle("/ws", webSocketHandler)
+
 	fmt.Println("Starting Forum on http://localhost:8080/...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 	db.Close()

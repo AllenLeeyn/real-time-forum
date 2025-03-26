@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="/static/post.css" />
   <link rel="stylesheet" href="/static/validation.css" />
 
+  <script src="/static/script/webSocket.js" type="module" defer></script>
   <script src="/static/script/main.js" type="module" defer></script>
 </head>
   <body>
@@ -72,14 +73,24 @@
           </div>
   
           <div class="chat-container">
-              <div class="message-list">
+            <div class="message-list" id="messages"></div>
+              <div class="message-bottom">
+                  <input type="text" id="messageInput" placeholder="Enter message" />
+                  <button id="send-button">Send</button>
               </div>
-              <div class="message-input">
-                  <input type="text" id="message-input" placeholder="Type a message...">
-              </div>
-              <div class="user-list">
-              </div>
-          </div>
+            <div class="user-list">
+              <h3>Online Users</h3>
+                <ul>
+                  <li>
+                    <!-- <img src="avatar.png" alt="User Avatar"> -->
+                    <span class="username">AmuroRay</span>
+                    <span class="status online"></span>
+                  </li>
+                </ul>
+            </div>
+        </div>
+
+        </div>
   
       </div>
     </div>
