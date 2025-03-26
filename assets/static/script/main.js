@@ -2,15 +2,16 @@ import { submitSignUp, submitLogIn, submitLogOut } from "./validation.js";
 import { showNewPost } from "./newPost.js";
 import { getFeed } from "./feed.js";
 import { addFeedbackListeners } from "./feedback.js";
-import { addViewPostLinksListeners, addSubmitCommentListener, showPostButton } from "./post.js";
+import { addViewPostLinksListeners, addSubmitCommentListener, addPostNavigationListeners, showPostButton } from "./post.js";
 import { showProfile, addViewProfileLinksListeners } from "./profile.js";
 
-document.addEventListener('DOMContentLoaded', start());
+document.addEventListener('DOMContentLoaded', start);
 document.getElementById('signup-btn').onclick = submitSignUp;
 document.getElementById('login-btn').onclick = submitLogIn;
 document.getElementById('logout-btn').onclick = submitLogOut;
 document.getElementById('toLogIn').onclick = toggleView;
 document.getElementById('toSignUp').onclick = toggleView;
+document.getElementById('logo-text').onclick = refreshFeed;
 document.getElementById('new-post').onclick = showNewPost;
 
 const VALIDATION_VIEW = document.getElementById("validationView");
@@ -87,9 +88,6 @@ export function handlePostFetch(path, jsonData, message, drawFn){
 /*------ start ------*/
 export function start(){
   handleGetFetch('/posts', async (response)=>{
-    currentState.isValid = false;
-    currentState.view = SIGNUP_VIEW;
-
     if (response.ok){
       currentState.isValid = true;
       currentState.view = MAIN_VIEW;
@@ -100,8 +98,13 @@ export function start(){
       currentState.categories = data.categories;
       insertCategories();
       currentState.feed = getFeed(data.posts);
-    } 
-    renderView();
+      addPostNavigationListeners();
+      renderView();
+    } else {
+      currentState.isValid = false;
+      currentState.view = SIGNUP_VIEW;
+      renderView();
+    }
   });
 }
 
@@ -160,7 +163,6 @@ export function renderDisplay(){
     addFeedbackListeners();
     addViewPostLinksListeners();
     addSubmitCommentListener();
-    // setupPostInteractions();
   }
 }
 
@@ -210,3 +212,9 @@ FEED_DISPLAY.addEventListener('click', showPostButton);
 document.querySelectorAll('.post-card').forEach(post => {
   post.addEventListener('click', showPostButton);
 });
+
+// -- Refresh the feed -- // 
+function refreshFeed(event) {
+  event.preventDefault(); 
+  start(); 
+}
