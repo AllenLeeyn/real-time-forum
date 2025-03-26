@@ -98,40 +98,48 @@
             <h2>Sign Up</h2>
             <form id="signUpForm">
               <div class="input-group">
-                <label>First Name</label>
+                <label class="form-label">First Name</label>
                 <input type="text" name="firstName" placeholder="3 to 16 alphanumeric, '_' or '-'" required />
               </div>
               <div class="input-group">
-                <label>Last Name</label>
+                <label class="form-label">Last Name</label>
                 <input type="text" name="lastName" placeholder="3 to 16 alphanumeric, '_' or '-'" required />
               </div>
               <div class="input-group">
-                <label>Nickname</label>
+                <label class="form-label">Nickname</label>
                 <input type="text" name="nickName" placeholder="3 to 16 alphanumeric, '_' or '-'" required />
               </div>
-              <div class="input-group">
-                <label>Gender</label>
-                <input type="radio" name="gender" value="Male" id="male" required />
-                <label for="male">Male</label>
-                <input type="radio" name="gender" value="Female" id="female" required />
-                <label for="female">Female</label>
-                <input type="radio" name="gender" value="Other" id="other" required checked/>
-                <label for="other">Other</label>
+                <div class="input-group">
+                  <label class="form-label">Gender</label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <input type="radio" name="gender" value="Male" id="male" required />
+                      <label class="radio-label" for="male">Male</label>
+                    </div>
+                    <div class="radio-item">
+                      <input type="radio" name="gender" value="Female" id="female" required />
+                      <label class="radio-label"  for="female">Female</label>
+                    </div>
+                    <div class="radio-item">
+                      <input type="radio" name="gender" value="Other" id="other" required checked/>
+                      <label class="radio-label"  for="other">Other</label>
+                    </div>
+                </div>
               </div>
               <div class="input-group">
-                <label>Age</label>
+                <label class="form-label">Age</label>
                 <input type="number" name="age" id="age" required min="1" step="1" />
               </div>
               <div class="input-group input-email">
-                <label>Email</label>
+                <label class="form-label">Email</label>
                 <input type="email" name="email" required placeholder=" ">
               </div>
               <div class="input-group">
-                <label>Password</label>
+                <label class="form-label">Password</label>
                 <input type="password" name="password"  placeholder="At least 1 a-z, A-Z, 0-9 and [@$!%*?&]" required />
               </div>
               <div class="input-group">
-                <label>Confirm Password</label>
+                <label class="form-label">Confirm Password</label>
                 <input type="password" name="confirm-password" placeholder="At least 1 a-z, A-Z, 0-9 and [@$!%*?&]" required />
               </div>
               <button type="submit" id="signup-btn">Sign Up</button>
@@ -145,22 +153,28 @@
             <h2>Login</h2>
             <form id="logInForm">
               <div class="input-group">
-                <label>Use: </label>
-                <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
-                <label for="nickNameField">Nickname</label>
-                <input type="radio" name="logInUsing" value="email" id="emailField" required />
-                <label for="emailField">Email</label>
+                <label class="form-label">Use: </label>
+                  <div class="radio-group">
+                    <div class="radio-item">
+                      <input type="radio" name="logInUsing" value="nickName" id="nickNameField" required checked/>
+                      <label class="form-label" for="nickNameField">Nickname</label>
+                    </div>
+                    <div class="radio-item">
+                      <input type="radio" name="logInUsing" value="email" id="emailField" required />
+                      <label class="form-label" for="emailField">Email</label>
+                    </div>
+                  </div>
               </div>
               <div style="display: flex;" class="input-group" id="nickNameGroup">
-                <label>Nickname</label>
+                <label class="form-label">Nickname</label>
                 <input type="text" name="nickName"/>
               </div>
               <div style="display: none;" class="input-group" id="emailGroup">
-                <label>Email</label>
+                <label class="form-label">Email</label>
                 <input type="email" name="email"/>
               </div>
               <div class="input-group">
-                <label>Password</label>
+                <label class="form-label">Password</label>
                 <input type="password" name="password" required />
               </div>
   
