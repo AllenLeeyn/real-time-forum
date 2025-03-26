@@ -1,29 +1,17 @@
 export const templateNoFound = (value) => `
   <tbody><tr><td>
     <div class="post-card">
-      <h3>
-        No ${value} found
-      </h3>
+      <h3>No ${value} found</h3>
     </div>
   </tbody></tr></td>`;
 
 export const templateNewPost = (categories) => `
   <form id="newPostForm">
     <div class="input-group">
-      <input
-        type="text"
-        name="title"
-        placeholder="Post Title"
-        required
-      />
+      <input type="text" name="title" placeholder="Title" required />
     </div>
     <div class="input-group">
-      <textarea
-        name="content"
-        placeholder="Write your thread content here..."
-        rows="10"
-        required
-      ></textarea>
+      <textarea name="content" placeholder="Write your content here..." rows="10" required ></textarea>
     </div>
     <div class="input-group">
       <h4>Click to select categories:</h4>
@@ -45,8 +33,8 @@ export const templatePostCard = (post) => `
   <div>
     <div class="post-header">
       <div class="post-meta">
-        <a href="/profile?id=${post.UserID}" class="post-author">${post.UserName}</a>
-        <div class="post-time">${post.CreatedAt}</div>
+        <a href="/profile?id=${post.userID}" class="post-author">${post.userName}</a>
+        <div class="post-time">${post.createdAt}</div>
       </div>
     </div>
     <div class="post-content">
@@ -55,18 +43,18 @@ export const templatePostCard = (post) => `
       </h3>
       <pre>${post.content}</pre>
     </div>
-    <div class="post-actions" data-id=${post.ID} data-state="${post.Rating}" data-for="post">
+    <div class="post-actions" data-id=${post.ID} data-state="${post.rating}" data-for="post">
       <button class="icon-button like-button" data-id=${post.ID} data-for="post">
-        <i class="fas fa-thumbs-up"></i> <span>${post.LikeCount}</span>
+        <i class="fas fa-thumbs-up"></i> <span>${post.likeCount}</span>
       </button>
       <button class="icon-button dislike-button" data-id=${post.ID} data-for="post">
-        <i class="fas fa-thumbs-down"></i> <span>${post.DislikeCount}</span>
+        <i class="fas fa-thumbs-down"></i> <span>${post.dislikeCount}</span>
       </button>
       <button class="icon-button">
-        <i class="fas fa-comment" href="/post?id=${post.ID}"></i> <span>${post.CommentCount}</span>
+        <i class="fas fa-comment" href="/post?id=${post.ID}"></i> <span>${post.commentCount}</span>
       </button>
       <p class="icon-button">
-        <span>${post.CatNames}</span>
+        <span>${post.catNames}</span>
       </p>
     </div>
   </div>`;
@@ -75,19 +63,19 @@ export const templateCommentCard = (comment) => `
   <div>
     <div class="post-header">
       <div class="post-meta">
-      <a href="/profile?id=${comment.UserID}" class="post-author">${comment.UserName}</a>
-      <div class="post-time">${comment.CreatedAt}</div>
+        <a href="/profile?id=${comment.userID}" class="post-author">${comment.userName}</a>
+        <div class="post-time">${comment.createdAt}</div>
       </div>
     </div>
     <div class="post-content">
       <pre>${comment.content}</pre>
     </div>
-    <div class="post-actions" data-id=${comment.ID} data-state="${comment.Rating}" data-for="comment">
+    <div class="post-actions" data-id=${comment.ID} data-state="${comment.rating}" data-for="comment">
       <button class="icon-button like-button" data-id=${comment.ID} data-for="comment">
-      <i class="fas fa-thumbs-up"></i> <span>${comment.LikeCount}</span>
+      <i class="fas fa-thumbs-up"></i> <span>${comment.likeCount}</span>
       </button>
       <button class="icon-button dislike-button" data-id=${comment.ID} data-for="comment">
-      <i class="fas fa-thumbs-down"></i> <span>${comment.DislikeCount}</span>
+      <i class="fas fa-thumbs-down"></i> <span>${comment.dislikeCount}</span>
       </button>
     </div>
   </div>`;
@@ -100,16 +88,14 @@ export const templateCommentForm = (post) => `
 
 export const templateProfileCard = (data) => {
   let result = `
-    <div class="post-header">
-        <div class="post-meta">
-            <h3>Name: ${data.name}</h3>
-        </div>
+  <div class="post-header">
+    <div class="post-meta">
+      <h3>Name: ${data.name}</h3>
     </div>
-    <div>
-        <h4>
-        Posts:
-        </h4>
-    </div>`;
+  </div>
+  <div>
+    <h4>Posts:</h4>
+  </div>`;
 
   if (!Array.isArray(data.posts) || data.posts.length === 0){
     result+=templateNoFound("post");

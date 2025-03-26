@@ -2,7 +2,7 @@ import { NEW_POST_DISPLAY, currentState, handlePostFetch, renderDisplay, start }
 import { templateNewPost } from "./template.js";
 
 /*------ new post display ------*/
-export function showNewPost(event){
+export function insertNewPostForm(event){
   event.preventDefault();
   NEW_POST_DISPLAY.innerHTML = '';
   const newPostElement = document.createElement('div');

@@ -21,11 +21,11 @@ export function addViewPostLinksListeners(){
     const commentBtns = document.querySelectorAll(".fas.fa-comment");
 
     postLinks.forEach(link =>{
-        link.addEventListener("click", postLinkHandler)
-    })
+        link.onclick = postLinkHandler;
+    });
     commentBtns.forEach(link =>{
-        link.addEventListener("click", postLinkHandler)
-    })
+        link.onclick = postLinkHandler;
+    });
 }
 
 function postLinkHandler(event){

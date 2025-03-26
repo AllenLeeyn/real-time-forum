@@ -4,7 +4,7 @@ import { templateProfileCard } from "./template.js";
 export function addViewProfileLinksListeners(){
     const profileLinks = document.querySelectorAll('.post-author');
     profileLinks.forEach(link =>{
-        link.addEventListener("click", profileLinkHandler);
+        link.onclick = profileLinkHandler;
     });
 }
 

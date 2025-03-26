@@ -3,12 +3,12 @@ import { handlePostFetch } from "./main.js";
 export function addFeedbackListeners(){
   const likeButtons = document.querySelectorAll(".like-button");
   likeButtons.forEach((button) => {
-    button.addEventListener("click", () => feedbackHandler("like", button));
+    button.onclick = () => feedbackHandler("like", button);
   });
   
   const dislikeButtons = document.querySelectorAll(".dislike-button");
   dislikeButtons.forEach((button) => {
-    button.addEventListener("click", () => feedbackHandler("dislike", button));
+    button.onclick = () => feedbackHandler("dislike", button);
   });
 }
 

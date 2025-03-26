@@ -1,18 +1,18 @@
+import { templateCategoriesList, templateNoFound } from "./template.js";
 import { submitSignUp, submitLogIn, submitLogOut } from "./validation.js";
-import { showNewPost } from "./newPost.js";
-import { addFeedbackListeners } from "./feedback.js";
-import { addViewPostLinksListeners, insertPostCard } from "./post.js";
 import { profileLinkHandler, addViewProfileLinksListeners } from "./profile.js";
-import { templateCategoriesList } from "./template.js";
+import { insertNewPostForm } from "./newPost.js";
+import { addViewPostLinksListeners, insertPostCard } from "./post.js";
+import { addFeedbackListeners } from "./feedback.js";
 
 document.addEventListener('DOMContentLoaded', start());
+document.getElementById('logo-text').onclick = start;
+document.getElementById('toLogIn').onclick = toggleView;
+document.getElementById('toSignUp').onclick = toggleView;
 document.getElementById('signup-btn').onclick = submitSignUp;
 document.getElementById('login-btn').onclick = submitLogIn;
 document.getElementById('logout-btn').onclick = submitLogOut;
-document.getElementById('toLogIn').onclick = toggleView;
-document.getElementById('toSignUp').onclick = toggleView;
-document.getElementById('new-post').onclick = showNewPost;
-document.getElementById('logo-text').onclick = start;
+document.getElementById('new-post').onclick = insertNewPostForm;
 
 const VALIDATION_VIEW = document.getElementById("validationView");
 const SIGNUP_VIEW = document.getElementById("signUpFormContainer");
@@ -29,18 +29,18 @@ export const POST_DISPLAY = document.getElementById("postDisplay");
 export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
 export const PROFILE_DISPLAY = document.getElementById("profileDisplay");
 
-
 export const currentState = {
   isValid: false,
   categories: [],
   view: SIGNUP_VIEW,
   display: FEED_DISPLAY,
-  feed: null,
 }
 
 /*------ start ------*/
-export function getFeed(posts){
+export function insertFeed(posts){
+  FEED_DISPLAY.innerHTML = '';
   const container = document.createElement('tbody');
+  FEED_DISPLAY.append(container);
 
   if (!Array.isArray(posts) || posts.length === 0){
     container.innerHTML = templateNoFound("post");
@@ -49,8 +49,6 @@ export function getFeed(posts){
       insertPostCard(post, container);
     });
   }
-
-  return container;
 }
 
 export function start(){
@@ -61,9 +59,10 @@ export function start(){
     if (response.ok){
       currentState.isValid = true;
       currentState.view = MAIN_VIEW;
-      currentState.display = FEED_DISPLAY;
 
       const data = await response.json();
+      insertFeed(data.posts);
+      currentState.display = FEED_DISPLAY;
 
       currentState.categories = data.categories;
       CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
@@ -71,11 +70,35 @@ export function start(){
 
       PROFILE_BTN.textContent = data.userName;
       PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
-
-      currentState.feed = getFeed(data.posts);
     } 
     renderView();
   });
+}
+
+function addCategoriesListeners(){
+  const categoryItems = Array.from(CATEGORIES_LIST.children);
+  categoryItems.forEach(item => addCategoriesListener(item));
+}
+
+function addCategoriesListener(item){
+  const categoryHref = item.querySelector('a').getAttribute('href');
+  item.onclick =  (event) => {
+    event.preventDefault();
+
+    handleGetFetch(categoryHref, async response => {
+      if (response.ok){
+        document.getElementsByClassName('active')[0].classList.remove('active');
+        item.querySelector('a').classList.add('active');
+        const data = await response.json();
+        insertFeed(data.posts);
+        currentState.display = FEED_DISPLAY;
+      } else {
+        currentState.view = LOGIN_VIEW
+        showMessage("Something went wrong. Log in and try again.");
+      }
+      renderView();
+    });
+  };
 }
 
 /*------ view functions ------*/
@@ -118,55 +141,20 @@ export function renderDisplay(){
   PROFILE_DISPLAY.style.display = 'none';
 
   if (currentState.display === FEED_DISPLAY) {
-    FEED_DISPLAY.innerHTML = '';
     FEED_DISPLAY.style.display = '';
-    FEED_DISPLAY.append(currentState.feed);
-    addFeedbackListeners();
-    addViewPostLinksListeners();
-    addViewProfileLinksListeners();
 
   } else if (currentState.display === NEW_POST_DISPLAY){
     NEW_POST_DISPLAY.style.display = '';
 
   } else if (currentState.display === POST_DISPLAY){
     POST_DISPLAY.style.display = '';
-    addFeedbackListeners();
-    addViewPostLinksListeners();
-    addViewProfileLinksListeners();
 
   } else if (currentState.display === PROFILE_DISPLAY){
     PROFILE_DISPLAY.style.display = '';
-    addFeedbackListeners();
-    addViewPostLinksListeners();
-    addViewProfileLinksListeners();
   }
-}
-
-/*------ categories function ------*/
-function addCategoriesListeners(){
-  const categoryItems = Array.from(CATEGORIES_LIST.children);
-  categoryItems.forEach(item => addCategoriesListener(item));
-}
-
-function addCategoriesListener(item){
-  const categoryHref = item.querySelector('a').getAttribute('href');
-  item.addEventListener('click', (event) => {
-    event.preventDefault();
-
-    handleGetFetch(categoryHref, async response => {
-      if (response.ok){
-        document.getElementsByClassName('active')[0].classList.remove('active');
-        item.querySelector('a').classList.add('active');
-        const data = await response.json();
-        currentState.feed = getFeed(data.posts);
-        currentState.display = FEED_DISPLAY;
-      } else {
-        currentState.view = LOGIN_VIEW
-        showMessage("Something went wrong. Log in and try again.");
-      }
-      renderView();
-    });
-  });
+  addFeedbackListeners();
+  addViewPostLinksListeners();
+  addViewProfileLinksListeners();
 }
 
 /*------ toast message function ------*/
