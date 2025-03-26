@@ -24,7 +24,7 @@ PROFILE_BTN.onclick = profileLinkHandler;
 
 const CATEGORIES_LIST = document.getElementById("categoriesList");
 
-export const FEED_DISPLAY = document.getElementById("feedDisplay");
+const FEED_DISPLAY = document.getElementById("feedDisplay");
 export const POST_DISPLAY = document.getElementById("postDisplay");
 export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
 export const PROFILE_DISPLAY = document.getElementById("profileDisplay");
@@ -142,7 +142,7 @@ function renderView(){
   }
 }
 
-export function renderDisplay(tabType){
+export function renderDisplay(){
   console.log('Rendering display...');
   FEED_DISPLAY.style.display = 'none';
   POST_DISPLAY.style.display = 'none';
@@ -155,40 +155,27 @@ export function renderDisplay(tabType){
   PROFILE_TAB.className = '';
   MESSENGER_TAB.className = '';
 
-  if (currentState.display === FEED_DISPLAY) {
-    FEED_DISPLAY.style.display = '';
-    FEED_TAB.className = 'selected';
+  currentState.display.style.display = '';
+  currentState.tab.className = 'selected';
 
-  } else if (currentState.display === POST_DISPLAY){
-    POST_DISPLAY.style.display = '';
-    POST_TAB.className = 'selected';
-
-  } else if (currentState.display === NEW_POST_DISPLAY){
-    NEW_POST_DISPLAY.style.display = '';
-    NEW_POST_TAB.className = 'selected';
-
-  } else if (currentState.display === PROFILE_DISPLAY){
-    PROFILE_DISPLAY.style.display = '';
-    PROFILE_TAB.className = 'selected';
-  }
   addFeedbackListeners();
   addViewPostLinksListeners();
   addViewProfileLinksListeners();
 }
 
-FEED_TAB.onclick = () => showDisplay(FEED_DISPLAY);
-POST_TAB.onclick = () => showDisplay(POST_DISPLAY);
-NEW_POST_TAB.onclick = () => showDisplay(NEW_POST_DISPLAY);
-PROFILE_TAB.onclick = () => showDisplay(PROFILE_DISPLAY);
+FEED_TAB.onclick = (event) => showDisplay(FEED_DISPLAY, event);
+POST_TAB.onclick = (event) => showDisplay(POST_DISPLAY, event);
+NEW_POST_TAB.onclick = (event) => showDisplay(NEW_POST_DISPLAY, event);
+PROFILE_TAB.onclick = (event) => showDisplay(PROFILE_DISPLAY, event);
 
-function showDisplay(display){
+function showDisplay(display, event){
   if (currentState.display === display && display !== FEED_DISPLAY) {
     hideTab();
-    renderDisplay();
   } else {
     currentState.display = display;
-    renderDisplay();
+    currentState.tab = event.target;
   }
+  renderDisplay();
 }
 
 export function showTab(type, title){
@@ -198,11 +185,11 @@ export function showTab(type, title){
   };
   if (type === 'post') {
     currentState.tab = POST_TAB;
-    title = title.slice(0, 10)+"...";
+    title = "Post: " + title.slice(0, 10) + "...";
   };
   if (type === 'profile') {
     currentState.tab = PROFILE_TAB;
-    title = title.slice(0, 6)+"...";
+    title = "Profile: " + title;
   };
 
   currentState.tab.style.display = '';
@@ -210,8 +197,8 @@ export function showTab(type, title){
 }
 
 export function hideTab(){
-  currentState.display = FEED_DISPLAY;
   currentState.tab.style.display = 'none';
+  currentState.display = FEED_DISPLAY;
   currentState.tab = FEED_TAB;
 }
 
