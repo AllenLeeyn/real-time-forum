@@ -78,6 +78,26 @@
   outline: none;
 }
 
+
+
+
+.input-group input::placeholder {
+  font-size: 14px;
+  color: #667;
+}
+
+.input-group input::-webkit-input-placeholder {
+  font-size: 12px;
+  color: #667;
+}
+
+
+
+
+
+
+
+
 .form-label {
   font-size: 14px;
   width: 120px;

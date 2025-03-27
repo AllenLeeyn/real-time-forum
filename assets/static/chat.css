@@ -9,3 +9,19 @@
 .status.offline {
     background-color: gray;
 }
+
+.message.left {
+    text-align: left;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 10px 10px 10px 0;
+    margin-right: auto;
+}
+
+.message.right {
+    text-align: right;
+    background-color: #c6e2b5;
+    padding: 10px;
+    border-radius: 10px 10px 0 10px;
+    margin-left: auto;
+}
