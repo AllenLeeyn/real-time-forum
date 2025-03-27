@@ -65,3 +65,12 @@ type Feedback struct {
 	Rating    int `json:"rating"`
 	CreatedAt time.Time
 }
+
+type Message struct {
+	ID         int       `json:"ID"`
+	SenderID   int       `json:"senderID"`
+	ReceiverID int       `json:"receiverID"`
+	Content    string    `json:"content"`
+	CreatedAt  time.Time `json:"createdAt"`
+	ReadAt     time.Time `json:"readAt"`
+}
