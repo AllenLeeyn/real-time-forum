@@ -35,6 +35,6 @@ func Post(w http.ResponseWriter, r *http.Request) {
 	extendSession(w, sessionCookie)
 	executeJSON(w, postData{
 		Post:     *selectedPost,
-		Comments: seletctedComments,
+		Comments: *seletctedComments,
 	}, http.StatusOK)
 }

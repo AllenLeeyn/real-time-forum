@@ -22,14 +22,14 @@ func CreateFeedback(w http.ResponseWriter, r *http.Request) {
 	} else if fb == nil {
 		data.UserID = userID
 		fb = data
-		if err = db.InsertFeedback(data.Tgt, *fb); err != nil {
+		if err = db.InsertFeedback(data.Tgt, fb); err != nil {
 			println(err.Error())
 			executeJSON(w, MsgData{"Error reading feedback"}, http.StatusInternalServerError)
 			return
 		}
 	} else {
 		fb.Rating = data.Rating
-		if err = db.UpdateFeedback(data.Tgt, *fb); err != nil {
+		if err = db.UpdateFeedback(data.Tgt, fb); err != nil {
 			executeJSON(w, MsgData{"Error reading feedback"}, http.StatusInternalServerError)
 			return
 		}

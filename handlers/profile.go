@@ -31,6 +31,6 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	extendSession(w, sessionCookie)
 	executeJSON(w, profileData{
 		Name:  user.NickName,
-		Posts: posts,
+		Posts: *posts,
 	}, http.StatusOK)
 }

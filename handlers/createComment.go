@@ -36,7 +36,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	data.UserName = user.NickName
 	data.Content = content
 
-	if err := db.InsertComment(*data); err != nil {
+	if err := db.InsertComment(data); err != nil {
 		executeJSON(w, MsgData{"Error creating comment"}, http.StatusInternalServerError)
 		return
 	}

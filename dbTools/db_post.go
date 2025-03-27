@@ -61,7 +61,7 @@ If invalid options or empty are given, default option is used.
 Valid filterBy: createdBy, category, likedBy.
 Valid orderBy: oldest, likeCount, commentCount.
 */
-func (db *DBContainer) SelectPosts(filterBy, orderBy string, catId, userID int) ([]Post, error) {
+func (db *DBContainer) SelectPosts(filterBy, orderBy string, catId, userID int) (*[]Post, error) {
 	qry := `SELECT v_posts.id, puser_id, user_name, 
 				comment_count, like_count, dislike_count,
 				title, content, pcreated_at, category_ids, pf.rating
@@ -108,7 +108,7 @@ func (db *DBContainer) SelectPosts(filterBy, orderBy string, catId, userID int) 
 	if err := rows.Err(); err != nil {
 		return nil, checkErrNoRows(err)
 	}
-	return posts, nil
+	return &posts, nil
 }
 
 func (db *DBContainer) SelectPost(id, userID int) (*Post, error) {
@@ -147,7 +147,7 @@ func (db *DBContainer) SelectPost(id, userID int) (*Post, error) {
 
 // db.InsetPost() into db and record the categories too
 // include created at for testing for now
-func (db *DBContainer) InsertPost(p Post) (int, error) {
+func (db *DBContainer) InsertPost(p *Post) (int, error) {
 	if err := db.isValidCategories(p.Categories); err != nil {
 		return -1, err
 	}
@@ -175,7 +175,7 @@ func (db *DBContainer) InsertPost(p Post) (int, error) {
 }
 
 // db.UpdatePost() for updating post when user make changes
-func (db *DBContainer) UpdatePost(p Post) error {
+func (db *DBContainer) UpdatePost(p *Post) error {
 	qry := `UPDATE posts SET title = ?, content = ?	WHERE id = ?`
 	_, err := db.conn.Exec(qry,
 		p.Title,

@@ -22,7 +22,7 @@ func (db *DBContainer) SelectFeedback(tgt string, userID, parentID int) (*Feedba
 
 // db.insertFeedback() inserts Feedback into tgt table.
 // valid tgt: "Post", "Comment"
-func (db *DBContainer) InsertFeedback(tgt string, fb Feedback) error {
+func (db *DBContainer) InsertFeedback(tgt string, fb *Feedback) error {
 	if tgt != "post" && tgt != "comment" {
 		return fmt.Errorf("invalid target")
 	}
@@ -38,7 +38,7 @@ func (db *DBContainer) InsertFeedback(tgt string, fb Feedback) error {
 
 // db.updateFeedback() updates Feedback in tgt table. for when User unlike.
 // valid tgt: "Post", "Comment"
-func (db *DBContainer) UpdateFeedback(tgt string, fb Feedback) error {
+func (db *DBContainer) UpdateFeedback(tgt string, fb *Feedback) error {
 	if tgt != "post" && tgt != "comment" {
 		return fmt.Errorf("invalid target")
 	}

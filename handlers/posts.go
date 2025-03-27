@@ -40,7 +40,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		postsData{
 			IsValidSession: sessionCookie != nil,
 			Categories:     db.Categories,
-			Posts:          selectedPosts,
+			Posts:          *selectedPosts,
 			UserName:       userName,
 			UserID:         userID,
 		},

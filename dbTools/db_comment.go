@@ -6,7 +6,7 @@ import (
 )
 
 // db.SelectComments() select all comments made in a post.
-func (db *DBContainer) SelectComments(id, userID int, orderBy string) ([]Comment, error) {
+func (db *DBContainer) SelectComments(id, userID int, orderBy string) (*[]Comment, error) {
 	qry := `SELECT c.id, u.id, u.nick_name, c.post_id, c.parent_id, c.content, 
 				   c.like_count, c.dislike_count, c.created_at, cf.rating
 			FROM comments c
@@ -52,11 +52,11 @@ func (db *DBContainer) SelectComments(id, userID int, orderBy string) ([]Comment
 	if err := rows.Err(); err != nil {
 		return nil, checkErrNoRows(err)
 	}
-	return comments, nil
+	return &comments, nil
 }
 
 // db.InsertComment() inserts a comment for a post.
-func (db *DBContainer) InsertComment(c Comment) error {
+func (db *DBContainer) InsertComment(c *Comment) error {
 	qry := `INSERT INTO comments
 			(user_id, user_name, post_id, parent_id, content, like_count)
 			VALUES (?, ?, ?, ?, ?, ?)`
@@ -78,7 +78,7 @@ func (db *DBContainer) InsertComment(c Comment) error {
 }
 
 // db.UpdateComment() based on changes in comment
-func (db *DBContainer) UpdateComment(c Comment) error {
+func (db *DBContainer) UpdateComment(c *Comment) error {
 	qry := `UPDATE comments	SET content = ?	WHERE id = ?`
 	_, err := db.conn.Exec(qry,
 		c.Content,
