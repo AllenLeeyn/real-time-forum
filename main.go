@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"real-time-forum/dbTools"
 	"real-time-forum/handlers"
+	"time"
 )
 
 var db *dbTools.DBContainer
@@ -24,6 +25,7 @@ func init() {
 	}
 
 	db.Categories, _ = db.SelectFieldFromTable("name", "categories")
+	go expireSessionsTask()
 	handlers.Init(db)
 }
 
@@ -53,5 +55,17 @@ func serveIndex(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		http.ServeFile(w, r, "index.html")
+	}
+}
+
+func expireSessionsTask() {
+	ticker := time.NewTicker(5 * time.Minute)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		err := db.ExpireSessions()
+		if err != nil {
+			log.Printf("Error expiring sessions: %v", err)
+		}
 	}
 }

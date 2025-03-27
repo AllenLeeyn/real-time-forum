@@ -1,6 +1,9 @@
 package dbTools
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 /*
 	db.SelectActiveSessionBy() id or user_id.
@@ -26,6 +29,36 @@ func (db *DBContainer) SelectActiveSessionBy(field string, id interface{}) (*Ses
 	return &s, err
 }
 
+func (db *DBContainer) SelectActiveSessions() (*[]Session, error) {
+	qry := `SELECT * FROM sessions WHERE is_active = 1`
+
+	rows, err := db.conn.Query(qry)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var sessions []Session
+	for rows.Next() {
+		var s Session
+		err := rows.Scan(
+			&s.ID,
+			&s.UserID,
+			&s.IsActive,
+			&s.StartTime,
+			&s.ExpireTime,
+			&s.LastAccess)
+		if err != nil {
+			return nil, err
+		}
+		sessions = append(sessions, s)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, checkErrNoRows(err)
+	}
+	return &sessions, nil
+}
+
 // db.InsertSession() when User login is successful
 func (db *DBContainer) InsertSession(s *Session) error {
 	qry := `INSERT INTO sessions
@@ -49,5 +82,23 @@ func (db *DBContainer) UpdateSession(s *Session) error {
 		s.ExpireTime,
 		s.LastAccess,
 		s.ID)
+	return err
+}
+
+func (db *DBContainer) ExpireSessions() error {
+	sessions, err := db.SelectActiveSessions()
+	if sessions == nil {
+		return err
+	}
+	for _, s := range *sessions {
+		if time.Now().After(s.ExpireTime) {
+			fmt.Printf("Expire session: %v\n", s.ID)
+			s.IsActive = false
+			err = db.UpdateSession(&s)
+			if err != nil {
+				break
+			}
+		}
+	}
 	return err
 }
