@@ -16,6 +16,7 @@
     padding: 10px;
     border-radius: 10px 10px 10px 0;
     margin-right: auto;
+    color: darkmagenta;
 }
 
 .message.right {
@@ -24,4 +25,5 @@
     padding: 10px;
     border-radius: 10px 10px 0 10px;
     margin-left: auto;
+    color: black ;
 }

@@ -6,10 +6,32 @@ socket.onopen = function() {
     appendMessage("Connected to WebSocket server", "system", "left");
 };
 
+// Handle reconnection establishment
+socket.onclose = function() {
+    console.log('Disconnected from WebSocket server. Attempting to reconnect...');
+    setTimeout(() => {
+        socket = new WebSocket('ws://localhost:8080/ws');
+        // Reassign event handlers here
+    }, 1000);
+};
+
 // Handle incoming messages
 socket.onmessage = function(event) {
     console.log('Message from server: ', event.data);
-    appendMessage(event.data, "Server", "left");
+    var data = JSON.parse(event.data);
+    
+    if (data.type === "updateUsers") {
+        var usersDiv = document.getElementById("connected-users");
+        usersDiv.innerHTML = "";
+        
+        data.users.forEach(function(user) {
+            var userElement = document.createElement("div");
+            userElement.textContent = user;
+            usersDiv.appendChild(userElement);
+        });
+    } else if (data.type === "message") {
+        appendMessage(data.message, data.sender, "left");
+    }
 };
 
 // Handle errors
@@ -50,3 +72,5 @@ function appendMessage(message, sender, alignment) {
     `;
     messageList.innerHTML += messageHTML;
 }
+
+

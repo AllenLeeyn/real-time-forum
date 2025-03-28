@@ -43,7 +43,7 @@ func main() {
 	http.HandleFunc("/create-comment", handlers.CreateComment)
 	http.HandleFunc("/feedback", handlers.CreateFeedback)
 
-	webSocketHandler := handlers.NewWebSocketHandler()
+	webSocketHandler := handlers.NewWebSocketHandler(db)
 	http.Handle("/ws", webSocketHandler)
 
 	fmt.Println("Starting Forum on http://localhost:8080/...")
