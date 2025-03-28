@@ -119,3 +119,13 @@ export const templateCategoriesList = (categories) => {
   })
   return result;
 };
+
+export const templateUserList = (allClients) => {
+  let result = ``;
+
+  allClients.forEach((client) => {
+  result += `
+    <li><a class="user-item" id="user-${client}">${client}</a></li>`;
+  })
+  return result;
+};

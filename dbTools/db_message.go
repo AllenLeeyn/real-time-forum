@@ -61,10 +61,31 @@ func (db *DBContainer) SelectMessages(id_1, id_2 int, fromTime time.Time) (*[]Me
 	return &messages, nil
 }
 
-func (db *DBContainer) SelectUnreadMessages(receiverID int) (*[]string, error) {
-	qry := `SELECT DISTINCT u.nick_name FROM messages m
-			JOIN users u ON m.sender_id = u.id
-			WHERE receiver_id = ? AND read_at IS NULL`
+var userListQry = `
+	SELECT u.nick_name 
+	FROM users U
+	LEFT JOIN (
+		SELECT sender_id, receiver_id, created_at
+		FROM messages
+		WHERE receiver_id = ?
+		ORDER BY created_at DESC
+	) m ON u.id = m.sender_id
+	ORDER BY 
+		m.created_at DESC NULLS LAST,
+		u.nick_name ASC`
+
+var unreadMsgQry = `
+	SELECT DISTINCT u.nick_name FROM messages m
+	JOIN users u ON m.sender_id = u.id
+	WHERE receiver_id = ? AND read_at IS NULL`
+
+func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, error) {
+	qry := ""
+	if kind == "clientList" {
+		qry = userListQry
+	} else if kind == "unreadMsg" {
+		qry = unreadMsgQry
+	}
 
 	rows, err := db.conn.Query(qry, receiverID)
 	if err != nil {

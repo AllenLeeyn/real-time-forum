@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"real-time-forum/dbTools"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -22,7 +21,7 @@ func checkSessionValidity(w http.ResponseWriter, r *http.Request) (*http.Cookie,
 	return sessionCookie, s.UserID
 }
 
-func createSession(w http.ResponseWriter, user *dbTools.User) {
+func createSession(w http.ResponseWriter, user *user) {
 	// generate a uuid for the session and set it into a cookie
 	id, _ := uuid.NewV4()
 	cookie := &http.Cookie{
@@ -30,10 +29,11 @@ func createSession(w http.ResponseWriter, user *dbTools.User) {
 		Value:    id.String(),
 		MaxAge:   7200,
 		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
 	}
 	http.SetCookie(w, cookie)
 
-	db.InsertSession(&dbTools.Session{
+	db.InsertSession(&session{
 		ID:         id.String(),
 		UserID:     user.ID,
 		IsActive:   true,
@@ -51,6 +51,7 @@ func extendSession(w http.ResponseWriter, sessionCookie *http.Cookie) {
 		Value:    sessionCookie.Value,
 		MaxAge:   7200,
 		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
 	})
 	db.UpdateSession(&session{
 		IsActive:   true,
@@ -66,6 +67,7 @@ func expireSession(w http.ResponseWriter, sessionId string) {
 		Value:    "", // Empty the cookie's value
 		MaxAge:   -1, // Invalidate the cookie immediately
 		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
 	})
 	db.UpdateSession(&session{
 		IsActive:   false,

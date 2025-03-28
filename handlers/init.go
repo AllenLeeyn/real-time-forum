@@ -7,11 +7,13 @@ import (
 	"io"
 	"net/http"
 	"real-time-forum/dbTools"
+	"real-time-forum/messenger"
 	"regexp"
 	"strings"
 )
 
 var db *dbTools.DBContainer
+var m messenger.Messenger
 
 type user = dbTools.User
 type session = dbTools.Session
@@ -42,8 +44,9 @@ type MsgData struct {
 }
 
 // Initializes all html files in templates folder
-func Init(dbMain *dbTools.DBContainer) {
+func Init(dbMain *dbTools.DBContainer, messenger messenger.Messenger) {
 	db = dbMain
+	m = messenger
 }
 
 func checkContent(input string, min, max int) (bool, string) {

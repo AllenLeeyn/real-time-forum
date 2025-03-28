@@ -1,0 +1,181 @@
+package messenger
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
+	"real-time-forum/dbTools"
+	"time"
+
+	"github.com/gorilla/websocket"
+)
+
+var db *dbTools.DBContainer
+var upgrader = websocket.Upgrader{}
+
+type message = dbTools.Message
+type user = dbTools.User
+
+type Messenger struct {
+	clients     map[string]*client
+	msgQueue    chan message
+	clientQueue chan action
+}
+
+type client struct {
+	UserName  string
+	UserID    int
+	SessionID string
+	Conn      *websocket.Conn
+}
+
+type action struct {
+	kind   string
+	client *client
+}
+
+func Start(dbMain *dbTools.DBContainer) Messenger {
+	db = dbMain
+	m := Messenger{
+		clients:     make(map[string]*client),
+		msgQueue:    make(chan message, 100),
+		clientQueue: make(chan action, 100),
+	}
+
+	go m.listener()
+	go m.broadcaster()
+	return m
+}
+
+func (m *Messenger) WebSocketUpgrade(w http.ResponseWriter, r *http.Request, sessionID string, u *user) {
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println("Error upgrading connection: ", err)
+		return
+	}
+
+	cl := &client{
+		u.NickName,
+		u.ID,
+		sessionID,
+		conn,
+	}
+
+	if time.Since(u.RegDate) < time.Minute {
+		m.clientQueue <- action{"join", cl}
+	} else {
+		m.clientQueue <- action{"online", cl}
+	}
+	go m.handleConnection(cl)
+}
+
+func (m *Messenger) handleConnection(cl *client) {
+	for {
+		_, msg, err := cl.Conn.ReadMessage()
+		if err != nil {
+			log.Println("Error reading message:", err)
+			break
+		}
+		fmt.Println("Message from", ":", string(msg))
+	}
+	m.clientQueue <- action{"offline", cl}
+	cl.Conn.Close()
+}
+
+func (m *Messenger) listener() {
+	for action := range m.clientQueue {
+		if action.kind == "join" {
+			m.clients[action.client.UserName] = action.client
+			m.sendClientList(action.client, -1)
+		}
+		if action.kind == "online" {
+			m.clients[action.client.UserName] = action.client
+			m.sendClientList(action.client, 0)
+			m.msgQueue <- message{
+				SenderID:   -1,
+				ReceiverID: -1,
+				Content:    `{"action": "online", "userName": "` + action.client.UserName + `"}`,
+			}
+		}
+		if action.kind == "offline" {
+			delete(m.clients, action.client.UserName)
+			m.msgQueue <- message{
+				SenderID:   -1,
+				ReceiverID: -1,
+				Content:    `{"action":"offline","userName":"` + action.client.UserName + `"}`,
+			}
+		}
+	}
+}
+
+func (m *Messenger) broadcaster() {
+	for {
+		msg := <-m.msgQueue
+		fmt.Println(msg.Content)
+
+		if msg.ReceiverID == -1 {
+			for _, client := range m.clients {
+				err := client.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
+				if err != nil {
+					log.Printf("Error sending message to %s: %v", msg.ReceiverName, err)
+				}
+			}
+		} else {
+			receiver, exists := m.clients[msg.ReceiverName]
+			if exists {
+				err := receiver.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
+				if err != nil {
+					log.Printf("Error sending message to %s: %v", msg.ReceiverName, err)
+				}
+			} else {
+				log.Printf("Receiver %s not found", msg.ReceiverName)
+			}
+		}
+
+	}
+
+}
+
+func (m *Messenger) sendClientList(cl *client, receiver int) {
+	type data struct {
+		Action           string   `json:"action"`
+		AllClients       []string `json:"allClients"`
+		OnlineClients    []string `json:"onlineClients"`
+		UnreadMsgClients []string `json:"unreadMsgClients"`
+	}
+	d := data{Action: "start"}
+	clientList, err := db.SelectUserList("clientList", cl.UserID)
+	if err != nil {
+		log.Println("Error fetching client list:", err)
+		return
+	}
+	d.AllClients = *clientList
+
+	unreadList, err := db.SelectUserList("unreadMsg", cl.UserID)
+	if err != nil {
+		log.Println("Error fetching client list:", err)
+		return
+	}
+	d.UnreadMsgClients = *unreadList
+
+	for userName := range m.clients {
+		d.OnlineClients = append(d.OnlineClients, userName)
+	}
+
+	jsonData, err := json.Marshal(d)
+	if err != nil {
+		log.Println("Error marshaling data to JSON:", err)
+		return
+	}
+	if receiver != -1 {
+		receiver = cl.UserID
+	}
+	m.msgQueue <- message{
+		SenderID:     -1,
+		ReceiverID:   receiver,
+		Content:      string(jsonData),
+		ReceiverName: cl.UserName,
+	}
+}

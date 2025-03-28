@@ -112,6 +112,7 @@ a:hover {
   font-size: 12px;
 }
 
+.user-item,
 .category-item {
   text-decoration: none;
   display: flex;
@@ -126,15 +127,37 @@ a:hover {
   color: var(--text);
 }
 
+.user-item:hover,
 .category-item:hover {
   background: var(--highlight);
   color: var(--card-background);
 }
 
+.user-item:active,
 .category-item.active {
   background: var(--primary);
   color: white;
   font-weight: bold;
+}
+
+.user-item::before{
+  content: '';
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background-color: grey;
+}
+
+.user-item.online::before{
+  content: '';
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background-color: green;
 }
 
 .feed {

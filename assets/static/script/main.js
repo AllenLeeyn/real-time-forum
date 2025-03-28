@@ -1,9 +1,10 @@
-import { templateCategoriesList, templateNoFound } from "./template.js";
-import { submitSignUp, submitLogIn, submitLogOut } from "./validation.js";
-import { profileLinkHandler, addViewProfileLinksListeners } from "./profile.js";
+import { submitSignUp, submitLogIn, submitLogOut } from "./authentication.js";
+import { addFeedbackListeners } from "./feedback.js";
+import { openWebSocket } from "./messenger.js";
 import { insertNewPostForm } from "./newPost.js";
 import { addViewPostLinksListeners, insertPostCard } from "./post.js";
-import { addFeedbackListeners } from "./feedback.js";
+import { profileLinkHandler, addViewProfileLinksListeners } from "./profile.js";
+import { templateCategoriesList, templateNoFound } from "./template.js";
 
 document.addEventListener('DOMContentLoaded', start());
 document.getElementById('logo-text').onclick = start;
@@ -61,6 +62,7 @@ export function insertFeed(posts){
 export function start(){
   handleGetFetch('/posts', async (response)=>{
     if (response.ok){
+      openWebSocket();
       currentState.isValid = true;
       currentState.view = MAIN_VIEW;
 
@@ -100,6 +102,7 @@ function addCategoriesListener(item){
         const data = await response.json();
         insertFeed(data.posts);
         currentState.display = FEED_DISPLAY;
+        currentState.tab = FEED_TAB;
       } else {
         currentState.view = LOGIN_VIEW
         showMessage("Something went wrong. Log in and try again.");

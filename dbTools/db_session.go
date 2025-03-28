@@ -2,7 +2,6 @@ package dbTools
 
 import (
 	"fmt"
-	"time"
 )
 
 /*
@@ -82,23 +81,5 @@ func (db *DBContainer) UpdateSession(s *Session) error {
 		s.ExpireTime,
 		s.LastAccess,
 		s.ID)
-	return err
-}
-
-func (db *DBContainer) ExpireSessions() error {
-	sessions, err := db.SelectActiveSessions()
-	if sessions == nil {
-		return err
-	}
-	for _, s := range *sessions {
-		if time.Now().After(s.ExpireTime) {
-			fmt.Printf("Expire session: %v\n", s.ID)
-			s.IsActive = false
-			err = db.UpdateSession(&s)
-			if err != nil {
-				break
-			}
-		}
-	}
 	return err
 }
