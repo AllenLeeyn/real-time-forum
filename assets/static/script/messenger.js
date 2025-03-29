@@ -1,4 +1,5 @@
-import { templateUserList } from "./template.js";
+import { currentState, MESSENGER_DISPLAY, showTab, renderDisplay } from "./main.js";
+import { templateUserList, templateChat } from "./template.js";
 
 const USER_LIST = document.getElementById("userList");
 
@@ -42,6 +43,24 @@ function addUserListItems(data) {
         const clientElement = document.getElementById(`user-${client}`);
         clientElement.classList.add("online");
     })
+    addUserListItemListeners();
+}
+
+function addUserListItemListeners() {
+    const listItems = document.querySelectorAll(".user-item");
+    listItems.forEach(item => addUserListItemListener(item));
+}
+
+function addUserListItemListener(item) {
+    const userName = item.textContent;
+    item.onclick = (event) => {
+        event.preventDefault();
+
+        MESSENGER_DISPLAY.innerHTML = templateChat();
+        currentState.display =  MESSENGER_DISPLAY;
+        showTab("chat", userName);
+        renderDisplay();
+    }
 }
 
 function updateUserListItems(client, action) {

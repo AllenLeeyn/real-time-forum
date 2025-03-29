@@ -16,6 +16,7 @@ func checkSessionValidity(w http.ResponseWriter, r *http.Request) (*http.Cookie,
 	s, err := db.SelectActiveSessionBy("id", sessionID)
 	if err != nil || s.ExpireTime.Before(time.Now()) {
 		expireSession(w, s)
+		return nil, -1
 	}
 	return sessionCookie, s.UserID
 }
@@ -36,7 +37,7 @@ func createSession(w http.ResponseWriter, user *user) {
 		ID:         id.String(),
 		UserID:     user.ID,
 		IsActive:   true,
-		ExpireTime: time.Now().Add(2 * time.Minute),
+		ExpireTime: time.Now().Add(2 * time.Hour),
 	})
 }
 
@@ -54,7 +55,7 @@ func extendSession(w http.ResponseWriter, sessionCookie *http.Cookie) {
 	})
 	db.UpdateSession(&session{
 		IsActive:   true,
-		ExpireTime: time.Now().Add(2 * time.Minute),
+		ExpireTime: time.Now().Add(2 * time.Hour),
 		LastAccess: time.Now(),
 		ID:         sessionCookie.Value,
 	})

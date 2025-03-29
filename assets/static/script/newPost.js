@@ -24,12 +24,14 @@ function submitNewPost(event) {
     const content = formData.get('content');
     const categories = formData.getAll('categories').map(c => parseInt(c));
 
-    hideTab("newPost");
     
     handlePostFetch('/create-post', {
       title: title,
       content: content,
       categories: categories,
-    }, "Post created!", start);
+    }, "Post created!", ()=>{
+        hideTab("newPost");
+        start()
+    });
 };
   

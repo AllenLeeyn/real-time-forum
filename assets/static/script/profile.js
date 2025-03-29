@@ -13,16 +13,11 @@ export function profileLinkHandler(event){
     const path = event.target.getAttribute('href');
     
     handleGetFetch(path, async (response) => {
-        if (response.ok) {
-            PROFILE_DISPLAY.innerHTML = '';
-            const data = await response.json();
-            PROFILE_DISPLAY.appendChild(insertProfile(data));
-            currentState.display = PROFILE_DISPLAY;
-            showTab("profile", data.name);
-        } else {
-            currentState.view = LOGIN_VIEW
-            showMessage("Something went wrong. Log in and try again.");
-        }
+        PROFILE_DISPLAY.innerHTML = '';
+        const data = await response.json();
+        PROFILE_DISPLAY.appendChild(insertProfile(data));
+        currentState.display = PROFILE_DISPLAY;
+        showTab("profile", data.name);
         renderDisplay();
     });
 }

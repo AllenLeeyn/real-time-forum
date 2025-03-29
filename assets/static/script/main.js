@@ -29,6 +29,7 @@ const FEED_DISPLAY = document.getElementById("feedDisplay");
 export const POST_DISPLAY = document.getElementById("postDisplay");
 export const NEW_POST_DISPLAY = document.getElementById("newPostDisplay");
 export const PROFILE_DISPLAY = document.getElementById("profileDisplay");
+export const MESSENGER_DISPLAY = document.getElementById("messengerDisplay");
 
 const FEED_TAB = document.getElementById('tab-feed');
 const POST_TAB = document.getElementById('tab-post');
@@ -61,26 +62,20 @@ export function insertFeed(posts){
 
 export function start(){
   handleGetFetch('/posts', async (response)=>{
-    if (response.ok){
-      openWebSocket();
-      currentState.isValid = true;
-      currentState.view = MAIN_VIEW;
+    openWebSocket();
+    currentState.isValid = true;
+    currentState.view = MAIN_VIEW;
 
-      const data = await response.json();
-      insertFeed(data.posts);
-      currentState.display = FEED_DISPLAY;
+    const data = await response.json();
+    insertFeed(data.posts);
+    currentState.display = FEED_DISPLAY;
 
-      currentState.categories = data.categories;
-      CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
-      addCategoriesListeners();
+    currentState.categories = data.categories;
+    CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
+    addCategoriesListeners();
 
-      PROFILE_BTN.textContent = data.userName;
-      PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
-      
-    } else {
-      currentState.isValid = false;
-      currentState.view = SIGNUP_VIEW;
-    }
+    PROFILE_BTN.textContent = data.userName;
+    PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
   renderView();
   });
 }
@@ -92,21 +87,16 @@ function addCategoriesListeners(){
 
 function addCategoriesListener(item){
   const categoryHref = item.querySelector('a').getAttribute('href');
-  item.onclick =  (event) => {
+  item.onclick = (event) => {
     event.preventDefault();
 
     handleGetFetch(categoryHref, async response => {
-      if (response.ok){
-        document.getElementsByClassName('active')[0].classList.remove('active');
-        item.querySelector('a').classList.add('active');
-        const data = await response.json();
-        insertFeed(data.posts);
-        currentState.display = FEED_DISPLAY;
-        currentState.tab = FEED_TAB;
-      } else {
-        currentState.view = LOGIN_VIEW
-        showMessage("Something went wrong. Log in and try again.");
-      }
+      document.getElementsByClassName('active')[0].classList.remove('active');
+      item.querySelector('a').classList.add('active');
+      const data = await response.json();
+      insertFeed(data.posts);
+      currentState.display = FEED_DISPLAY;
+      currentState.tab = FEED_TAB;
       renderView();
     });
   };
@@ -125,7 +115,7 @@ function toggleView(event){
   renderView();
 }
 
-function renderView(){
+export function renderView(){
   VALIDATION_VIEW.style.display = 'none';
   SIGNUP_VIEW.style.display = 'none';
   LOGIN_VIEW.style.display = 'none';
@@ -146,11 +136,11 @@ function renderView(){
 }
 
 export function renderDisplay(){
-  console.log('Rendering display...');
   FEED_DISPLAY.style.display = 'none';
   POST_DISPLAY.style.display = 'none';
   NEW_POST_DISPLAY.style.display = 'none';
   PROFILE_DISPLAY.style.display = 'none';
+  MESSENGER_DISPLAY.style.display = 'none';
 
   FEED_TAB.className = '';
   POST_TAB.className = '';
@@ -170,6 +160,7 @@ FEED_TAB.onclick = (event) => showDisplay(FEED_DISPLAY, event);
 POST_TAB.onclick = (event) => showDisplay(POST_DISPLAY, event);
 NEW_POST_TAB.onclick = (event) => showDisplay(NEW_POST_DISPLAY, event);
 PROFILE_TAB.onclick = (event) => showDisplay(PROFILE_DISPLAY, event);
+MESSENGER_TAB.onclick = (event) => showDisplay(MESSENGER_DISPLAY, event);
 
 function showDisplay(display, event){
   if (currentState.display === display && display !== FEED_DISPLAY) {
@@ -193,6 +184,10 @@ export function showTab(type, title){
   if (type === 'profile') {
     currentState.tab = PROFILE_TAB;
     title = "Profile: " + title;
+  };
+  if (type === 'chat') {
+    currentState.tab = MESSENGER_TAB;
+    title = "Chat: " + title;
   };
 
   currentState.tab.style.display = '';
@@ -218,7 +213,13 @@ export function showMessage(message) {
 /*------ handle typical JSON fetch ------*/
 export function handleGetFetch(path, handler){
   fetch(path)
-  .then(handler)
+  .then((response) => {
+      if (response.ok) {
+          handler(response);
+      } else {
+          showMessage("Something went wrong. Log in and try again.");
+      }
+  })
   .catch(error =>{
     console.error("Error:", error);
     showMessage("An error occurred. Please check your connection.");

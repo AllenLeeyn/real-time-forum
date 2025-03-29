@@ -68,6 +68,7 @@ type Feedback struct {
 
 type Message struct {
 	ID           int       `json:"ID"`
+	Action       string    `json:"action"`
 	SenderID     int       `json:"senderID"`
 	ReceiverID   int       `json:"receiverID"`
 	Content      string    `json:"content"`

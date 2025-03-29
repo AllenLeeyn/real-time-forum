@@ -32,11 +32,7 @@ function postLinkHandler(event){
     event.preventDefault();
     const path = event.target.getAttribute('href');
     
-    handleGetFetch(path, (response) => {
-        if (response.ok) {
-            insertPostWithComments(response);
-        }
-    });
+    handleGetFetch(path, insertPostWithComments);
 }
 
 function getPost(data){
@@ -67,11 +63,7 @@ function submitComment(event){
         postID: postID,
         content: commentText,
     }, "Comment created!", ()=>{
-        handleGetFetch(`/post?id=${postID}`, async (response) => {
-            if (response.ok) {
-                insertPostWithComments(response);
-            }
-        })
+        handleGetFetch(`/post?id=${postID}`, insertPostWithComments)
     });
 };
 
