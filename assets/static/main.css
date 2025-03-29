@@ -315,10 +315,6 @@ footer ul li a {
   .container {
     flex-direction: column;
   }
-  
-  .image-section {
-    display: none;
-  }
 
   .form-section {
     padding: 20px;

@@ -78,7 +78,7 @@ func (m *Messenger) handleConnection(cl *client) {
 			log.Println("Error reading message:", err)
 			break
 		}
-		fmt.Println("Message from", ":", string(msg))
+		log.Println("Message from", ":", string(msg))
 	}
 	m.clientQueue <- action{"offline", cl}
 	cl.Conn.Close()
@@ -91,6 +91,7 @@ func (m *Messenger) listener() {
 			m.sendClientList(action.client, -1)
 		}
 		if action.kind == "online" {
+			log.Println("online:", action.client.UserName)
 			m.clients[action.client.UserName] = action.client
 			m.sendClientList(action.client, 0)
 			m.msgQueue <- message{
@@ -100,6 +101,7 @@ func (m *Messenger) listener() {
 			}
 		}
 		if action.kind == "offline" {
+			log.Println("offline:", action.client.UserName)
 			delete(m.clients, action.client.UserName)
 			m.msgQueue <- message{
 				SenderID:   -1,
@@ -113,7 +115,7 @@ func (m *Messenger) listener() {
 func (m *Messenger) broadcaster() {
 	for {
 		msg := <-m.msgQueue
-		fmt.Println(msg.Content)
+		log.Println(msg.Content)
 
 		if msg.ReceiverID == -1 {
 			for _, client := range m.clients {
@@ -133,9 +135,7 @@ func (m *Messenger) broadcaster() {
 				log.Printf("Receiver %s not found", msg.ReceiverName)
 			}
 		}
-
 	}
-
 }
 
 func (m *Messenger) sendClientList(cl *client, receiver int) {
@@ -178,4 +178,17 @@ func (m *Messenger) sendClientList(cl *client, receiver int) {
 		Content:      string(jsonData),
 		ReceiverName: cl.UserName,
 	}
+}
+
+func (m *Messenger) CloseConn(s *dbTools.Session) error {
+	u, err := db.SelectUserByField("id", s.UserID)
+	if err != nil || u == nil {
+		return fmt.Errorf("failed to find user: %w", err)
+	}
+	cl, exists := m.clients[u.NickName]
+	if !exists {
+		return fmt.Errorf("user %s not found in clients map", u.NickName)
+	}
+	cl.Conn.Close()
+	return nil
 }

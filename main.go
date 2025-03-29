@@ -69,8 +69,13 @@ func expireSessionsTask() {
 		for _, s := range *sessions {
 			if time.Now().After(s.ExpireTime) {
 				fmt.Printf("Expire session: %v\n", s.ID)
+
 				s.IsActive = false
 				err = db.UpdateSession(&s)
+				if err != nil {
+					break
+				}
+				err = m.CloseConn(&s)
 				if err != nil {
 					break
 				}

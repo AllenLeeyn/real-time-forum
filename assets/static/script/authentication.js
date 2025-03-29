@@ -1,5 +1,4 @@
 import { showMessage, handlePostFetch, start} from "./main.js";
-import { closeWebSocket } from "./messenger.js";
 
 /*------ Authentication functions ------*/
 export function submitSignUp(event){
@@ -121,7 +120,6 @@ export function submitLogIn(event){
 
 export function submitLogOut(event){
     event.preventDefault();
-    closeWebSocket()
     handlePostFetch('/logout', {}, "Log out successful!", start);
 };
 

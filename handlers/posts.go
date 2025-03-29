@@ -13,10 +13,10 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userName := "Guest"
 	u, err := db.SelectUserByField("id", userID)
-	if err == nil && u != nil {
-		userName = u.NickName
+	if err != nil || u == nil {
+		executeJSON(w, MsgData{"User not found"}, http.StatusNotFound)
+		return
 	}
 
 	filterBy := r.URL.Query().Get("filterBy")
@@ -41,7 +41,7 @@ func Posts(w http.ResponseWriter, r *http.Request) {
 			IsValidSession: sessionCookie != nil,
 			Categories:     db.Categories,
 			Posts:          *selectedPosts,
-			UserName:       userName,
+			UserName:       u.NickName,
 			UserID:         userID,
 		},
 		http.StatusOK,

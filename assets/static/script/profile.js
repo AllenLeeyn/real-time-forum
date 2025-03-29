@@ -19,8 +19,11 @@ export function profileLinkHandler(event){
             PROFILE_DISPLAY.appendChild(insertProfile(data));
             currentState.display = PROFILE_DISPLAY;
             showTab("profile", data.name);
-            renderDisplay();
+        } else {
+            currentState.view = LOGIN_VIEW
+            showMessage("Something went wrong. Log in and try again.");
         }
+        renderDisplay();
     });
 }
 

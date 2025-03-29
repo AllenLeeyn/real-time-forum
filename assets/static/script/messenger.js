@@ -22,13 +22,6 @@ export function openWebSocket() {
     };
 }
 
-export function closeWebSocket() {
-    if (socket) {
-        socket.close();
-        console.log("WebSocket connection closed");
-    }
-}
-
 function onMessageHandler(dataString) {
     const data = JSON.parse(dataString)
     

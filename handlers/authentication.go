@@ -52,9 +52,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e := checkLoginCredentials(u)
-	if e != nil {
-		executeJSON(w, MsgData{e.Error()}, http.StatusBadRequest)
+	if err := checkLoginCredentials(u); err != nil {
+		executeJSON(w, MsgData{err.Error()}, http.StatusBadRequest)
 		return
 	}
 
@@ -70,7 +69,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	s, e := db.SelectActiveSessionBy("user_id", user.ID)
 	if e == nil {
-		expireSession(w, s.ID)
+		expireSession(w, s)
 	}
 	createSession(w, user)
 	executeJSON(w, MsgData{"Login succesful"}, http.StatusOK)
@@ -82,7 +81,8 @@ func LogOut(w http.ResponseWriter, r *http.Request) {
 		executeJSON(w, MsgData{"You're not logged in"}, http.StatusBadRequest)
 		return
 	} else {
-		expireSession(w, sessionCookie.Value)
+		s, _ := db.SelectActiveSessionBy("id", sessionCookie.Value)
+		expireSession(w, s)
 	}
 	http.Redirect(w, r, "./", http.StatusSeeOther)
 }
@@ -111,7 +111,7 @@ func WS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	u, err := db.SelectUserByField("id", userID)
-	if err == nil && u == nil {
+	if err != nil || u == nil {
 		executeJSON(w, MsgData{"User not found."}, http.StatusBadRequest)
 		return
 	}
