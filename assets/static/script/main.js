@@ -217,7 +217,9 @@ export function handleGetFetch(path, handler){
       if (response.ok) {
           handler(response);
       } else {
+          currentState.view = LOGIN_VIEW
           showMessage("Something went wrong. Log in and try again.");
+          renderView();
       }
   })
   .catch(error =>{
