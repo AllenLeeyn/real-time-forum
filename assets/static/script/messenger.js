@@ -111,6 +111,8 @@ function appendMessage(messageText, sender, status = 'sent') {
     }
 }
 
+// using localStorage in the main.js after profileID to get the username to get the sender name
+// so we can connect the WS and for future DB use
 function sendMessage() {
     const messageInputField = document.getElementById("message-input");
     const messageText = messageInputField.value.trim();
