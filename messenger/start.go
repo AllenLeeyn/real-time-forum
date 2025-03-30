@@ -79,6 +79,37 @@ func (m *Messenger) handleConnection(cl *client) {
 			break
 		}
 		log.Println("Message from", ":", string(msg))
+
+		// adding
+		var messageData map[string]interface{}
+		err = json.Unmarshal(msg, &messageData)
+		if err != nil {
+			log.Println("Error unmarshaling message:", err)
+			continue
+		}
+
+		action, ok := messageData["action"].(string)
+		if !ok {
+			log.Println("Invalid message format")
+			continue
+		}
+
+		if action == "message" {
+			content, _ := messageData["content"].(string)
+			sender, _ := messageData["sender"].(string)
+			recipient, _ := messageData["recipient"].(string)
+
+			// Store message in database
+			m.storeMessage(content, cl.UserID, m.getUserID(recipient))
+
+			// Broadcast message to recipient
+			m.msgQueue <- message{
+				SenderID:     cl.UserID,
+				ReceiverID:   m.getUserID(recipient),
+				Content:      fmt.Sprintf(`{"action": "message", "content": "%s", "sender": "%s"}`, content, sender),
+				ReceiverName: recipient,
+			}
+		}
 	}
 	m.clientQueue <- action{"offline", cl}
 	cl.Conn.Close()
@@ -191,4 +222,22 @@ func (m *Messenger) CloseConn(s *dbTools.Session) error {
 	}
 	cl.Conn.Close()
 	return nil
+}
+
+// Adding
+// grabbing userID and StoreMessage
+func (m *Messenger) getUserID(username string) int {
+	user, err := db.SelectUserByField("nick_name", username)
+	if err != nil || user == nil {
+		log.Printf("User %s not found", username)
+		return -1
+	}
+	return user.ID
+}
+
+func (m *Messenger) storeMessage(content string, senderID int, receiverID int) {
+	err := db.StoreMessage(content, senderID, receiverID) // check db_message.go for direct storeMessage function
+	if err != nil {
+		log.Println("Error storing message:", err)
+	}
 }

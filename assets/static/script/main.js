@@ -76,7 +76,10 @@ export function start(){
 
     PROFILE_BTN.textContent = data.userName;
     PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
-  renderView();
+
+    localStorage.setItem('username', data.userName);
+
+    renderView();
   });
 }
 

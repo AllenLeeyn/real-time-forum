@@ -107,3 +107,10 @@ func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, e
 	}
 	return &names, nil
 }
+
+// Adding to store message
+func (db *DBContainer) StoreMessage(content string, senderID int, receiverID int) error {
+	qry := `INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)`
+	_, err := db.conn.Exec(qry, senderID, receiverID, content)
+	return err
+}

@@ -2,8 +2,10 @@ import { currentState, MESSENGER_DISPLAY, showTab, renderDisplay } from "./main.
 import { templateUserList, templateChat } from "./template.js";
 
 const USER_LIST = document.getElementById("userList");
+let MESSAGE_CONTAINER = document.getElementById("message-container");
 
 let socket;
+let currentRecipientUsername = null;
 
 export function openWebSocket() {
     console.log("connecting WebSocket");
@@ -34,11 +36,15 @@ function onMessageHandler(dataString) {
 
     } else if (data.action === "offline") {
         updateUserListItems(data.userName, "offline")
+    } else if (data.action === "message") {
+    appendMessage(data.content, data.sender, "left");
     };
 }
 
 function addUserListItems(data) {
-    USER_LIST.innerHTML = templateUserList(data.allClients)
+    const allUsers = [...new Set([...data.allClients, ...data.onlineClients])];
+    USER_LIST.innerHTML = templateUserList(allUsers)
+
     data.onlineClients.forEach(client=>{
         const clientElement = document.getElementById(`user-${client}`);
         clientElement.classList.add("online");
@@ -60,6 +66,20 @@ function addUserListItemListener(item) {
         currentState.display =  MESSENGER_DISPLAY;
         showTab("chat", userName);
         renderDisplay();
+
+        currentRecipientUsername = userName; 
+
+        MESSAGE_CONTAINER = document.getElementById("message-container");
+
+        document.getElementById("submit-message").addEventListener('click', sendMessage);
+
+        document.getElementById("message-input").addEventListener('keydown', event => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+        MESSAGE_CONTAINER.innerHTML = '';
     }
 }
 
@@ -72,3 +92,39 @@ function updateUserListItems(client, action) {
     }
 }
 
+// Added
+function appendMessage(messageText, sender, status = 'sent') {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message');
+
+    if (sender === 'You') {
+        messageDiv.classList.add('sent');
+    } else {
+        messageDiv.classList.add('received');
+    }
+    messageDiv.innerHTML = `<p>${messageText}</p>`;
+
+    if (MESSAGE_CONTAINER) {
+        MESSAGE_CONTAINER.appendChild(messageDiv);
+    } else {
+        console.error("MESSAGE_CONTAINER not found.");
+    }
+}
+
+function sendMessage() {
+    const messageInputField = document.getElementById("message-input");
+    const messageText = messageInputField.value.trim();
+
+    if (messageText) {
+        const senderUsername = localStorage.getItem('username');
+        const messageData = {
+            action: 'message',
+            content: messageText,
+            sender: senderUsername, 
+            recipient: currentRecipientUsername
+        };
+        socket.send(JSON.stringify(messageData));
+        appendMessage(messageText, "You", "right");
+        messageInputField.value = ""
+    }
+}
