@@ -42,6 +42,10 @@ function onMessageHandler(dataString) {
 }
 
 function addUserListItems(data) {
+    // this is the block where we can filter.
+    // const currentUser = localStorage.getItem('username');
+    // const allUsers = [...new Set([...data.allClients, ...data.onlineClients])].filter(user => user !== currentUser);
+
     const allUsers = [...new Set([...data.allClients, ...data.onlineClients])];
     USER_LIST.innerHTML = templateUserList(allUsers)
 
