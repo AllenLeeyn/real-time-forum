@@ -6,13 +6,12 @@ import (
 
 func (db *DBContainer) InsertMessage(m *Message) error {
 	qry := `INSERT INTO messages 
-			(sender_id, receiver_id, content, created_at) 
-			VALUES (?, ?, ?, ?)`
+			(sender_id, receiver_id, content) 
+			VALUES (?, ?, ?)`
 	_, err := db.conn.Exec(qry,
 		m.SenderID,
 		m.ReceiverID,
 		m.Content,
-		m.CreatedAt,
 	)
 	return err
 }
@@ -62,7 +61,7 @@ func (db *DBContainer) SelectMessages(id_1, id_2 int, fromTime time.Time) (*[]Me
 }
 
 var userListQry = `
-	SELECT u.nick_name 
+	SELECT DISTINCT u.nick_name, u.id
 	FROM users U
 	LEFT JOIN (
 		SELECT sender_id, receiver_id, created_at
@@ -75,11 +74,12 @@ var userListQry = `
 		u.nick_name ASC`
 
 var unreadMsgQry = `
-	SELECT DISTINCT u.nick_name FROM messages m
+	SELECT DISTINCT u.nick_name, u.id
+	FROM messages m
 	JOIN users u ON m.sender_id = u.id
 	WHERE receiver_id = ? AND read_at IS NULL`
 
-func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, error) {
+func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, *[]int, error) {
 	qry := ""
 	if kind == "clientList" {
 		qry = userListQry
@@ -89,21 +89,24 @@ func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, e
 
 	rows, err := db.conn.Query(qry, receiverID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer rows.Close()
 
 	var names []string
+	var ids []int
 	for rows.Next() {
 		var n string
-		err := rows.Scan(&n)
+		var id int
+		err := rows.Scan(&n, &id)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		names = append(names, n)
+		ids = append(ids, id)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, checkErrNoRows(err)
+		return nil, nil, checkErrNoRows(err)
 	}
-	return &names, nil
+	return &names, &ids, nil
 }

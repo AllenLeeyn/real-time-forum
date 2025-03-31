@@ -120,23 +120,23 @@ export const templateCategoriesList = (categories) => {
   return result;
 };
 
-export const templateUserList = (allClients) => {
+export const templateUserList = (clientList) => {
   let result = ``;
 
-  allClients.forEach((client) => {
+  clientList.forEach((client) => {
   result += `
-    <li><a class="user-item" id="user-${client}">${client}</a></li>`;
+    <li><a class="user-item" data-id="${client.id}" id="user-${client.id}">${client.name}</a></li>`;
   })
   return result;
 };
 
-export const templateChat = () => `
+export const templateChat = (userId) => `
   <tr><tc><td>
     <div id="message-container"></div>
     
     <div id="message-form">
       <textarea id="message-input" rows="3"></textarea>
-      <button id="submit-message">Send</button>
+      <button id="submit-message" data-id=${userId}>Send</button>
     </div>
   </td></tc></tr>
 `;

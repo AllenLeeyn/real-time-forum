@@ -1,4 +1,4 @@
-import { currentState, PROFILE_DISPLAY, renderDisplay, handleGetFetch, showTab } from "./main.js";
+import { currentState, PROFILE_DISPLAY, renderDisplay, handleGetFetch, showTab, showMessage } from "./main.js";
 import { templateProfileCard } from "./template.js";
 
 export function addViewProfileLinksListeners(){
@@ -13,12 +13,15 @@ export function profileLinkHandler(event){
     const path = event.target.getAttribute('href');
     
     handleGetFetch(path, async (response) => {
-        PROFILE_DISPLAY.innerHTML = '';
-        const data = await response.json();
-        PROFILE_DISPLAY.appendChild(insertProfile(data));
-        currentState.display = PROFILE_DISPLAY;
-        showTab("profile", data.name);
-        renderDisplay();
+        if (response.ok) {
+            PROFILE_DISPLAY.innerHTML = '';
+            const data = await response.json();
+            PROFILE_DISPLAY.appendChild(insertProfile(data));
+            currentState.display = PROFILE_DISPLAY;
+            showTab("profile", data.name);
+            renderDisplay();
+        }
+        else showMessage("Something went wrong. Please log in and try again.");
     });
 }
 

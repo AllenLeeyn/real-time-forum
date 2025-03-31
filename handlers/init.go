@@ -52,9 +52,9 @@ func Init(dbMain *dbTools.DBContainer, messenger messenger.Messenger) {
 func checkContent(input string, min, max int) (bool, string) {
 	input = strings.TrimSpace(input)
 	if len(input) < min {
-		return false, "*Title too short"
+		return false, "*Input too short"
 	} else if len(input) > max {
-		return false, "*Title too long"
+		return false, "*Input too long"
 	}
 	return true, html.EscapeString(input)
 }

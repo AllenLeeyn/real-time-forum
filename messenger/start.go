@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"real-time-forum/dbTools"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -18,7 +20,7 @@ type message = dbTools.Message
 type user = dbTools.User
 
 type Messenger struct {
-	clients     map[string]*client
+	clients     map[int]*client
 	msgQueue    chan message
 	clientQueue chan action
 }
@@ -38,7 +40,7 @@ type action struct {
 func Start(dbMain *dbTools.DBContainer) Messenger {
 	db = dbMain
 	m := Messenger{
-		clients:     make(map[string]*client),
+		clients:     make(map[int]*client),
 		msgQueue:    make(chan message, 100),
 		clientQueue: make(chan action, 100),
 	}
@@ -79,34 +81,80 @@ func (m *Messenger) handleConnection(cl *client) {
 			break
 		}
 		log.Println("Message from", ":", string(msg))
+
+		msgData := message{Action: "message"}
+		err = json.Unmarshal(msg, &msgData)
+		if err != nil {
+			log.Println("Invalid message format")
+			continue
+		}
+
+		isValidMsg, sanitizeMsg := checkMessage(msgData.Content)
+		if !isValidMsg {
+			log.Println("Invalid message format")
+			continue
+		}
+
+		receiver, err := db.SelectUserByField("id", msgData.ReceiverID)
+		if err != nil || receiver == nil {
+			log.Println("Receiver not found:", err)
+			continue
+		}
+
+		msgData.SenderID = cl.UserID
+		msgData.Content = sanitizeMsg
+		msgData.CreatedAt = time.Now()
+
+		err = db.InsertMessage(&msgData)
+		if err != nil {
+			log.Println("Error inserting message:", err)
+			continue
+		}
+		m.msgQueue <- message{
+			SenderID:   -1,
+			ReceiverID: cl.UserID,
+			Action:     "messageSendOK",
+		}
+		m.msgQueue <- msgData
 	}
 	m.clientQueue <- action{"offline", cl}
 	cl.Conn.Close()
 }
 
+func checkMessage(message string) (bool, string) {
+	message = strings.TrimSpace(message)
+	if len(message) == 0 {
+		return false, "Too short"
+	} else if len(message) > 1000 {
+		return false, "Too long"
+	}
+	return true, message
+}
 func (m *Messenger) listener() {
 	for action := range m.clientQueue {
 		if action.kind == "join" {
-			m.clients[action.client.UserName] = action.client
+			m.clients[action.client.UserID] = action.client
 			m.sendClientList(action.client, -1)
 		}
 		if action.kind == "online" {
 			log.Println("online:", action.client.UserName)
-			m.clients[action.client.UserName] = action.client
+			m.clients[action.client.UserID] = action.client
 			m.sendClientList(action.client, 0)
+			idStr := strconv.Itoa(action.client.UserID)
 			m.msgQueue <- message{
 				SenderID:   -1,
 				ReceiverID: -1,
-				Content:    `{"action": "online", "userName": "` + action.client.UserName + `"}`,
+				Content:    `{"action": "online", "id": "` + idStr + `"}`,
 			}
 		}
 		if action.kind == "offline" {
 			log.Println("offline:", action.client.UserName)
-			delete(m.clients, action.client.UserName)
+			delete(m.clients, action.client.UserID)
+			idStr := strconv.Itoa(action.client.UserID)
 			m.msgQueue <- message{
 				SenderID:   -1,
 				ReceiverID: -1,
-				Content:    `{"action":"offline","userName":"` + action.client.UserName + `"}`,
+				Content:    `{"action":"offline","id":"` + idStr + `"}`,
 			}
 		}
 	}
@@ -117,22 +165,30 @@ func (m *Messenger) broadcaster() {
 		msg := <-m.msgQueue
 		log.Println(msg.Content)
 
+		if msg.Action == "message" || msg.Action == "messageSendOK" {
+			content, err := json.Marshal(msg)
+			if err != nil {
+				log.Printf("Error generating JSON: %v", err)
+			}
+			msg.Content = string(content)
+		}
+
 		if msg.ReceiverID == -1 {
 			for _, client := range m.clients {
 				err := client.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
 				if err != nil {
-					log.Printf("Error sending message to %s: %v", msg.ReceiverName, err)
+					log.Printf("Error sending message to %v: %v", msg.ReceiverID, err)
 				}
 			}
 		} else {
-			receiver, exists := m.clients[msg.ReceiverName]
+			receiver, exists := m.clients[msg.ReceiverID]
 			if exists {
 				err := receiver.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
 				if err != nil {
-					log.Printf("Error sending message to %s: %v", msg.ReceiverName, err)
+					log.Printf("Error sending message to %v: %v", msg.ReceiverID, err)
 				}
 			} else {
-				log.Printf("Receiver %s not found", msg.ReceiverName)
+				log.Printf("Receiver %v not found", msg.ReceiverID)
 			}
 		}
 	}
@@ -142,26 +198,28 @@ func (m *Messenger) sendClientList(cl *client, receiver int) {
 	type data struct {
 		Action           string   `json:"action"`
 		AllClients       []string `json:"allClients"`
-		OnlineClients    []string `json:"onlineClients"`
-		UnreadMsgClients []string `json:"unreadMsgClients"`
+		ClientIDs        []int    `json:"clientIDs"`
+		OnlineClients    []int    `json:"onlineClients"`
+		UnreadMsgClients []int    `json:"unreadMsgClients"`
 	}
 	d := data{Action: "start"}
-	clientList, err := db.SelectUserList("clientList", cl.UserID)
+	clientList, clientIDs, err := db.SelectUserList("clientList", cl.UserID)
 	if err != nil {
 		log.Println("Error fetching client list:", err)
 		return
 	}
 	d.AllClients = *clientList
+	d.ClientIDs = *clientIDs
 
-	unreadList, err := db.SelectUserList("unreadMsg", cl.UserID)
+	_, unreadList, err := db.SelectUserList("unreadMsg", cl.UserID)
 	if err != nil {
 		log.Println("Error fetching client list:", err)
 		return
 	}
 	d.UnreadMsgClients = *unreadList
 
-	for userName := range m.clients {
-		d.OnlineClients = append(d.OnlineClients, userName)
+	for userID := range m.clients {
+		d.OnlineClients = append(d.OnlineClients, userID)
 	}
 
 	jsonData, err := json.Marshal(d)
@@ -173,10 +231,9 @@ func (m *Messenger) sendClientList(cl *client, receiver int) {
 		receiver = cl.UserID
 	}
 	m.msgQueue <- message{
-		SenderID:     -1,
-		ReceiverID:   receiver,
-		Content:      string(jsonData),
-		ReceiverName: cl.UserName,
+		SenderID:   -1,
+		ReceiverID: receiver,
+		Content:    string(jsonData),
 	}
 }
 
@@ -185,9 +242,9 @@ func (m *Messenger) CloseConn(s *dbTools.Session) error {
 	if err != nil || u == nil {
 		return fmt.Errorf("failed to find user: %w", err)
 	}
-	cl, exists := m.clients[u.NickName]
+	cl, exists := m.clients[u.ID]
 	if !exists {
-		return fmt.Errorf("user %s not found in clients map", u.NickName)
+		return fmt.Errorf("user %v not found in clients map", u.ID)
 	}
 	cl.Conn.Close()
 	return nil

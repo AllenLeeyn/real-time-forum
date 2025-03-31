@@ -97,14 +97,13 @@ a:hover {
 #mainView{
   margin: 80px auto 0;
   display: flex;
-  gap: 2rem;
 }
 
 /* Categories Sidebar */
 .categories {
+  margin: 5px;
   margin-bottom: 30px;
   overflow-y: auto;
-  padding-right: 1rem;
 }
 
 .categories li {
@@ -161,10 +160,10 @@ a:hover {
 }
 
 .feed {
+  padding: 5px;
   flex: 1;
   max-width: 768px;
   min-width: 320px;
-  padding-right: 1rem;
 }
 
 .feed-header {

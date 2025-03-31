@@ -68,11 +68,13 @@ function submitComment(event){
 };
 
 async function insertPostWithComments(response){
-    POST_DISPLAY.innerHTML = "";
-    const data = await response.json();
-    POST_DISPLAY.appendChild(getPost(data));
-    currentState.display = POST_DISPLAY;
-    showTab("post", data.post.title);
-    renderDisplay();
-    document.getElementById('submit-comment').onclick = submitComment;
+    if (response.ok) {
+        POST_DISPLAY.innerHTML = "";
+        const data = await response.json();
+        POST_DISPLAY.appendChild(getPost(data));
+        currentState.display = POST_DISPLAY;
+        showTab("post", data.post.title);
+        renderDisplay();
+        document.getElementById('submit-comment').onclick = submitComment;
+    } else showMessage("Something went wrong. Please log in and try again.");
 }

@@ -62,21 +62,23 @@ export function insertFeed(posts){
 
 export function start(){
   handleGetFetch('/posts', async (response)=>{
-    openWebSocket();
-    currentState.isValid = true;
-    currentState.view = MAIN_VIEW;
+    if (response.ok){
+      openWebSocket();
+      currentState.isValid = true;
+      currentState.view = MAIN_VIEW;
 
-    const data = await response.json();
-    insertFeed(data.posts);
-    currentState.display = FEED_DISPLAY;
+      const data = await response.json();
+      insertFeed(data.posts);
+      currentState.display = FEED_DISPLAY;
 
-    currentState.categories = data.categories;
-    CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
-    addCategoriesListeners();
+      currentState.categories = data.categories;
+      CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
+      addCategoriesListeners();
 
-    PROFILE_BTN.textContent = data.userName;
-    PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
-  renderView();
+      PROFILE_BTN.textContent = data.userName;
+      PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
+    } else currentState.view = LOGIN_VIEW;
+    renderView();
   });
 }
 
@@ -91,13 +93,15 @@ function addCategoriesListener(item){
     event.preventDefault();
 
     handleGetFetch(categoryHref, async response => {
-      document.getElementsByClassName('active')[0].classList.remove('active');
-      item.querySelector('a').classList.add('active');
-      const data = await response.json();
-      insertFeed(data.posts);
-      currentState.display = FEED_DISPLAY;
-      currentState.tab = FEED_TAB;
-      renderView();
+      if (response.ok){
+        document.getElementsByClassName('active')[0].classList.remove('active');
+        item.querySelector('a').classList.add('active');
+        const data = await response.json();
+        insertFeed(data.posts);
+        currentState.display = FEED_DISPLAY;
+        currentState.tab = FEED_TAB;
+        renderView();
+      } else showMessage("Something went wrong. Please log in and try again.");
     });
   };
 }
@@ -213,15 +217,7 @@ export function showMessage(message) {
 /*------ handle typical JSON fetch ------*/
 export function handleGetFetch(path, handler){
   fetch(path)
-  .then((response) => {
-      if (response.ok) {
-          handler(response);
-      } else {
-          currentState.view = LOGIN_VIEW
-          showMessage("Something went wrong. Log in and try again.");
-          renderView();
-      }
-  })
+  .then(handler)
   .catch(error =>{
     console.error("Error:", error);
     showMessage("An error occurred. Please check your connection.");

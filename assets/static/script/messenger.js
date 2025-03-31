@@ -30,15 +30,24 @@ function onMessageHandler(dataString) {
         addUserListItems(data)
 
     } else if (data.action === "online") {
-        updateUserListItems(data.userName, "online")
+        updateUserListItems(data.id, "online")
 
     } else if (data.action === "offline") {
-        updateUserListItems(data.userName, "offline")
+        updateUserListItems(data.id, "offline")
+
+    } else if (data.action === "messageSendOK") {
+        const messageInput = document.getElementById('message-input');
+        messageInput.value = "";
     };
 }
 
 function addUserListItems(data) {
-    USER_LIST.innerHTML = templateUserList(data.allClients)
+    console.log(data)
+    const clientList = data.allClients.map((name, index) => ({
+        name: name, id: data.clientIDs[index]
+    }));
+    console.log(clientList);
+    USER_LIST.innerHTML = templateUserList(clientList);
     data.onlineClients.forEach(client=>{
         const clientElement = document.getElementById(`user-${client}`);
         clientElement.classList.add("online");
@@ -53,13 +62,15 @@ function addUserListItemListeners() {
 
 function addUserListItemListener(item) {
     const userName = item.textContent;
+    const userId = item.getAttribute("data-id");
     item.onclick = (event) => {
         event.preventDefault();
 
-        MESSENGER_DISPLAY.innerHTML = templateChat();
+        MESSENGER_DISPLAY.innerHTML = templateChat(userId);
         currentState.display =  MESSENGER_DISPLAY;
         showTab("chat", userName);
         renderDisplay();
+        document.getElementById('submit-message').onclick = submitMessage;
     }
 }
 
@@ -72,3 +83,18 @@ function updateUserListItems(client, action) {
     }
 }
 
+function submitMessage(event) {
+    const receiverID = parseInt(event.target.getAttribute('data-id'));
+    const messageInput = document.getElementById('message-input');
+    const messageText = messageInput.value.trim();
+
+    if (messageText === "") {
+            showMessage('Message cannot be empty!');
+            return;
+    }
+    const messageData = {
+        receiverID: receiverID,
+        content: messageText,
+    }
+    socket.send(JSON.stringify(messageData));
+}
