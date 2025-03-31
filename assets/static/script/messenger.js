@@ -38,9 +38,19 @@ function onMessageHandler(dataString) {
         updateUserListItems(data.userName, "offline")
 
     } else if (data.action === "message") {
-        appendMessage(data.content, data.sender, "left");
+        if (currentRecipientUsername === data.sender) {
+            appendMessage(data.content, data.sender, "left");
+        } else {
+            // Update user list to indicate unread message
+            const clientElement = document.getElementById(`user-${data.sender}`);
+            if (clientElement) {
+                clientElement.classList.add("unread");
+            }
+        }
     };
 }
+
+
 
 // function addUserListItems(data) {
 //     // this is the block where we can filter.
@@ -108,6 +118,12 @@ function addUserListItemListener(item) {
                 sendMessage();
             }
         });
+
+        const clientElement = document.getElementById(`user-${userName}`);
+        if (clientElement) {
+            clientElement.classList.remove("unread");
+        }
+        
         MESSAGE_CONTAINER.innerHTML = '';
     }
 }
