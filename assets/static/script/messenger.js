@@ -36,25 +36,50 @@ function onMessageHandler(dataString) {
 
     } else if (data.action === "offline") {
         updateUserListItems(data.userName, "offline")
+
     } else if (data.action === "message") {
-    appendMessage(data.content, data.sender, "left");
+        appendMessage(data.content, data.sender, "left");
     };
 }
 
+// function addUserListItems(data) {
+//     // this is the block where we can filter.
+//     // const currentUser = localStorage.getItem('username');
+//     // const allUsers = [...new Set([...data.allClients, ...data.onlineClients])].filter(user => user !== currentUser);
+
+//     const allUsers = [...new Set([...data.allClients, ...data.onlineClients])];
+//     allUsers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+//     USER_LIST.innerHTML = templateUserList(allUsers)
+
+//     data.onlineClients.forEach(client=>{
+//         const clientElement = document.getElementById(`user-${client}`);
+//         clientElement.classList.add("online");
+//     })
+//     addUserListItemListeners();
+// }
+
 function addUserListItems(data) {
-    // this is the block where we can filter.
-    // const currentUser = localStorage.getItem('username');
-    // const allUsers = [...new Set([...data.allClients, ...data.onlineClients])].filter(user => user !== currentUser);
-
     const allUsers = [...new Set([...data.allClients, ...data.onlineClients])];
-    USER_LIST.innerHTML = templateUserList(allUsers)
+    
+    const onlineUsers = data.onlineClients.filter(user => allUsers.includes(user));
+    const offlineUsers = allUsers.filter(user => !onlineUsers.includes(user));
+    
+    onlineUsers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    offlineUsers.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+    
+    const sortedUsers = [...onlineUsers, ...offlineUsers];
+    
+    USER_LIST.innerHTML = templateUserList(sortedUsers)
 
-    data.onlineClients.forEach(client=>{
+    sortedUsers.forEach(client=>{
         const clientElement = document.getElementById(`user-${client}`);
-        clientElement.classList.add("online");
+        if (onlineUsers.includes(client)) {
+            clientElement.classList.add("online");
+        }
     })
     addUserListItemListeners();
 }
+
 
 function addUserListItemListeners() {
     const listItems = document.querySelectorAll(".user-item");
@@ -91,7 +116,7 @@ function updateUserListItems(client, action) {
     const clientElement = document.getElementById(`user-${client}`);
     if (action === "online") {
         clientElement.classList.add(action);
-    } else {
+    }  else if (action === "offline") {
         clientElement.classList.remove("online");
     }
 }
@@ -110,6 +135,7 @@ function appendMessage(messageText, sender, status = 'sent') {
 
     if (MESSAGE_CONTAINER) {
         MESSAGE_CONTAINER.appendChild(messageDiv);
+        MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight; 
     } else {
         console.error("MESSAGE_CONTAINER not found.");
     }

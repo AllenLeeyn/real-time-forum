@@ -1,0 +1,27 @@
+#message-container {
+    /* background-color: var(--background); */
+    display: flex;
+    flex-direction: column;
+    padding: 10px; /* Optional padding */
+    overflow-y: auto; /* For scrolling */
+    max-height: 500px; /* Adjust max height as needed */
+}
+
+.sent {
+    /* background-color: #13314f;  */
+    background-color: #0d421f;
+    margin-left: auto;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    color: var(--text);
+}
+
+.received {
+    /* background-color: #0d421f; */
+    background-color: #13314f; 
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 60%;
+    color: var(--text);
+}

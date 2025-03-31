@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"real-time-forum/dbTools"
+	"sort"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -182,7 +183,20 @@ func (m *Messenger) sendClientList(cl *client, receiver int) {
 		log.Println("Error fetching client list:", err)
 		return
 	}
-	d.AllClients = *clientList
+
+	// Remove duplicates from the client list
+	uniqueClients := make(map[string]bool)
+	for _, client := range *clientList {
+		uniqueClients[client] = true
+	}
+
+	// Convert map to a sorted slice
+	var sortedClients []string
+	for client := range uniqueClients {
+		sortedClients = append(sortedClients, client)
+	}
+	sort.Strings(sortedClients) // Sort the slice alphabetically
+	d.AllClients = sortedClients
 
 	unreadList, err := db.SelectUserList("unreadMsg", cl.UserID)
 	if err != nil {
