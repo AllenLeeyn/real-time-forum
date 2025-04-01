@@ -39,6 +39,9 @@ const MESSENGER_TAB = document.getElementById('tab-messenger');
 
 export const currentState = {
   isValid: false,
+  user: "",
+  id: 0,
+  chat: "",
   categories: [],
   view: SIGNUP_VIEW,
   display: FEED_DISPLAY,
@@ -75,6 +78,8 @@ export function start(){
       CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
       addCategoriesListeners();
 
+      currentState.user = data.userName;
+      currentState.id = data.userID;
       PROFILE_BTN.textContent = data.userName;
       PROFILE_BTN.setAttribute('href', `/profile?id=${data.userID}`)
     } else currentState.view = LOGIN_VIEW;
@@ -199,6 +204,7 @@ export function showTab(type, title){
 }
 
 export function hideTab(){
+  currentState.display.innerHTML = '';
   currentState.tab.style.display = 'none';
   currentState.display = FEED_DISPLAY;
   currentState.tab = FEED_TAB;

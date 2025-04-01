@@ -1,3 +1,5 @@
+import { currentState } from "./main.js";
+
 export const templateNoFound = (value) => `
   <tbody><tr><td>
     <div class="post-card">
@@ -34,7 +36,7 @@ export const templatePostCard = (post) => `
     <div class="post-header">
       <div class="post-meta">
         <a href="/profile?id=${post.userID}" class="post-author">${post.userName}</a>
-        <div class="post-time">${post.createdAt}</div>
+        <div class="post-time">${relativeTime(post.createdAt)}</div>
       </div>
     </div>
     <div class="post-content">
@@ -64,7 +66,7 @@ export const templateCommentCard = (comment) => `
     <div class="post-header">
       <div class="post-meta">
         <a href="/profile?id=${comment.userID}" class="post-author">${comment.userName}</a>
-        <div class="post-time">${comment.createdAt}</div>
+        <div class="post-time">${relativeTime(comment.createdAt)}</div>
       </div>
     </div>
     <div class="post-content">
@@ -140,3 +142,43 @@ export const templateChat = (userId) => `
     </div>
   </td></tc></tr>
 `;
+
+export const templateChatHistory = (messages, receiverID) => {
+  const msgsData = JSON.parse(messages);
+
+  let result = ``;
+  if (!Array.isArray(msgsData)) return `<div class="nuetral"> End of history </div>`
+  msgsData.forEach(msg => {
+    result = templateChatMessage(msg, receiverID) + result
+  });
+  return result;
+};
+
+export const templateChatMessage = (message, receiverID) => `
+    <div class="${(message.receiverID !== receiverID) ? "receiver": "sender"}" data-id=${message.ID}>
+      <pre>${message.content}</pre>
+      <p>[${(message.receiverID !== receiverID) ? currentState.chat: currentState.user}] ${formatTime(message.createdAt)}</p></div>`
+;
+
+function relativeTime(timestamp) {
+  const timeObj = new Date(timestamp);
+  const now = Date.now()
+  const diff = now - timeObj;
+
+  if (diff < 60000) return `moments ago`;
+  if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours ago`;
+  return `${Math.floor(diff / 86400000)} days ago`;
+};
+
+function formatTime(timestamp) {
+  const timeObj = new Date(timestamp);
+
+  const year = timeObj.getFullYear();
+  const month = String(timeObj.getMonth() + 1).padStart(2, '0');
+  const day = String(timeObj.getDate()).padStart(2, '0');
+  const hours = String(timeObj.getHours()).padStart(2, '0');
+  const minutes = String(timeObj.getMinutes()).padStart(2, '0');
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+}

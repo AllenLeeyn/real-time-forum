@@ -24,6 +24,23 @@ body {
   color: var(--text);
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: grey;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card-background);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: darkgrey;
+}
+
 a {
   color: var(--primary);
   transition: color 0.2s ease;
@@ -100,12 +117,14 @@ a:hover {
 }
 
 /* Categories Sidebar */
+.users,
 .categories {
   margin: 5px;
   margin-bottom: 30px;
   overflow-y: auto;
 }
 
+.users li,
 .categories li {
   margin: 3px;
   font-size: 12px;
@@ -132,7 +151,6 @@ a:hover {
   color: var(--card-background);
 }
 
-.user-item:active,
 .category-item.active {
   background: var(--primary);
   color: white;
@@ -157,6 +175,13 @@ a:hover {
   margin-right: 5px;
   border-radius: 50%;
   background-color: green;
+}
+
+.user-item.unread::after {
+  content: "!";
+  font-size: 12px;
+  color: red;
+  margin-left: 5px;
 }
 
 .feed {
@@ -242,7 +267,7 @@ tbody tr:nth-child(odd) {
 }
 
 tbody td {
-  padding: 1rem;
+  padding: 10px;
   text-align: left;
 }
 

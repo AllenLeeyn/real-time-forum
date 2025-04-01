@@ -1,8 +1,6 @@
 package dbTools
 
-import (
-	"time"
-)
+import "strconv"
 
 func (db *DBContainer) InsertMessage(m *Message) error {
 	qry := `INSERT INTO messages 
@@ -25,14 +23,23 @@ func (db *DBContainer) UpdateMessage(m *Message) error {
 	return err
 }
 
-func (db *DBContainer) SelectMessages(id_1, id_2 int, fromTime time.Time) (*[]Message, error) {
+func (db *DBContainer) SelectMessages(id_1, id_2 int, msgIdStr string) (*[]Message, error) {
+	msgId, err := strconv.Atoi(msgIdStr)
+	if err != nil {
+		return nil, err
+	}
+
+	fromStart := ""
+	if msgId != -1 {
+		fromStart = "AND id < ?"
+	}
 	qry := `SELECT * FROM messages
 			WHERE (sender_id = ? AND receiver_id = ? OR sender_id = ? AND receiver_id = ?)
-			AND created_at < ?
+			` + fromStart + `
 			ORDER BY created_at DESC
 			LIMIT 10`
 
-	rows, err := db.conn.Query(qry, id_1, id_2, id_2, id_1, fromTime)
+	rows, err := db.conn.Query(qry, id_1, id_2, id_2, id_1, msgId)
 	if err != nil {
 		return nil, err
 	}
@@ -60,34 +67,51 @@ func (db *DBContainer) SelectMessages(id_1, id_2 int, fromTime time.Time) (*[]Me
 	return &messages, nil
 }
 
-var userListQry = `
-	SELECT DISTINCT u.nick_name, u.id
-	FROM users U
-	LEFT JOIN (
-		SELECT sender_id, receiver_id, created_at
-		FROM messages
-		WHERE receiver_id = ?
-		ORDER BY created_at DESC
-	) m ON u.id = m.sender_id
-	ORDER BY 
-		m.created_at DESC NULLS LAST,
-		u.nick_name ASC`
+func (db *DBContainer) SelectUnreadMessages(senderID, receiverID int) (*[]Message, error) {
+	qry := `SELECT DISTINCT receiver_id FROM messages
+			WHERE (sender_id = ? AND receiver_id = ? AND read_at IS NULL)`
 
-var unreadMsgQry = `
-	SELECT DISTINCT u.nick_name, u.id
-	FROM messages m
-	JOIN users u ON m.sender_id = u.id
-	WHERE receiver_id = ? AND read_at IS NULL`
-
-func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, *[]int, error) {
-	qry := ""
-	if kind == "clientList" {
-		qry = userListQry
-	} else if kind == "unreadMsg" {
-		qry = unreadMsgQry
+	rows, err := db.conn.Query(qry, senderID, receiverID)
+	if err != nil {
+		return nil, err
 	}
+	defer rows.Close()
 
-	rows, err := db.conn.Query(qry, receiverID)
+	var messages []Message
+	for rows.Next() {
+		var m Message
+		err := rows.Scan(
+			&m.ID,
+			&m.SenderID,
+			&m.ReceiverID,
+			&m.Content,
+			&m.CreatedAt,
+			&m.ReadAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		messages = append(messages, m)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, checkErrNoRows(err)
+	}
+	return &messages, nil
+}
+
+func (db *DBContainer) SelectUserList(receiverID int) (*[]string, *[]int, error) {
+	qry := `SELECT u.nick_name, u.id
+			FROM users U
+			LEFT JOIN (
+				SELECT sender_id, receiver_id, created_at
+				FROM messages
+				WHERE (receiver_id = ? OR sender_id = ?)
+			) m ON (u.id = m.receiver_id AND m.sender_id = ? OR u.id = m.sender_id AND m.receiver_id  = ?)
+			WHERE u.id != 0
+			GROUP BY u.nick_name, u.id
+			ORDER BY MAX(m.created_at) DESC, LOWER(u.nick_name) ASC`
+
+	rows, err := db.conn.Query(qry, receiverID, receiverID, receiverID, receiverID)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -109,4 +133,31 @@ func (db *DBContainer) SelectUserList(kind string, receiverID int) (*[]string, *
 		return nil, nil, checkErrNoRows(err)
 	}
 	return &names, &ids, nil
+}
+
+func (db *DBContainer) SelectUnreadMsgList(receiverID int) (*[]int, error) {
+	qry := `SELECT DISTINCT u.id
+			FROM messages m
+			JOIN users u ON m.sender_id = u.id
+			WHERE (m.receiver_id = ?) AND read_at IS NULL`
+
+	rows, err := db.conn.Query(qry, receiverID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []int
+	for rows.Next() {
+		var id int
+		err := rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, checkErrNoRows(err)
+	}
+	return &ids, nil
 }
