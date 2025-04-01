@@ -72,49 +72,61 @@ func (m *Messenger) WebSocketUpgrade(w http.ResponseWriter, r *http.Request, ses
 	go m.handleConnection(cl)
 }
 
-func (m *Messenger) handleConnection(cl *client) {
-	for {
-		_, msg, err := cl.Conn.ReadMessage()
-		if err != nil {
-			log.Println("Error reading message:", err)
-			break
-		}
-		log.Println("Message from", ":", string(msg))
+// func (m *Messenger) handleConnection(cl *client) {
+// 	for {
+// 		_, msg, err := cl.Conn.ReadMessage()
+// 		if err != nil {
+// 			log.Println("Error reading message:", err)
+// 			break
+// 		}
+// 		log.Println("Message from", ":", string(msg))
 
-		// adding
-		var messageData map[string]interface{}
-		err = json.Unmarshal(msg, &messageData)
-		if err != nil {
-			log.Println("Error unmarshaling message:", err)
-			continue
-		}
+// 		// adding
+// 		var messageData map[string]interface{}
+// 		err = json.Unmarshal(msg, &messageData)
+// 		if err != nil {
+// 			log.Println("Error unmarshaling message:", err)
+// 			continue
+// 		}
 
-		action, ok := messageData["action"].(string)
-		if !ok {
-			log.Println("Invalid message format")
-			continue
-		}
+// 		action, ok := messageData["action"].(string)
+// 		if !ok {
+// 			log.Println("Invalid message format")
+// 			continue
+// 		}
 
-		if action == "message" {
-			content, _ := messageData["content"].(string)
-			sender, _ := messageData["sender"].(string)
-			recipient, _ := messageData["recipient"].(string)
+// 		if action == "message" {
+// 			content, _ := messageData["content"].(string)
+// 			sender, _ := messageData["sender"].(string)
+// 			recipient, _ := messageData["recipient"].(string)
 
-			// Store message in database
-			m.storeMessage(content, cl.UserID, m.getUserID(recipient))
+// 			// Store message in database using dbTools.StoreMessage
+// 			err := db.StoreMessage(content, cl.UserID, m.getUserID(recipient))
+// 			if err != nil {
+// 				log.Println("Error storing message:", err)
+// 			}
 
-			// Broadcast message to recipient
-			m.msgQueue <- message{
-				SenderID:     cl.UserID,
-				ReceiverID:   m.getUserID(recipient),
-				Content:      fmt.Sprintf(`{"action": "message", "content": "%s", "sender": "%s"}`, content, sender),
-				ReceiverName: recipient,
-			}
-		}
-	}
-	m.clientQueue <- action{"offline", cl}
-	cl.Conn.Close()
-}
+// 			// Broadcast message to recipient
+// 			m.msgQueue <- message{
+// 				SenderID:     cl.UserID,
+// 				ReceiverID:   m.getUserID(recipient),
+// 				Content:      fmt.Sprintf(`{"action": "message", "content": "%s", "sender": "%s"}`, content, sender),
+// 				ReceiverName: recipient,
+// 			}
+// 		} else if action == "mark-as-read" {
+// 			recipient, _ := messageData["recipient"].(string)
+// 			recipientID := m.getUserID(recipient)
+// 			// Mark messages as read
+// 			qry := `UPDATE messages SET read_at = CURRENT_TIMESTAMP WHERE receiver_id = ? AND sender_id = ? AND read_at IS NULL`
+// 			_, err = db.conn.Exec(qry, cl.UserID, recipientID)
+// 			if err != nil {
+// 				log.Println("Error marking messages as read:", err)
+// 			}
+// 		}
+// 	}
+// 	m.clientQueue <- action{"offline", cl}
+// 	cl.Conn.Close()
+// }
 
 func (m *Messenger) listener() {
 	for action := range m.clientQueue {
@@ -148,9 +160,11 @@ func (m *Messenger) broadcaster() {
 	for {
 		msg := <-m.msgQueue
 		log.Println(msg.Content)
+		log.Println("Sending message:", msg.Content)
 
 		if msg.ReceiverID == -1 {
 			for _, client := range m.clients {
+				log.Printf("Sending to all clients: %s", client.UserName)
 				err := client.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
 				if err != nil {
 					log.Printf("Error sending message to %s: %v", msg.ReceiverName, err)
@@ -160,6 +174,7 @@ func (m *Messenger) broadcaster() {
 			receiver, exists := m.clients[msg.ReceiverName]
 			if exists {
 				err := receiver.Conn.WriteMessage(websocket.TextMessage, []byte(msg.Content))
+				log.Printf("Sending to %s", msg.ReceiverName)
 				if err != nil {
 					log.Printf("Error sending message to %s: %v", msg.ReceiverName, err)
 				}
@@ -239,7 +254,7 @@ func (m *Messenger) CloseConn(s *dbTools.Session) error {
 }
 
 // Adding
-// grabbing userID and StoreMessage
+// grabbing userID
 func (m *Messenger) getUserID(username string) int {
 	user, err := db.SelectUserByField("nick_name", username)
 	if err != nil || user == nil {
@@ -249,9 +264,139 @@ func (m *Messenger) getUserID(username string) int {
 	return user.ID
 }
 
-func (m *Messenger) storeMessage(content string, senderID int, receiverID int) {
-	err := db.StoreMessage(content, senderID, receiverID) // check db_message.go for direct storeMessage function
-	if err != nil {
-		log.Println("Error storing message:", err)
+// func (m *Messenger) markAsRead(w http.ResponseWriter, r *http.Request) {
+// 	var data map[string]interface{}
+// 	err := json.NewDecoder(r.Body).Decode(&data)
+// 	if err != nil {
+// 		log.Println("Error decoding request:", err)
+// 		return
+// 	}
+// 	messageID, ok := data["messageID"].(int)
+// 	if !ok {
+// 		log.Println("Invalid messageID in request")
+// 		return
+// 	}
+// 	err = db.MarkMessageAsRead(senderID, recipientID)
+// 	if err != nil {
+// 		log.Println("Error updating read status:", err)
+// 	}
+// }
+
+type MessageResponse struct {
+	Action   string            `json:"action"`
+	Messages []dbTools.Message `json:"messages"`
+}
+
+func (m *Messenger) handleConnection(cl *client) {
+	for {
+		_, msg, err := cl.Conn.ReadMessage()
+		if err != nil {
+			log.Println("Error reading message:", err)
+			break
+		}
+		log.Println("Message from", ":", string(msg))
+
+		var messageData map[string]interface{}
+		err = json.Unmarshal(msg, &messageData)
+		if err != nil {
+			log.Println("Error unmarshaling message:", err)
+			continue
+		}
+
+		action, ok := messageData["action"].(string)
+		if !ok {
+			log.Println("Invalid message format")
+			continue
+		}
+
+		if action == "message" {
+			// Handle message sending
+			content, _ := messageData["content"].(string)
+			sender, _ := messageData["sender"].(string)
+			recipient, _ := messageData["recipient"].(string)
+
+			err := db.StoreMessage(content, cl.UserID, m.getUserID(recipient))
+			if err != nil {
+				log.Println("Error storing message:", err)
+			}
+
+			m.msgQueue <- message{
+				SenderID:     cl.UserID,
+				ReceiverID:   m.getUserID(recipient),
+				Content:      fmt.Sprintf(`{"action": "message", "content": "%s", "sender": "%s"}`, content, sender),
+				ReceiverName: recipient,
+			}
+		} else if action == "fetch-messages" {
+			recipient, _ := messageData["recipient"].(string)
+			recipientID := m.getUserID(recipient)
+			senderID := cl.UserID
+
+			messages, err := db.SelectMessages(senderID, recipientID, time.Now())
+			if err != nil {
+				log.Println("Error fetching messages:", err)
+				return
+			}
+
+			var messageResponse MessageResponse
+			messageResponse.Action = "messages"
+			messageResponse.Messages = make([]dbTools.Message, 0, len(*messages))
+
+			for _, message := range *messages {
+				userData, err := db.SelectUserByField("id", message.SenderID)
+				if err != nil || userData == nil {
+					log.Println("Error fetching user data")
+					continue
+				}
+				messageResponse.Messages = append(messageResponse.Messages, dbTools.Message{
+					ID:           message.ID,
+					Action:       "",
+					SenderID:     message.SenderID,
+					ReceiverID:   message.ReceiverID,
+					Content:      message.Content,
+					CreatedAt:    message.CreatedAt,
+					ReadAt:       message.ReadAt,
+					ReceiverName: userData.NickName,
+				})
+			}
+
+			// Reverse the order of messages
+			// for i, j := 0, len(messageResponse.Messages)-1; i < j; i, j = i+1, j-1 {
+			// 	messageResponse.Messages[i], messageResponse.Messages[j] = messageResponse.Messages[j], messageResponse.Messages[i]
+			// }
+			sort.Slice(messageResponse.Messages, func(i, j int) bool {
+				return messageResponse.Messages[i].CreatedAt.Before(messageResponse.Messages[j].CreatedAt)
+			})
+
+			// Mark messages as read
+			err = db.MarkMessagesAsRead(senderID, recipientID)
+			if err != nil {
+				log.Println("Error marking messages as read:", err)
+			}
+
+			jsonContent, err := json.Marshal(messageResponse)
+			if err != nil {
+				log.Println("Error marshaling messages:", err)
+				return
+			}
+
+			// Send messages back to the client
+			m.msgQueue <- message{
+				SenderID:     -1,
+				ReceiverID:   cl.UserID,
+				Content:      string(jsonContent),
+				ReceiverName: cl.UserName,
+			}
+		} else if action == "mark-as-read" {
+			recipient, _ := messageData["recipient"].(string)
+			recipientID := m.getUserID(recipient)
+			senderID := cl.UserID
+
+			err = db.MarkMessagesAsRead(senderID, recipientID)
+			if err != nil {
+				log.Println("Error marking messages as read:", err)
+			}
+		}
 	}
+	m.clientQueue <- action{"offline", cl}
+	cl.Conn.Close()
 }

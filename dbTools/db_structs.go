@@ -67,12 +67,12 @@ type Feedback struct {
 }
 
 type Message struct {
-	ID           int       `json:"ID"`
-	Action       string    `json:"action"`
-	SenderID     int       `json:"senderID"`
-	ReceiverID   int       `json:"receiverID"`
-	Content      string    `json:"content"`
-	CreatedAt    time.Time `json:"createdAt"`
-	ReadAt       time.Time `json:"readAt"`
+	ID           int          `json:"ID"`
+	Action       string       `json:"action"`
+	SenderID     int          `json:"senderID"`
+	ReceiverID   int          `json:"receiverID"`
+	Content      string       `json:"content"`
+	CreatedAt    time.Time    `json:"createdAt"`
+	ReadAt       sql.NullTime `json:"readAt"`
 	ReceiverName string
 }

@@ -47,6 +47,18 @@ function onMessageHandler(dataString) {
                 clientElement.classList.add("unread");
             }
         }
+    } else if (data.action === "messages") {
+        MESSAGE_CONTAINER.innerHTML = '';
+        // data.messages.forEach(message => {
+        //     appendMessage(message.content, message.ReceiverName, message.ReceiverName === localStorage.getItem('username') ? "right" : "left");
+        // });
+        if (Array.isArray(data.messages)) {
+            data.messages.forEach(message => {
+                appendMessage(message.content, message.ReceiverName, message.ReceiverName === localStorage.getItem('username') ? "right" : "left");
+            });
+        } else {
+            console.error("Expected an array of messages but got:", data.messages);
+        }
     };
 }
 
@@ -122,9 +134,16 @@ function addUserListItemListener(item) {
         const clientElement = document.getElementById(`user-${userName}`);
         if (clientElement) {
             clientElement.classList.remove("unread");
+            markAsRead();
         }
         
         MESSAGE_CONTAINER.innerHTML = '';
+
+        const messageData = {
+            action: 'fetch-messages',
+            recipient: userName
+        };
+        socket.send(JSON.stringify(messageData));
     }
 }
 
@@ -175,4 +194,13 @@ function sendMessage() {
         appendMessage(messageText, "You", "right");
         messageInputField.value = ""
     }
+}
+
+// When marking messages as read
+function markAsRead() {
+    const messageData = {
+        action: 'mark-as-read',
+        recipient: currentRecipientUsername
+    };
+    socket.send(JSON.stringify(messageData));
 }

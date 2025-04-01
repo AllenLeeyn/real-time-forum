@@ -1,6 +1,7 @@
 package dbTools
 
 import (
+	"database/sql"
 	"time"
 )
 
@@ -44,6 +45,7 @@ func (db *DBContainer) SelectMessages(id_1, id_2 int, fromTime time.Time) (*[]Me
 		var m Message
 		err := rows.Scan(
 			&m.ID,
+			// &m.Action,
 			&m.SenderID,
 			&m.ReceiverID,
 			&m.Content,
@@ -113,4 +115,15 @@ func (db *DBContainer) StoreMessage(content string, senderID int, receiverID int
 	qry := `INSERT INTO messages (sender_id, receiver_id, content) VALUES (?, ?, ?)`
 	_, err := db.conn.Exec(qry, senderID, receiverID, content)
 	return err
+}
+
+// Read
+func (db *DBContainer) MarkMessagesAsRead(senderID, receiverID int) error {
+	qry := `UPDATE messages SET read_at = CURRENT_TIMESTAMP WHERE receiver_id = ? AND sender_id = ? AND read_at IS NULL`
+	_, err := db.conn.Exec(qry, receiverID, senderID)
+	return err
+}
+
+func (db *DBContainer) Exec(qry string, args ...interface{}) (sql.Result, error) {
+	return db.conn.Exec(qry, args...)
 }
