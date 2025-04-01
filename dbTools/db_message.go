@@ -68,7 +68,7 @@ func (db *DBContainer) SelectMessages(id_1, id_2 int, msgIdStr string) (*[]Messa
 }
 
 func (db *DBContainer) SelectUnreadMessages(senderID, receiverID int) (*[]Message, error) {
-	qry := `SELECT DISTINCT receiver_id FROM messages
+	qry := `SELECT * FROM messages
 			WHERE (sender_id = ? AND receiver_id = ? AND read_at IS NULL)`
 
 	rows, err := db.conn.Query(qry, senderID, receiverID)
