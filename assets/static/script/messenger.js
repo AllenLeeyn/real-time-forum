@@ -23,6 +23,7 @@ export function openWebSocket() {
     };
 }
 
+
 function onMessageHandler(dataString) {
     const data = JSON.parse(dataString)
     
@@ -86,6 +87,17 @@ function onMessageHandler(dataString) {
             clientElement = document.getElementById(`user-${data.senderID}`).parentElement;
         }
         USER_LIST.prepend(clientElement);
+
+        const typingIndicator = document.getElementById('typing-indicator');
+        typingIndicator.style.display = "none";
+
+    } else if (data.action === "typing") {
+        const typingIndicator = document.getElementById('typing-indicator');
+        typingIndicator.textContent = `${data.senderName} is typing...`;
+        typingIndicator.style.display = "block"
+        setTimeout(() => {
+            typingIndicator.style.display = "none"; // Hide after 5 seconds
+        }, 3000);
     };
 }
 
@@ -129,10 +141,17 @@ function addUserListItemListener(item) {
         requestMessages(userId, -1)
 
         const messageInput = document.getElementById('message-input');
+        let typingTimeout;
+        
         messageInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 submitMessage({ target: document.getElementById('submit-message') });
+            } else {
+                clearTimeout(typingTimeout); 
+                typingTimeout = setTimeout(() => {
+                    sendTypingEvent();
+                }, 500); 
             }
         });
 
@@ -141,6 +160,7 @@ function addUserListItemListener(item) {
         document.getElementById("message-container").onscroll = (event) => {messageScollHandler(event, userId)};
     }
 }
+
 let isThrottled = false;
 function messageScollHandler(event, userID){
     if (event.target.scrollTop > 20 || isThrottled) return;
@@ -201,4 +221,16 @@ function sendMessageAcknowledgement(receiverID){
         receiverID: receiverID,
     }
     socket.send(JSON.stringify(messageAcknowledged))
+}
+
+// Sending Typing Event
+function sendTypingEvent() {
+    const receiverID = parseInt(document.getElementById('submit-message').getAttribute('data-id'));
+    const typingData = {
+        action: "typing",
+        receiverID: receiverID,
+        senderID: currentState.id,
+        senderName: currentState.user, 
+    }
+    socket.send(JSON.stringify(typingData));
 }
