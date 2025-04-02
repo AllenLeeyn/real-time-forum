@@ -68,9 +68,8 @@ func (m *Messenger) WebSocketUpgrade(w http.ResponseWriter, r *http.Request, ses
 	go m.handleConnection(cl)
 }
 
-func (m *Messenger) queuePublicMessage(action, content string, tgt int) {
+func (m *Messenger) queuePublicMessage(content string, tgt int) {
 	m.msgQueue <- message{
-		Action:     action,
 		SenderID:   -1,
 		ReceiverID: tgt,
 		Content:    content,

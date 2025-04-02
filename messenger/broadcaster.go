@@ -1,7 +1,6 @@
 package messenger
 
 import (
-	"encoding/json"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -10,14 +9,6 @@ import (
 func (m *Messenger) broadcaster() {
 	for {
 		msg := <-m.msgQueue
-
-		if msg.Action == "message" || msg.Action == "messageHistory" {
-			content, err := json.Marshal(msg)
-			if err != nil {
-				log.Printf("Error generating JSON: %v", err)
-			}
-			msg.Content = string(content)
-		}
 
 		if msg.ReceiverID == -1 {
 			for _, client := range m.clients {

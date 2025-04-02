@@ -62,7 +62,13 @@ func (m *Messenger) processMessage(msgData *message, cl *client) error {
 		return fmt.Errorf("receiver inserting message: %v", err)
 	}
 
-	m.queuePublicMessage("messageSendOK", `{"action":"messageSendOK" }`, cl.UserID)
+	content, err := json.Marshal(msgData)
+	if err != nil {
+		log.Printf("Error generating JSON: %v", err)
+	}
+	msgData.Content = string(content)
+
+	m.queuePublicMessage(`{"action":"messageSendOK"}`, cl.UserID)
 	m.msgQueue <- *msgData
 	return nil
 }
@@ -74,11 +80,16 @@ func (m *Messenger) processMessageRequest(msgData *message, cl *client) error {
 		return fmt.Errorf("error getting messages: %v", err)
 	}
 
-	content, err := json.Marshal(messages)
+	content := struct {
+		Action  string    `json:"action"`
+		Content []message `json:"content"`
+	}{Action: "messageHistory", Content: *messages}
+
+	contentJSON, err := json.Marshal(content)
 	if err != nil {
 		log.Printf("Error generating JSON: %v", err)
 	}
-	m.queuePublicMessage("messageHistory", string(content), cl.UserID)
+	m.queuePublicMessage(string(contentJSON), cl.UserID)
 	return nil
 }
 

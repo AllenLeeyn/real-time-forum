@@ -67,18 +67,22 @@ function onMessageHandler(dataString) {
         if (submit_message !== null)
         receiverID = parseInt(submit_message.getAttribute('data-id'));
 
-        if ((data.receiverID !== receiverID && data.senderID !== receiverID) || currentState.chat === currentState.user) {
-            const clientElement = document.getElementById(`user-${data.senderID}`);
-            clientElement.classList.add("unread");
-
-        } else {
+        if (data.receiverID === currentState.id && data.senderID === currentState.chatID) {
             MESSAGE_CONTAINER.innerHTML += templateChatMessage(data, receiverID);
             MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
             sendMessageAcknowledgement(receiverID);
+
+        } else if (data.senderID === currentState.id) {
+            MESSAGE_CONTAINER.innerHTML += templateChatMessage(data, receiverID);
+            MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
+
+        } else if (data.receiverID === currentState.id && data.senderID !== currentState.chatID) {
+            const clientElement = document.getElementById(`user-${data.senderID}`);
+            clientElement.classList.add("unread");
         }
 
         let clientElement = document.getElementById(`user-${data.receiverID}`).parentElement;
-        if (data.receiverID !== receiverID || currentState.chat === currentState.user) {
+        if (data.receiverID === currentState.id) {
             clientElement = document.getElementById(`user-${data.senderID}`).parentElement;
         }
         USER_LIST.prepend(clientElement);
@@ -119,9 +123,19 @@ function addUserListItemListener(item) {
         MESSENGER_DISPLAY.innerHTML = templateChat(userId);
         currentState.display =  MESSENGER_DISPLAY;
         currentState.chat = userName;
+        currentState.chatID = parseInt(userId);
         showTab("chat", userName);
         renderDisplay();
         requestMessages(userId, -1)
+
+        const messageInput = document.getElementById('message-input');
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submitMessage({ target: document.getElementById('submit-message') });
+            }
+        });
+
         document.getElementById('submit-message').onclick = submitMessage;
         isThrottled = false;
         document.getElementById("message-container").onscroll = (event) => {messageScollHandler(event, userId)};

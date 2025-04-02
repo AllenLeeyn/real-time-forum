@@ -15,12 +15,12 @@ func (m *Messenger) listener() {
 		case "online":
 			m.sendClientList(action.client, action.client.UserID)
 			content := fmt.Sprintf(`{"action": "online", "id": "%d"}`, action.client.UserID)
-			m.queuePublicMessage("online", content, -1)
+			m.queuePublicMessage(content, -1)
 
 		case "offline":
 			delete(m.clients, action.client.UserID)
 			content := fmt.Sprintf(`{"action": "offline", "id": "%d"}`, action.client.UserID)
-			m.queuePublicMessage("offline", content, -1)
+			m.queuePublicMessage(content, -1)
 		}
 	}
 }
@@ -59,5 +59,5 @@ func (m *Messenger) sendClientList(cl *client, receiver int) {
 		log.Println("Error marshaling data to JSON:", err)
 		return
 	}
-	m.queuePublicMessage("start", string(jsonData), receiver)
+	m.queuePublicMessage(string(jsonData), receiver)
 }

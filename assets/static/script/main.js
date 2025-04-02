@@ -42,6 +42,7 @@ export const currentState = {
   user: "",
   id: 0,
   chat: "",
+  chatID: 0,
   categories: [],
   view: SIGNUP_VIEW,
   display: FEED_DISPLAY,
@@ -173,6 +174,10 @@ MESSENGER_TAB.onclick = (event) => showDisplay(MESSENGER_DISPLAY, event);
 
 function showDisplay(display, event){
   if (currentState.display === display && display !== FEED_DISPLAY) {
+    if (currentState.display === MESSENGER_DISPLAY) {
+      currentState.chat = "";
+      currentState.chatID = 0;
+    }
     hideTab();
   } else {
     currentState.display = display;

@@ -144,11 +144,9 @@ export const templateChat = (userId) => `
 `;
 
 export const templateChatHistory = (messages, receiverID) => {
-  const msgsData = JSON.parse(messages);
-
   let result = ``;
-  if (!Array.isArray(msgsData)) return `<div class="nuetral"> End of history </div>`
-  msgsData.forEach(msg => {
+  if (!Array.isArray(messages)) return `<div class="nuetral"> End of history </div>`
+  messages.forEach(msg => {
     result = templateChatMessage(msg, receiverID) + result
   });
   return result;
