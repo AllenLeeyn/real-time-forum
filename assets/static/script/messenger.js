@@ -42,13 +42,15 @@ function onMessageHandler(event) {
         processMessage(data);
 
     } else if (data.action === "typing") {
+        if (data.senderID !== currentState.chatID) return;
+
         const typingIndicator = document.getElementById('typing-indicator');
-        typingIndicator.textContent = `${data.senderName} is typing...`;
+        typingIndicator.textContent = `${currentState.chat} is typing...`;
         typingIndicator.style.display = "block";
         
         setTimeout(() => {
-            typingIndicator.style.display = "none"; 
-        }, 500);;
+            typingIndicator.textContent = " "; 
+        }, 800);;
     }
 }
 
@@ -76,7 +78,7 @@ function processMessage(data) {
     USER_LIST.prepend(clientElement);
 
     const typingIndicator = document.getElementById('typing-indicator');
-    typingIndicator.style.display = "none";
+    typingIndicator.textContent = " ";
 }
 
 function processMessageHistory(data) {
@@ -184,6 +186,7 @@ function sendMessage(action, receiverID, content){
     }
     socket.send(JSON.stringify(message))
 }
+
 let isTyping = false;
 function handleKeyDown(event) {
     if (event.key === 'Enter') {
@@ -191,23 +194,10 @@ function handleKeyDown(event) {
     } else {
         if (!isTyping){
             isTyping = true;
-            sendTypingEvent();
+            sendMessage("typing", currentState.chatID, "");
         }
         setTimeout(() => {
             isTyping = false;
-        }, 500); 
+        }, 800); 
     }
-    socket.send(JSON.stringify(messageAcknowledged))
-}
-
-// Sending Typing Event
-function sendTypingEvent() {
-    const receiverID = parseInt(document.getElementById('submit-message').getAttribute('data-id'));
-    const typingData = {
-        action: "typing",
-        receiverID: receiverID,
-        senderID: currentState.id,
-        senderName: currentState.user, 
-    }
-    socket.send(JSON.stringify(typingData));
 }

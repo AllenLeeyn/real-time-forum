@@ -268,8 +268,8 @@ tbody td {
 /*----- form -----*/
 #message-form,
 #comment-form {
-  margin-top: 2rem;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 #message-form textarea,
@@ -280,7 +280,7 @@ tbody td {
   border-radius: 8px;
   font-size: 0.9rem;
   color: black;
-  margin-bottom: 1rem;
+  margin-bottom: 5px;
   resize: none;
 }
 
