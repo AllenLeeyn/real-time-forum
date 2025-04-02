@@ -174,10 +174,6 @@ MESSENGER_TAB.onclick = (event) => showDisplay(MESSENGER_DISPLAY, event);
 
 function showDisplay(display, event){
   if (currentState.display === display && display !== FEED_DISPLAY) {
-    if (currentState.display === MESSENGER_DISPLAY) {
-      currentState.chat = "";
-      currentState.chatID = 0;
-    }
     hideTab();
   } else {
     currentState.display = display;
@@ -209,6 +205,11 @@ export function showTab(type, title){
 }
 
 export function hideTab(){
+  if (currentState.display === MESSENGER_DISPLAY) {
+    currentState.chat = "";
+    currentState.chatID = 0;
+  }
+
   currentState.display.innerHTML = '';
   currentState.tab.style.display = 'none';
   currentState.display = FEED_DISPLAY;

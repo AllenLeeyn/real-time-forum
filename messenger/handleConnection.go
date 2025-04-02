@@ -49,7 +49,7 @@ func (m *Messenger) processMessage(msgData *message, cl *client) error {
 	}
 
 	receiver, err := db.SelectUserByField("id", msgData.ReceiverID)
-	if err != nil || receiver == nil {
+	if err != nil || receiver == nil || receiver.ID == 0 {
 		return fmt.Errorf("receiver not found: %v", err)
 	}
 

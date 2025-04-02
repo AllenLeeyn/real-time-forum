@@ -6,25 +6,21 @@ const USER_LIST = document.getElementById("userList");
 let socket;
 
 export function openWebSocket() {
-    console.log("connecting WebSocket");
     socket = new WebSocket("/ws");
     socket.onopen = function() {
-        console.log("WebSocket connection established");
+        console.log("Websocket opened.");
     };
-    socket.onmessage = function(event) {
-        console.log("Message received:", event.data);
-        onMessageHandler(event.data)
-    };
+    socket.onmessage = onMessageHandler;
     socket.onerror = function(error) {
         console.error("WebSocket error:", error);
     };
     socket.onclose = function() {
-        console.log("WebSocket connection closed");
+        console.log("Websocket closed.");
     };
 }
 
-function onMessageHandler(dataString) {
-    const data = JSON.parse(dataString)
+function onMessageHandler(event) {
+    const data = JSON.parse(event.data)                                                                                                                                                                                                                                    
     
     if (data.action === "start") {
         addUserListItems(data)
@@ -40,60 +36,57 @@ function onMessageHandler(dataString) {
         messageInput.value = "";
 
     } else if (data.action === "messageHistory") {
-        const MESSAGE_CONTAINER = document.getElementById("message-container");
-        const receiverID = parseInt(document.getElementById('submit-message').getAttribute('data-id'));
-
-        const currentScrollPosition = MESSAGE_CONTAINER.scrollTop;
-        const currentScrollHeight = MESSAGE_CONTAINER.scrollHeight;
-
-        MESSAGE_CONTAINER.innerHTML = templateChatHistory(data.content, receiverID) + MESSAGE_CONTAINER.innerHTML;
-        sendMessageAcknowledgement(receiverID);
-        
-        if (MESSAGE_CONTAINER.children.length <= 10) {
-            MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
-        } else {
-            const newScrollHeight = MESSAGE_CONTAINER.scrollHeight;
-            const scrollDifference = newScrollHeight - currentScrollHeight;
-
-            MESSAGE_CONTAINER.scrollTop = currentScrollPosition + scrollDifference;
-        }
-        const clientElement = document.getElementById(`user-${receiverID}`);
-        clientElement.classList.remove("unread");
+        processMessageHistory(data);
 
     } else if (data.action === "message") {
-        const MESSAGE_CONTAINER = document.getElementById("message-container");
-        const submit_message = document.getElementById('submit-message');
-        let receiverID = -1
-        if (submit_message !== null)
-        receiverID = parseInt(submit_message.getAttribute('data-id'));
-
-        if (data.receiverID === currentState.id && data.senderID === currentState.chatID) {
-            MESSAGE_CONTAINER.innerHTML += templateChatMessage(data, receiverID);
-            MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
-            sendMessageAcknowledgement(receiverID);
-
-        } else if (data.senderID === currentState.id) {
-            MESSAGE_CONTAINER.innerHTML += templateChatMessage(data, receiverID);
-            MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
-
-        } else if (data.receiverID === currentState.id && data.senderID !== currentState.chatID) {
-            const clientElement = document.getElementById(`user-${data.senderID}`);
-            clientElement.classList.add("unread");
-        }
-
-        let clientElement = document.getElementById(`user-${data.receiverID}`).parentElement;
-        if (data.receiverID === currentState.id) {
-            clientElement = document.getElementById(`user-${data.senderID}`).parentElement;
-        }
-        USER_LIST.prepend(clientElement);
+        processMessage(data);
     };
+}
+
+function processMessage(data) {
+    const MESSAGE_CONTAINER = document.getElementById("message-container");
+
+    if (data.receiverID === currentState.id && data.senderID === currentState.chatID) {
+        MESSAGE_CONTAINER.innerHTML += templateChatMessage(data);
+        MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
+        sendMessage("messageAck", currentState.id, "");
+
+    } else if (data.senderID === currentState.id) {
+        MESSAGE_CONTAINER.innerHTML += templateChatMessage(data);
+        MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
+
+    } else if (data.receiverID === currentState.id && data.senderID !== currentState.chatID) {
+        const clientElement = document.getElementById(`user-${data.senderID}`);
+        clientElement.classList.add("unread");
+    }
+
+    let clientElement = document.getElementById(`user-${data.receiverID}`).parentElement;
+    if (data.receiverID === currentState.id) {
+        clientElement = document.getElementById(`user-${data.senderID}`).parentElement;
+    }
+    USER_LIST.prepend(clientElement);
+}
+
+function processMessageHistory(data) {
+    const MESSAGE_CONTAINER = document.getElementById("message-container");
+    const oldScrollPosition = MESSAGE_CONTAINER.scrollTop - MESSAGE_CONTAINER.scrollHeight;
+
+    MESSAGE_CONTAINER.innerHTML = templateChatHistory(data.content) + MESSAGE_CONTAINER.innerHTML;
+    sendMessage("messageAck", currentState.chatID, "");
+    document.getElementById(`user-${currentState.chatID}`).classList.remove("unread");
+    
+    if (MESSAGE_CONTAINER.children.length <= 10) {
+        MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
+
+    } else {
+        MESSAGE_CONTAINER.scrollTop = oldScrollPosition + MESSAGE_CONTAINER.scrollHeight;
+    }
 }
 
 function addUserListItems(data) {
     const clientList = data.allClients.map((name, index) => ({
         name: name, id: data.clientIDs[index]
     }));
-    console.log(clientList);
 
     USER_LIST.innerHTML = templateUserList(clientList);
     data.onlineClients.forEach(client=>{
@@ -106,62 +99,36 @@ function addUserListItems(data) {
         const clientElement = document.getElementById(`user-${client}`);
         clientElement.classList.add("unread");
     });
-    addUserListItemListeners();
-}
 
-function addUserListItemListeners() {
     const listItems = document.querySelectorAll(".user-item");
     listItems.forEach(item => addUserListItemListener(item));
 }
 
 function addUserListItemListener(item) {
     const userName = item.textContent;
-    const userId = item.getAttribute("data-id");
+    const userID = item.dataset.id;
+
     item.onclick = (event) => {
         event.preventDefault();
 
-        MESSENGER_DISPLAY.innerHTML = templateChat(userId);
-        currentState.display =  MESSENGER_DISPLAY;
+        currentState.display = MESSENGER_DISPLAY;
         currentState.chat = userName;
-        currentState.chatID = parseInt(userId);
+        currentState.chatID = parseInt(userID);
         showTab("chat", userName);
         renderDisplay();
-        requestMessages(userId, -1)
 
-        const messageInput = document.getElementById('message-input');
-        messageInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                submitMessage({ target: document.getElementById('submit-message') });
-            }
-        });
-
-        document.getElementById('submit-message').onclick = submitMessage;
         isThrottled = false;
-        document.getElementById("message-container").onscroll = (event) => {messageScollHandler(event, userId)};
-    }
-}
-let isThrottled = false;
-function messageScollHandler(event, userID){
-    if (event.target.scrollTop > 20 || isThrottled) return;
-    isThrottled = true;
-    
-    console.log("here")
-    const firstChild = event.target.children[0];
+        MESSENGER_DISPLAY.innerHTML = templateChat(userID);
+        sendMessage("messageReq", userID, "-1");
 
-    if (firstChild.textContent != " End of history ")
-        setTimeout(() => {
-            isThrottled = false;
-        }, 300);
-
-    if (firstChild && firstChild.dataset.id) {
-        const msgId = firstChild.dataset.id;
-        requestMessages(userID, msgId);
+        document.getElementById('message-input').onkeydown = handleKeyDown;
+        document.getElementById('submit-message').onclick = submitMessage;
+        document.getElementById("message-container").onscroll = (event) => {messageScollHandler(event, userID)};
     }
 }
 
-function updateUserListItems(client, action) {
-    const clientElement = document.getElementById(`user-${client}`);
+function updateUserListItems(tgtID, action) {
+    const clientElement = document.getElementById(`user-${tgtID}`);
     if (action === "online") {
         clientElement.classList.add(action);
     } else {
@@ -169,8 +136,24 @@ function updateUserListItems(client, action) {
     }
 }
 
-function submitMessage(event) {
-    const receiverID = parseInt(event.target.getAttribute('data-id'));
+let isThrottled = false;
+function messageScollHandler(event, tgtID){
+    if (event.target.scrollTop > 20 || isThrottled) return;
+    isThrottled = true;
+
+    const firstChild = event.target.children[0];
+    if (firstChild.textContent === " End of history ") return;
+
+    setTimeout(() => {
+        isThrottled = false;
+    }, 300);
+
+    const msgId = firstChild.dataset.id;
+    sendMessage("messageReq", tgtID, msgId)
+}
+
+function submitMessage() {
+    const receiverID = document.getElementById('submit-message').dataset.id;
     const messageInput = document.getElementById('message-input');
     const messageText = messageInput.value.trim();
 
@@ -178,27 +161,20 @@ function submitMessage(event) {
             showMessage('Message cannot be empty!');
             return;
     }
-    const messageData = {
-        action: "message",
-        receiverID: receiverID,
-        content: messageText,
-    }
-    socket.send(JSON.stringify(messageData));
+    sendMessage("message", receiverID, messageText);
 }
 
-function requestMessages(receiverID, msgId) {
-    const messageReq = {
-        action: "messageReq",
+function sendMessage(action, receiverID, content){
+    const message = {
+        action: action,
         receiverID: parseInt(receiverID),
-        content: String(msgId)
+        content: content
     }
-    socket.send(JSON.stringify(messageReq))
+    socket.send(JSON.stringify(message))
 }
 
-function sendMessageAcknowledgement(receiverID){
-    const messageAcknowledged = {
-        action: "messageAck",
-        receiverID: receiverID,
+function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+        submitMessage();
     }
-    socket.send(JSON.stringify(messageAcknowledged))
 }

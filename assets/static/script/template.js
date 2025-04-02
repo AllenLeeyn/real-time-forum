@@ -127,7 +127,7 @@ export const templateUserList = (clientList) => {
 
   clientList.forEach((client) => {
   result += `
-    <li><a class="user-item" data-id="${client.id}" id="user-${client.id}">${client.name}</a></li>`;
+    <li><a class="user-item" data-id=${client.id} id="user-${client.id}">${client.name}</a></li>`;
   })
   return result;
 };
@@ -143,19 +143,20 @@ export const templateChat = (userId) => `
   </td></tc></tr>
 `;
 
-export const templateChatHistory = (messages, receiverID) => {
+export const templateChatHistory = (messages) => {
   let result = ``;
   if (!Array.isArray(messages)) return `<div class="nuetral"> End of history </div>`
+  
   messages.forEach(msg => {
-    result = templateChatMessage(msg, receiverID) + result
+    result = templateChatMessage(msg) + result
   });
   return result;
 };
 
-export const templateChatMessage = (message, receiverID) => `
-    <div class="${(message.receiverID !== receiverID) ? "receiver": "sender"}" data-id=${message.ID}>
+export const templateChatMessage = (message) => `
+    <div class="${(message.senderID === currentState.id) ? "sender": "receiver"}" data-id=${message.ID}>
       <pre>${message.content}</pre>
-      <p>[${(message.receiverID !== receiverID) ? currentState.chat: currentState.user}] ${formatTime(message.createdAt)}</p></div>`
+      <p>[${(message.senderID === currentState.id) ? currentState.user: currentState.chat}] ${formatTime(message.createdAt)}</p></div>`
 ;
 
 function relativeTime(timestamp) {
