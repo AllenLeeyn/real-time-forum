@@ -96,8 +96,8 @@ function onMessageHandler(dataString) {
         typingIndicator.textContent = `${data.senderName} is typing...`;
         typingIndicator.style.display = "block"
         setTimeout(() => {
-            typingIndicator.style.display = "none"; // Hide after 5 seconds
-        }, 3000);
+            typingIndicator.style.display = "none"; 
+        }, 5000);
     };
 }
 
@@ -142,7 +142,7 @@ function addUserListItemListener(item) {
 
         const messageInput = document.getElementById('message-input');
         let typingTimeout;
-        
+
         messageInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 event.preventDefault();
