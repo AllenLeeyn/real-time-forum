@@ -32,6 +32,8 @@ func (m *Messenger) handleConnection(cl *client) {
 			err = m.processMessageRequest(&msgData, cl)
 		case "messageAck":
 			err = m.processMessageAcknowledgement(&msgData, cl)
+		case "typing":
+			err = m.processTypingEvent(&msgData, cl)
 		}
 
 		if err != nil {
@@ -120,4 +122,11 @@ func checkMessage(message string) (bool, string) {
 		return false, "Too long"
 	}
 	return true, html.EscapeString(message)
+}
+
+// Typing
+func (m *Messenger) processTypingEvent(msgData *message, cl *client) error {
+	content := fmt.Sprintf(`{"action": "typing", "receiverID": %d, "senderID": %d, "senderName": "%s"}`, msgData.ReceiverID, cl.UserID, cl.UserName)
+	m.queuePublicMessage(content, msgData.ReceiverID)
+	return nil
 }
