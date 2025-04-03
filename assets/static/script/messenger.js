@@ -46,14 +46,30 @@ function onMessageHandler(event) {
     }
 }
 
+let typingTimer;
 function processTyping (data) {
     if (data.senderID !== currentState.chatID) return;
-
     const typingIndicator = document.getElementById('typing-indicator');
-    typingIndicator.textContent = `${currentState.chat} is typing...`;
+
+    if (typingIndicator.textContent !== "") {
+        clearTimeout(typingTimer);
+    } else {
+        typingIndicator.textContent = `${currentState.chat} is typing`;
+        typingIndicator.innerHTML += `<svg width="30" height="10" viewBox="0 0 50 10" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10" cy="8" r="3" fill="hsl(0, 0%, 80%)">
+              <animate attributeName="r" values="3;5;3" dur="1.2s" repeatCount="indefinite" begin="0s"/>
+            </circle>
+            <circle cx="25" cy="8" r="3" fill="hsl(0, 0%, 80%)">
+              <animate attributeName="r" values="3;5;3" dur="1.2s" repeatCount="indefinite" begin="0.1s"/>
+            </circle>
+            <circle cx="40" cy="8" r="3" fill="hsl(0, 0%, 80%)">
+              <animate attributeName="r" values="3;5;3" dur="1.2s" repeatCount="indefinite" begin="0.2s"/>
+            </circle>
+          </svg>`;
+    }
     
-    setTimeout(() => {
-        typingIndicator.textContent = " "; 
+    typingTimer = setTimeout(() => {
+        typingIndicator.textContent = ""; 
     }, 800);
 }
 
@@ -81,7 +97,7 @@ function processMessage(data) {
     USER_LIST.prepend(clientElement);
 
     const typingIndicator = document.getElementById('typing-indicator');
-    typingIndicator.textContent = " ";
+    if (typingIndicator) typingIndicator.textContent = "";
 }
 
 function processMessageHistory(data) {
@@ -196,6 +212,6 @@ function handleKeyDown(event) {
         }
         setTimeout(() => {
             isTyping = false;
-        }, 800); 
+        }, 600); 
     }
 }

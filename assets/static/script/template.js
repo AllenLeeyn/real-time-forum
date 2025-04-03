@@ -136,7 +136,7 @@ export const templateChat = (userId) => `
   <tr><tc><td>
     <div id="message-container"></div>
     
-    <div><pre id="typing-indicator"> </pre></div>
+    <div><span id="typing-indicator" class="typing-indicator"></div>
 
     <div id="message-form">
       <textarea id="message-input" rows="3"></textarea>
