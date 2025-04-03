@@ -77,9 +77,10 @@ function processMessage(data) {
     const MESSAGE_CONTAINER = document.getElementById("message-container");
 
     if (data.receiverID === currentState.id && data.senderID === currentState.chatID) {
+        
         MESSAGE_CONTAINER.innerHTML += templateChatMessage(data);
         MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
-        sendMessage("messageAck", currentState.id, "");
+        sendMessage("messageAck", currentState.chatID, "");
 
     } else if (data.senderID === currentState.id) {
         MESSAGE_CONTAINER.innerHTML += templateChatMessage(data);
