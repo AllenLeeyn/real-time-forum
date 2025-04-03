@@ -125,6 +125,6 @@ func checkMessage(message string) (bool, string) {
 }
 
 func (m *Messenger) processTypingEvent(msgData *message, cl *client) {
-	content := fmt.Sprintf(`{"action": "typing", "receiverID": %d, "senderID": %d"}`, msgData.ReceiverID, cl.UserID)
+	content := fmt.Sprintf(`{"action": "typing", "receiverID": %d, "senderID": %d}`, msgData.ReceiverID, cl.UserID)
 	m.queuePublicMessage(content, msgData.ReceiverID)
 }
