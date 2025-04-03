@@ -42,16 +42,19 @@ function onMessageHandler(event) {
         processMessage(data);
 
     } else if (data.action === "typing") {
-        if (data.senderID !== currentState.chatID) return;
-
-        const typingIndicator = document.getElementById('typing-indicator');
-        typingIndicator.textContent = `${currentState.chat} is typing...`;
-        typingIndicator.style.display = "block";
-        
-        setTimeout(() => {
-            typingIndicator.textContent = " "; 
-        }, 800);;
+        processTyping(data);
     }
+}
+
+function processTyping (data) {
+    if (data.senderID !== currentState.chatID) return;
+
+    const typingIndicator = document.getElementById('typing-indicator');
+    typingIndicator.textContent = `${currentState.chat} is typing...`;
+    
+    setTimeout(() => {
+        typingIndicator.textContent = " "; 
+    }, 800);
 }
 
 function processMessage(data) {
@@ -89,11 +92,15 @@ function processMessageHistory(data) {
     sendMessage("messageAck", currentState.chatID, "");
     document.getElementById(`user-${currentState.chatID}`).classList.remove("unread");
     
-    if (MESSAGE_CONTAINER.children.length <= 10) {
-        MESSAGE_CONTAINER.scrollTop = MESSAGE_CONTAINER.scrollHeight;
+    MESSAGE_CONTAINER.scrollTop = oldScrollPosition + MESSAGE_CONTAINER.scrollHeight;
+}
 
+function updateUserListItems(tgtID, action) {
+    const clientElement = document.getElementById(`user-${tgtID}`);
+    if (action === "online") {
+        clientElement.classList.add(action);
     } else {
-        MESSAGE_CONTAINER.scrollTop = oldScrollPosition + MESSAGE_CONTAINER.scrollHeight;
+        clientElement.classList.remove("online");
     }
 }
 
@@ -138,15 +145,6 @@ function addUserListItemListener(item) {
         document.getElementById('message-input').onkeydown = handleKeyDown;
         document.getElementById('submit-message').onclick = submitMessage;
         document.getElementById("message-container").onscroll = (event) => {messageScollHandler(event, userID)};
-    }
-}
-
-function updateUserListItems(tgtID, action) {
-    const clientElement = document.getElementById(`user-${tgtID}`);
-    if (action === "online") {
-        clientElement.classList.add(action);
-    } else {
-        clientElement.classList.remove("online");
     }
 }
 

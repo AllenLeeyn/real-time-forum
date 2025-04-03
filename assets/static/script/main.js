@@ -74,6 +74,7 @@ export function start(){
       const data = await response.json();
       insertFeed(data.posts);
       currentState.display = FEED_DISPLAY;
+      currentState.tab = FEED_TAB;
 
       currentState.categories = data.categories;
       CATEGORIES_LIST.innerHTML = templateCategoriesList(currentState.categories);
